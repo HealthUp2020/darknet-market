@@ -7,6 +7,7 @@ import {
 import { fitScale, isTooSmall } from "./layout.js";
 import { DIFFICULTY, DIFFICULTY_ORDER } from "./strategies.js";
 import { SAVE_KEY, parseSave } from "./persistence.js";
+import { AVATARS } from "./avatars.js";
 // Live opponent difficulty (ROC-208): easy=reckless, normal=heuristic, hard=1-ply lookahead.
 let difficulty = "hard";
 
@@ -42,9 +43,11 @@ function rivalHTML(p) {
   const active = state.turnIndex === p.id && !state.gameOver;
   return `<div class="glass rival ${active ? "active" : ""}"><div class="sheen"></div>
     <div class="lock">${LOCK_SVG}</div>
-    <div class="top"><div class="who"><div class="av">${AV_SVG}</div><span class="nm">${p.name}</span></div>
-      <span class="stt"><i></i><b>${active ? "EXEC" : "IDLE"}</b></span></div>
-    <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">${p.hand.length}</span></div><div class="st"><span class="k">FLEET</span><span class="v">${p.camels}</span></div><div class="st"><span class="k">SCORE</span><span class="v">${p.score}</span></div></div>
+    <div class="av">${AVATARS[p.name] || AV_SVG}</div>
+    <div class="rinfo">
+      <div class="top"><span class="nm">${p.name}</span><span class="stt"><i></i><b>${active ? "EXEC" : "IDLE"}</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">${p.hand.length}</span></div><div class="st"><span class="k">FLEET</span><span class="v">${p.camels}</span></div><div class="st"><span class="k">SCORE</span><span class="v">${p.score}</span></div></div>
+    </div>
   </div>`;
 }
 
@@ -554,3 +557,5 @@ initPriceWall();
 initBackgroundSwitch();
 initMenu();
 render();
+const _opAv = document.getElementById("op-av"); // operator is always players[0]
+if (_opAv) _opAv.innerHTML = AVATARS["OPERATOR"] || AV_SVG;

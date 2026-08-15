@@ -360,8 +360,13 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .rival{padding:9px 12px}
   .rival .top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
   .rival .who{display:flex;align-items:center;gap:8px}
-  .rival .av{width:22px;height:22px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);background:linear-gradient(150deg,#1a2430,#0c131c);border:1px solid rgba(79,195,217,.35);display:grid;place-items:center;color:var(--text-muted)}
-  .rival .av svg{width:12px;height:12px}
+  /* Avatar-forward rival card: big machine portrait on the left, info on the right (ROC-213) */
+  .rival{display:flex;align-items:center;gap:12px}
+  .rival .rinfo{flex:1;min-width:0}
+  .rival .av{width:76px;height:76px;flex-shrink:0;clip-path:polygon(16% 0,100% 0,100% 84%,84% 100%,0 100%,0 16%);background:linear-gradient(150deg,#1a2430,#0c131c);border:1px solid rgba(79,195,217,.3);overflow:hidden;padding:0}
+  .rival .av svg{width:100%;height:100%;display:block}
+  .ophud .av{width:76px;height:76px;flex-shrink:0;clip-path:polygon(16% 0,100% 0,100% 84%,84% 100%,0 100%,0 16%);background:linear-gradient(150deg,#1c2734,#0d141d);border:1px solid rgba(79,195,217,.4);overflow:hidden;padding:0}
+  .ophud .av svg{width:100%;height:100%;display:block}
   .rival .nm{font:600 11px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary)}
   .rival .stt{display:inline-flex;align-items:center;gap:5px}
   .rival .stt i{width:5px;height:5px;border-radius:50%;background:var(--text-muted)}
@@ -378,7 +383,7 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .rival .lock svg{width:12px;height:12px}
 
   /* ---------- terminal (right rail, below rivals) ---------- */
-  .term{position:absolute;right:16px;top:326px;width:290px;height:300px;z-index:23;display:flex;flex-direction:column;border-top:2px solid var(--accent-ui)}
+  .term{position:absolute;right:16px;top:388px;width:290px;height:288px;z-index:23;display:flex;flex-direction:column;border-top:2px solid var(--accent-ui)}
   .term .th{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border-subtle);background:rgba(79,195,217,.05)}
   .term .th .pr{font:600 12px/1 var(--font-mono);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
   .term .th .pr .c{animation:ds-blink-caret 1s step-end infinite}
@@ -396,16 +401,15 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   /* ---------- operator zone (bottom band, right of wall) ---------- */
   .op{position:absolute;left:304px;right:0;bottom:0;height:272px;z-index:18}
   .opbg{position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(6,9,15,.72) 42%);pointer-events:none}
-  .ophud{position:absolute;left:20px;bottom:22px;width:216px;padding:12px 14px}
-  .ophud .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .ophud .who{display:flex;align-items:center;gap:9px}
-  .ophud .av{width:28px;height:28px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);background:linear-gradient(150deg,#1c2734,#0d141d);border:1px solid rgba(79,195,217,.5);display:grid;place-items:center}
-  .ophud .av span{font:600 12px/1 var(--font-display);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
-  .ophud .nm{font:600 12px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
-  .ophud .score{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+  /* Avatar-forward operator card (matches the rival cards): 76px portrait left, info right */
+  .ophud{position:absolute;left:20px;bottom:22px;width:236px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+  .ophud .ohinfo{flex:1;min-width:0}
+  /* .ophud .av is defined above (avatar-forward, 76px) — old 28px glyph rule removed */
+  .ophud .nm{font:600 12px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ui);text-shadow:var(--glow-text-ui);margin-bottom:6px}
+  .ophud .score{display:flex;align-items:baseline;gap:6px;margin-bottom:6px}
   .ophud .score b{font:600 30px/1 var(--font-mono);color:var(--text-primary)}
   .ophud .score .u{font:600 11px/1 var(--font-display);letter-spacing:.16em;color:var(--accent-ui)}
-  .ophud .mini{display:flex;gap:16px}
+  .ophud .mini{display:flex;gap:12px}
   .ophud .mini .st{display:flex;flex-direction:column;gap:2px}
   .ophud .mini .k{font:600 7px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted)}
   .ophud .mini .v{font:600 15px/1 var(--font-mono);color:var(--text-primary)}
