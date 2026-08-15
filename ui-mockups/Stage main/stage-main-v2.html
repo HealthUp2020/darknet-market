@@ -1,0 +1,524 @@
+<!-- @dsCard group="Screens" viewport="1600x900" name="Main Stage v2 — Left Wall / Center Heart" subtitle="Layout revision — price wall left, market centered" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>NIGHT MARKET — Main Stage v2</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  html,body{margin:0}
+  .stage{position:relative;width:1600px;height:900px;overflow:hidden;color:var(--text-primary);
+    font-family:var(--font-body);
+    background:
+      radial-gradient(52% 42% at 52% 4%, rgba(0,229,255,.06), transparent 70%),
+      radial-gradient(40% 44% at 50% 40%, rgba(0,229,255,.05), transparent 72%),
+      radial-gradient(38% 40% at 92% 20%, rgba(255,201,77,.05), transparent 72%),
+      radial-gradient(46% 40% at 6% 60%, rgba(255,45,150,.07), transparent 72%),
+      linear-gradient(180deg,#0a0e16 0%,#0b1220 46%,#080b12 100%);--warn:#ffab3d}
+
+  /* ---------- ENVIRONMENT ---------- */
+  .env{position:absolute;inset:0;pointer-events:none}
+  .rain{position:absolute;inset:0;opacity:.05;background:repeating-linear-gradient(102deg, rgba(180,210,230,.6) 0 1px, transparent 1px 7px)}
+  .grid{position:absolute;inset:0;opacity:.5;background:var(--texture-grid);background-size:var(--texture-grid-size);
+    -webkit-mask:radial-gradient(70% 66% at 52% 42%, #000 40%, transparent 90%);mask:radial-gradient(70% 66% at 52% 42%, #000 40%, transparent 90%)}
+  .cable{position:absolute;top:-2px;width:1px;height:120px;background:linear-gradient(#2a3542,transparent);opacity:.6}
+  .cable::after{content:"";position:absolute;bottom:0;left:-1px;width:3px;height:3px;border-radius:50%;background:#4fc3d9;opacity:.5;box-shadow:0 0 5px #4fc3d9}
+  .sign{position:absolute;font-family:var(--font-display);writing-mode:vertical-rl;font-weight:700;letter-spacing:.1em;opacity:.13;user-select:none}
+  /* central stall light pool — draws the eye to the market heart */
+  .counterlight{position:absolute;left:360px;right:372px;top:96px;height:320px;
+    background:radial-gradient(58% 80% at 50% 42%, rgba(79,195,217,.16), transparent 72%);filter:blur(8px)}
+  .puddle{position:absolute;left:788px;bottom:2px;width:720px;height:120px;transform:translateX(-50%);
+    background:radial-gradient(60% 100% at 50% 0, rgba(255,45,150,.10), rgba(0,229,255,.06) 45%, transparent 75%);filter:blur(4px);opacity:.7}
+  .steam{position:absolute;border-radius:50%;background:radial-gradient(circle, rgba(190,210,225,.10), transparent 70%);filter:blur(10px)}
+
+  /* ---------- generic glass ---------- */
+  .glass{position:relative;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border:1px solid var(--glass-border-color);clip-path:var(--clip-panel);box-shadow:var(--shadow-panel)}
+  .glass>.sheen{position:absolute;inset:0;background:var(--glass-highlight);pointer-events:none;clip-path:var(--clip-panel)}
+  .lab{font:var(--type-label);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--text-secondary)}
+  .mono{font-family:var(--font-mono)}
+  .cap{font:var(--type-caption);color:var(--text-muted)}
+
+  /* ---------- turn banner ---------- */
+  .banner{position:absolute;top:16px;left:52%;transform:translateX(-50%);z-index:30;
+    width:440px;height:38px;display:flex;align-items:center;gap:12px;padding:0 16px;box-sizing:border-box;
+    background:linear-gradient(90deg,rgba(79,195,217,.14),rgba(10,14,22,.85));border:1px solid rgba(79,195,217,.55);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    box-shadow:0 0 14px rgba(79,195,217,.3),inset 0 0 12px rgba(0,0,0,.5)}
+  .banner .dot{width:11px;height:11px;flex-shrink:0;position:relative}
+  .banner .dot i{position:absolute;inset:0;border-radius:50%;background:var(--accent-ui);box-shadow:var(--glow-ui)}
+  .banner .dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(79,195,217,.6);animation:ring 1.8s var(--ease-hud) infinite}
+  .banner b{font:600 13px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .banner .sub{margin-left:auto;font:500 10px/1 var(--font-mono);letter-spacing:.1em;color:var(--text-muted)}
+
+  /* ---------- utility icons ---------- */
+  .util{position:absolute;top:18px;right:22px;z-index:31;display:flex;gap:8px}
+  .util .ic{width:32px;height:32px;display:grid;place-items:center;color:var(--text-secondary);background:var(--glass-bg);border:1px solid var(--border-panel);
+    clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+  .util .ic svg{width:16px;height:16px}
+
+  /* =========================================================
+     LEFT PRICE WALL — trading-floor ticker mounted on the wall
+     ========================================================= */
+  .wall{position:absolute;left:16px;top:58px;width:232px;bottom:16px;z-index:22;display:flex;flex-direction:column;padding:12px 12px 10px;
+    background:linear-gradient(180deg,rgba(12,16,23,.82),rgba(9,12,18,.8));border:1px solid rgba(79,195,217,.12);box-shadow:none;filter:saturate(.86);opacity:.95}
+  .wall>.sheen{display:none}
+  .wall .wh{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .wall .wh .ttl{font:600 10px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+  .wall .wh .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.4),transparent)}
+  .wall .wsub{font:500 8px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--text-muted);margin-bottom:9px}
+  .rows{display:flex;flex-direction:column;gap:5px;flex:1}
+  .prow{position:relative;display:flex;align-items:center;gap:9px;padding:5px 8px;flex:1;
+    background:linear-gradient(180deg,rgba(18,24,33,.4),rgba(9,12,18,.32));border:1px solid rgba(79,195,217,.07);
+    border-left:2px solid color-mix(in srgb,var(--ac) 30%,transparent);
+    clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
+  .prow.rare{border-left-color:color-mix(in srgb,var(--ac) 52%,transparent)}
+  /* mini chamfered acrylic chip (top token of the pile) */
+  .ppile{position:relative;width:42px;height:32px;flex-shrink:0}
+  .ppile .sl{position:absolute;left:5px;right:5px;height:4px;bottom:-2px;background:color-mix(in srgb,var(--ac) 18%,var(--bg-inset));
+    clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 100%,0 100%);opacity:.5}
+  .ppile .sl.s2{bottom:1px;left:8px;right:8px;opacity:.32}
+  .ppile .chip{position:absolute;inset:0;display:grid;place-items:center;
+    clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 8px),0 8px);
+    background:linear-gradient(158deg,color-mix(in srgb,var(--ac) 22%,transparent),color-mix(in srgb,var(--ac) 9%,transparent)),var(--bg-inset);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 0 7px color-mix(in srgb,var(--ac) 16%,transparent),inset 0 -4px 8px rgba(0,0,0,.5)}
+  .prow.rare .ppile .chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 0 8px color-mix(in srgb,var(--ac) 22%,transparent),inset 0 -4px 8px rgba(0,0,0,.5)}
+  .ppile .chip b{font:600 13px/1 var(--font-mono);color:var(--ac)}
+  .prow.rare .ppile .chip b{text-shadow:none}
+  .pmid{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .pr1{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+  .pnm{font:600 9px/1 var(--font-display);letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prow.rare .pnm{color:var(--text-secondary)}
+  .pval{display:flex;align-items:baseline;gap:3px;flex-shrink:0}
+  .pval b{font:600 13px/1 var(--font-mono);color:color-mix(in srgb,var(--ac) 82%,var(--text-secondary))}
+  .prow.rare .pval b{text-shadow:none}
+  .pval span{font:600 7px/1 var(--font-mono);letter-spacing:.1em;color:var(--text-muted)}
+  .pr2{display:flex;align-items:center;gap:8px}
+  /* DEPLETION GAUGE — segmented, one lit per token in stock */
+  .gauge{display:flex;gap:2px;flex:1}
+  .gauge i{flex:1;height:5px;background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent);
+    clip-path:polygon(2px 0,100% 0,calc(100% - 2px) 100%,0 100%)}
+  .gauge i.lit{background:color-mix(in srgb,var(--ac) 78%,transparent)}
+  .prow.rare .gauge i.lit{box-shadow:none}
+  /* COUNT CHIP ×N */
+  .pcnt{display:inline-flex;align-items:center;gap:3px;font:600 11px/1 var(--font-mono);color:var(--text-secondary);
+    background:rgba(10,14,22,.5);border:1px solid rgba(79,195,217,.1);padding:2px 7px;flex-shrink:0;
+    clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+  .pcnt .x{color:var(--text-muted);font-size:9px}
+  .prow.rare .pcnt{border-color:color-mix(in srgb,var(--ac) 24%,transparent)}
+  /* LOW state */
+  .prow.low .gauge i.lit{background:color-mix(in srgb,var(--warn) 80%,transparent);border-color:color-mix(in srgb,var(--warn) 58%,transparent);box-shadow:none}
+  .prow.low .pcnt{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 42%,transparent)}
+  .prow.low .pcnt .x{color:var(--warn)}
+  /* EMPTY state */
+  .prow.empty{opacity:.55;filter:grayscale(.5)}
+  .prow.empty .ppile .chip{background:transparent;border:1px dashed var(--border-panel);box-shadow:none}
+  .prow.empty .ppile .chip b{color:var(--text-muted);font-size:14px}
+  .prow.empty .pval b{color:var(--text-muted)}
+  .prow.empty .pcnt{color:var(--text-muted)}
+  .prow.empty .so{font:600 7px/1 var(--font-display);letter-spacing:.16em;color:var(--text-muted)}
+  /* wall footer — bonus tokens + fixer seal */
+  .wfoot{margin-top:9px;padding-top:10px;border-top:1px solid var(--border-subtle)}
+  .wfoot .fh{font:600 8px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);margin-bottom:9px}
+  .wfoot .frow{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .bset{display:flex;gap:9px}
+  .bcol{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .bcol .k{font:600 7px/1 var(--font-display);letter-spacing:.1em;color:var(--text-muted)}
+  .hex{width:34px;height:30px;position:relative;filter:drop-shadow(0 0 2px rgba(255,201,77,.22))}
+  .hex .hb{position:absolute;inset:0;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:var(--rare-gold)}
+  .hex .hi{position:absolute;inset:2px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:linear-gradient(160deg,var(--bg-panel-raised),var(--bg-inset));display:grid;place-items:center}
+  .hex .hi b{font:600 9px/1 var(--font-mono);color:var(--rare-gold)}
+  .seal{width:42px;height:42px;display:grid;place-items:center}
+  .seal .dm{width:30px;height:30px;transform:rotate(45deg);border:1px solid color-mix(in srgb,var(--rare-magenta) 60%,transparent);background:var(--rare-magenta-glass);box-shadow:0 0 8px rgba(255,45,150,.18);display:grid;place-items:center}
+  .seal .dm span{transform:rotate(-45deg);font:600 13px/1 var(--font-display);color:var(--rare-magenta);text-shadow:none}
+  /* good accents */
+  .g-cyan{--ac:var(--rare-cyan);--acg:var(--glow-cyan)}
+  .g-gold{--ac:var(--rare-gold);--acg:var(--glow-gold)}
+  .g-mag{--ac:var(--rare-magenta);--acg:var(--glow-magenta)}
+  .g-pur{--ac:var(--common-purple);--acg:none}
+  .g-grn{--ac:var(--common-green);--acg:none}
+  .g-org{--ac:var(--common-orange);--acg:none}
+
+  /* =========================================================
+     CENTER — DARKNET MARKET (the heart)
+     ========================================================= */
+  .market{position:absolute;left:270px;right:322px;top:94px;z-index:16}
+  .market .hd{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+  .market .hd .ttl{font:600 17px/1 var(--font-display);letter-spacing:.15em;text-transform:uppercase;color:var(--text-primary);text-shadow:0 0 12px rgba(79,195,217,.25)}
+  .market .hd .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.5),transparent)}
+  .counter{display:flex;align-items:flex-end;gap:14px;padding:20px 22px 22px;
+    background:linear-gradient(180deg,rgba(20,26,36,.62),rgba(10,14,22,.4));
+    border:1px solid var(--border-panel);border-top:1px solid rgba(79,195,217,.45);
+    box-shadow:0 0 56px rgba(79,195,217,.14),inset 0 24px 48px rgba(79,195,217,.06);clip-path:var(--clip-panel)}
+  .cards{display:flex;gap:11px;flex:1}
+
+  .card{position:relative;width:100%;aspect-ratio:5/7;box-sizing:border-box;display:flex;flex-direction:column;
+    background:var(--bg-panel);border:1px solid var(--cl);clip-path:var(--clip-card);
+    transition:transform var(--dur) var(--ease-hud),box-shadow var(--dur) var(--ease-hud)}
+  .card .cc{position:absolute;top:0;right:0;width:var(--cut);height:var(--cut);background:var(--gl);border-left:1px solid var(--cl)}
+  .card .ch{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;gap:4px}
+  .card .ch .cn{font:600 9px/1.1 var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--nm)}
+  .card .ch .pip{display:flex;gap:2px;margin-right:6px;flex-shrink:0}
+  .card .ch .pip i{width:4px;height:4px;background:var(--c);transform:rotate(45deg)}
+  .card .well{flex:1;margin:0 1px;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+    background:var(--texture-scanline),repeating-linear-gradient(135deg,var(--bg-inset) 0 8px,#0b1018 8px 16px);display:grid;place-items:center;overflow:hidden}
+  .card .well svg{width:40%;height:40%;opacity:.9}
+  .card .ft{display:flex;align-items:flex-end;justify-content:space-between;padding:6px 8px 7px;gap:4px}
+  .card .ft .ty{font:600 6px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+  .card .ft .vl{font:600 14px/1 var(--font-mono);color:var(--c)}
+  .card.rare{box-shadow:var(--gw)}
+  .card.rare .cn{text-shadow:0 0 7px var(--c)}
+  .card .strip{position:absolute;left:0;bottom:0;width:14px;height:2px;background:var(--c)}
+  .card.sel{border-color:var(--accent-ui);transform:translateY(-14px);box-shadow:var(--glow-ui)}
+  .card.sel.rare{box-shadow:var(--glow-ui),var(--gw)}
+  .card .selring{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font:600 6px/1 var(--font-display);letter-spacing:.18em;color:var(--accent-ui);text-shadow:var(--glow-text-ui);white-space:nowrap}
+  .a-cyan{--c:var(--rare-cyan);--cl:var(--rare-cyan);--gl:var(--rare-cyan-glass);--gw:var(--glow-cyan);--nm:var(--rare-cyan)}
+  .a-gold{--c:var(--rare-gold);--cl:var(--rare-gold);--gl:var(--rare-gold-glass);--gw:var(--glow-gold);--nm:var(--rare-gold)}
+  .a-mag{--c:var(--rare-magenta);--cl:var(--rare-magenta);--gl:var(--rare-magenta-glass);--gw:var(--glow-magenta);--nm:var(--rare-magenta)}
+  .a-pur{--c:var(--common-purple);--cl:color-mix(in srgb,var(--common-purple) 55%,transparent);--gl:var(--common-purple-glass);--gw:none;--nm:var(--text-primary)}
+  .a-grn{--c:var(--common-green);--cl:color-mix(in srgb,var(--common-green) 55%,transparent);--gl:var(--common-green-glass);--gw:none;--nm:var(--text-primary)}
+  .a-org{--c:var(--common-orange);--cl:color-mix(in srgb,var(--common-orange) 55%,transparent);--gl:var(--common-orange-glass);--gw:none;--nm:var(--text-primary)}
+
+  .deckcol{display:flex;flex-direction:column;align-items:center;gap:4px;padding-left:6px;border-left:1px solid var(--border-subtle);margin-left:2px}
+  .deck{position:relative;width:82px;aspect-ratio:5/7}
+  .deck .layer{position:absolute;inset:0;background:linear-gradient(160deg,#16202c,#0b111a);border:1px solid var(--border-panel);clip-path:var(--clip-card)}
+  .deck .layer:nth-child(1){transform:translate(6px,6px);opacity:.5}
+  .deck .layer:nth-child(2){transform:translate(3px,3px);opacity:.75}
+  .deck .face{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,#12202a,#070c13);border:1px solid rgba(79,195,217,.4);clip-path:var(--clip-card);display:grid;place-items:center}
+  .deck .face svg{width:30px;height:30px;color:rgba(79,195,217,.55)}
+  .deck .cnt{position:absolute;bottom:7px;left:0;right:0;text-align:center;font:600 12px/1 var(--font-mono);color:var(--accent-ui)}
+  .deckcol .k{font:600 7px/1 var(--font-display);letter-spacing:.16em;color:var(--text-muted)}
+  .discard{width:82px;aspect-ratio:5/7;border:1px dashed var(--border-panel);clip-path:var(--clip-card);display:grid;place-items:center;background:rgba(255,255,255,.015)}
+  .discard svg{width:24px;height:24px;color:var(--text-muted);opacity:.6}
+
+  /* flow markers */
+  .flow{position:absolute;z-index:17;color:rgba(79,195,217,.55);font:600 8px/1 var(--font-display);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+  .flow svg{width:22px;height:13px}
+  .flow.sell{color:rgba(255,45,150,.6)}
+
+  /* ---------- rival panels (top-right column) ---------- */
+  .rivals{position:absolute;right:16px;top:60px;z-index:24;width:290px;display:flex;flex-direction:column;gap:9px}
+  .rival{padding:9px 12px}
+  .rival .top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .rival .who{display:flex;align-items:center;gap:8px}
+  .rival .av{width:22px;height:22px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);background:linear-gradient(150deg,#1a2430,#0c131c);border:1px solid rgba(79,195,217,.35);display:grid;place-items:center;color:var(--text-muted)}
+  .rival .av svg{width:12px;height:12px}
+  .rival .nm{font:600 11px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary)}
+  .rival .stt{display:inline-flex;align-items:center;gap:5px}
+  .rival .stt i{width:5px;height:5px;border-radius:50%;background:var(--text-muted)}
+  .rival .stt b{font:500 8px/1 var(--font-mono);letter-spacing:.1em;color:var(--text-muted)}
+  .rival .stats{display:flex;gap:16px}
+  .rival .st{display:flex;flex-direction:column;gap:2px}
+  .rival .st .k{font:600 7px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted)}
+  .rival .st .v{font:600 15px/1 var(--font-mono);color:var(--text-primary)}
+  .rival.active{border-color:rgba(79,195,217,.6);box-shadow:var(--glow-ui),var(--shadow-panel)}
+  .rival.active .nm{color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .rival.active .stt i{background:var(--accent-ui);box-shadow:var(--glow-ui);animation:ds-pulse 1.6s infinite}
+  .rival.active .stt b{color:var(--accent-ui)}
+  .rival .lock{position:absolute;top:9px;right:11px;color:var(--text-muted);opacity:.5}
+  .rival .lock svg{width:12px;height:12px}
+
+  /* ---------- terminal (right rail, below rivals) ---------- */
+  .term{position:absolute;right:16px;top:326px;width:290px;height:300px;z-index:23;display:flex;flex-direction:column;border-top:2px solid var(--accent-ui)}
+  .term .th{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border-subtle);background:rgba(79,195,217,.05)}
+  .term .th .pr{font:600 12px/1 var(--font-mono);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .term .th .pr .c{animation:ds-blink-caret 1s step-end infinite}
+  .term .th .tl{font:var(--type-label);letter-spacing:.16em;color:var(--text-secondary)}
+  .term .th .x{color:var(--text-muted)}.term .th .x svg{width:14px;height:14px}
+  .term .tb{position:relative;flex:1;padding:12px 14px;overflow:hidden;font:var(--type-terminal)}
+  .term .tb .scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.5;pointer-events:none}
+  .term .tb .ln{position:relative;color:var(--text-secondary);margin-bottom:7px}
+  .term .tb .ln .g{color:var(--accent-ui-dim)}
+  .term .tb .ln .cr{color:var(--rare-gold)}
+  .term .tb .ln.you{color:var(--accent-ui)}
+  .term .tb .cur{position:relative;color:var(--accent-ui)}
+  .term .tb .cur i{display:inline-block;width:7px;height:12px;background:var(--accent-ui);box-shadow:var(--glow-ui);vertical-align:-1px;animation:ds-blink-caret 1s step-end infinite}
+
+  /* ---------- operator zone (bottom band, right of wall) ---------- */
+  .op{position:absolute;left:304px;right:0;bottom:0;height:272px;z-index:18}
+  .opbg{position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(6,9,15,.72) 42%);pointer-events:none}
+  .ophud{position:absolute;left:20px;bottom:22px;width:216px;padding:12px 14px}
+  .ophud .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .ophud .who{display:flex;align-items:center;gap:9px}
+  .ophud .av{width:28px;height:28px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);background:linear-gradient(150deg,#1c2734,#0d141d);border:1px solid rgba(79,195,217,.5);display:grid;place-items:center}
+  .ophud .av span{font:600 12px/1 var(--font-display);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .ophud .nm{font:600 12px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .ophud .score{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+  .ophud .score b{font:600 30px/1 var(--font-mono);color:var(--text-primary)}
+  .ophud .score .u{font:600 11px/1 var(--font-display);letter-spacing:.16em;color:var(--accent-ui)}
+  .ophud .mini{display:flex;gap:16px}
+  .ophud .mini .st{display:flex;flex-direction:column;gap:2px}
+  .ophud .mini .k{font:600 7px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted)}
+  .ophud .mini .v{font:600 15px/1 var(--font-mono);color:var(--text-primary)}
+
+  .fleet{position:absolute;left:20px;bottom:150px;z-index:19;width:216px}
+  .fleet .k{margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .fleet .cluster{display:flex;flex-wrap:wrap;gap:5px;max-width:216px}
+  .drone{width:26px;height:24px;color:var(--accent-ui);opacity:.9}
+  .drone svg{width:100%;height:100%;filter:drop-shadow(0 0 3px rgba(79,195,217,.5))}
+  .fleet .cnt{font:600 13px/1 var(--font-mono);color:var(--accent-ui)}
+
+  .hand{position:absolute;left:492px;bottom:8px;transform:translateX(-50%);z-index:20;display:flex;align-items:flex-end;height:196px}
+  .hand .hc{width:106px;aspect-ratio:5/7;margin:0 -13px;transform-origin:bottom center;filter:drop-shadow(0 10px 16px rgba(0,0,0,.6));transition:transform var(--dur) var(--ease-hud)}
+  .hand .lab2{position:absolute;top:-6px;left:50%;transform:translateX(-50%);white-space:nowrap}
+
+  .dock{position:absolute;right:20px;bottom:22px;z-index:22;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+  .drow{display:flex;gap:9px;align-items:center}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;box-sizing:border-box;cursor:pointer;
+    font:600 10px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ui);
+    background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.5);clip-path:var(--clip-btn)}
+  .btn svg{width:16px;height:16px}
+  .btn.on{background:rgba(79,195,217,.18);color:#aef1fb;border-color:var(--accent-ui);box-shadow:var(--glow-ui)}
+  .btn.off{opacity:.4;filter:grayscale(.5);cursor:not-allowed}
+  .btn.primary{background:var(--accent-ui);color:#06131a;border-color:var(--accent-ui);box-shadow:var(--glow-ui)}
+  .btn.sys{background:transparent;border-color:var(--border-panel);color:var(--text-secondary);border-radius:2px;clip-path:none;font-family:var(--font-mono);letter-spacing:.08em}
+  .btn.sys .br{opacity:.5}
+  .stepper{display:inline-flex;align-items:stretch;border:1px solid rgba(79,195,217,.4);clip-path:var(--clip-btn);background:rgba(10,14,22,.6)}
+  .stepper .sb{width:30px;display:grid;place-items:center;color:var(--accent-ui);font:600 16px/1 var(--font-mono);cursor:pointer}
+  .stepper .win{width:44px;display:grid;place-items:center;border-left:1px solid rgba(79,195,217,.3);border-right:1px solid rgba(79,195,217,.3);background:rgba(0,229,255,.05)}
+  .stepper .win b{font:600 15px/1 var(--font-mono);color:var(--accent-ui);text-shadow:0 0 6px rgba(79,195,217,.6)}
+  .dock .hint{font:500 8px/1 var(--font-mono);letter-spacing:.08em;color:var(--text-muted);text-transform:uppercase}
+
+  @keyframes ring{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+</style></head>
+<body>
+<div class="stage">
+
+  <!-- ENVIRONMENT -->
+  <div class="env">
+    <div class="grid"></div>
+    <div class="counterlight"></div>
+    <div class="cable" style="left:520px"></div>
+    <div class="cable" style="left:700px;height:90px"></div>
+    <div class="cable" style="left:1060px;height:150px"></div>
+    <div class="cable" style="left:1200px;height:70px"></div>
+    <div class="sign" style="left:330px;top:250px;font-size:110px;color:var(--rare-magenta)">夜市</div>
+    <div class="sign" style="right:340px;top:150px;font-size:84px;color:var(--rare-cyan)">闇市場</div>
+    <div class="sign" style="left:640px;top:56px;font-size:44px;color:var(--rare-gold);writing-mode:horizontal-tb">// DARKNET BAZAAR //</div>
+    <div class="steam" style="left:520px;bottom:150px;width:300px;height:160px"></div>
+    <div class="steam" style="right:420px;bottom:120px;width:260px;height:140px"></div>
+    <div class="rain"></div>
+    <div class="puddle"></div>
+  </div>
+
+  <!-- TURN BANNER -->
+  <div class="banner">
+    <span class="dot"><i></i></span>
+    <b>Operator // Your Move</b>
+    <span class="sub">RND 07</span>
+  </div>
+
+  <!-- UTILITY -->
+  <div class="util">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.2A1.6 1.6 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 13.4H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 6.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v0a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></div>
+    <div class="ic" style="color:var(--accent-ui);border-color:rgba(79,195,217,.5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div>
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></div>
+  </div>
+
+  <!-- ================= LEFT PRICE WALL ================= -->
+  <div class="glass wall"><div class="sheen"></div>
+    <div class="wh"><span class="ttl">Market Prices</span><span class="rule"></span></div>
+    <div class="wsub">TOP TOKEN = CR PAYOUT · ×N = STOCK LEFT</div>
+    <div class="rows">
+      <div class="prow rare g-cyan">
+        <div class="ppile"><div class="sl"></div><div class="sl s2"></div><div class="chip"><b>7</b></div></div>
+        <div class="pmid">
+          <div class="pr1"><span class="pnm">AI Cores</span><span class="pval"><b>7</b><span>CR</span></span></div>
+          <div class="pr2"><div class="gauge"><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i></i></div><span class="pcnt"><span class="x">×</span>6</span></div>
+        </div>
+      </div>
+      <div class="prow rare g-gold">
+        <div class="ppile"><div class="sl"></div><div class="sl s2"></div><div class="chip"><b>6</b></div></div>
+        <div class="pmid">
+          <div class="pr1"><span class="pnm">Implants</span><span class="pval"><b>6</b><span>CR</span></span></div>
+          <div class="pr2"><div class="gauge"><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i></i><i></i></div><span class="pcnt"><span class="x">×</span>5</span></div>
+        </div>
+      </div>
+      <div class="prow rare g-mag">
+        <div class="ppile"><div class="sl"></div><div class="sl s2"></div><div class="chip"><b>5</b></div></div>
+        <div class="pmid">
+          <div class="pr1"><span class="pnm">Corp Data</span><span class="pval"><b>5</b><span>CR</span></span></div>
+          <div class="pr2"><div class="gauge"><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i></i><i></i><i></i></div><span class="pcnt"><span class="x">×</span>4</span></div>
+        </div>
+      </div>
+      <div class="prow g-pur">
+        <div class="ppile"><div class="sl"></div><div class="sl s2"></div><div class="chip"><b>3</b></div></div>
+        <div class="pmid">
+          <div class="pr1"><span class="pnm">Pharma</span><span class="pval"><b>3</b><span>CR</span></span></div>
+          <div class="pr2"><div class="gauge"><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i><i class="lit"></i></div><span class="pcnt"><span class="x">×</span>7</span></div>
+        </div>
+      </div>
+      <div class="prow g-grn">
+        <div class="ppile"><div class="sl"></div><div class="sl s2"></div><div class="chip"><b>3</b></div></div>
+        <div class="pmid">
+          <div class="pr1"><span class="pnm">Cracked SW</span><span class="pval"><b>3</b><span>CR</span></span></div>
+          <div class="pr2"><div class="gauge"><i class="lit"></i><i class="lit"></i><i class="lit"></i><i></i><i></i><i></i><i></i></div><span class="pcnt"><span class="x">×</span>3</span></div>
+        </div>
+      </div>
+      <div class="prow low g-org">
+        <div class="ppile"><div class="sl"></div><div class="sl s2"></div><div class="chip"><b>2</b></div></div>
+        <div class="pmid">
+          <div class="pr1"><span class="pnm">Weaponry</span><span class="pval"><b>2</b><span>CR</span></span></div>
+          <div class="pr2"><div class="gauge"><i class="lit"></i><i class="lit"></i><i></i><i></i><i></i><i></i><i></i></div><span class="pcnt"><span class="x">×</span>2</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="wfoot">
+      <div class="fh">Bonus Tokens // Fixer Seal</div>
+      <div class="frow">
+        <div class="bset">
+          <div class="bcol"><div class="hex" style="filter:drop-shadow(0 0 2px rgba(0,229,255,.2))"><div class="hb" style="background:var(--rare-cyan)"></div><div class="hi"><b style="color:var(--rare-cyan)">×3</b></div></div><span class="k">+2</span></div>
+          <div class="bcol"><div class="hex"><div class="hb"></div><div class="hi"><b>×4</b></div></div><span class="k">+5</span></div>
+          <div class="bcol"><div class="hex" style="filter:drop-shadow(0 0 2px rgba(255,45,150,.22))"><div class="hb" style="background:var(--rare-magenta)"></div><div class="hi"><b style="color:var(--rare-magenta)">×5+</b></div></div><span class="k">+9</span></div>
+        </div>
+        <div class="bcol"><div class="seal"><div class="dm"><span>印</span></div></div><span class="k" style="color:var(--rare-magenta)">FIXER</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CENTER MARKET ================= -->
+  <div class="market">
+    <div class="hd"><span class="ttl">Darknet Market</span><span class="rule"></span><span class="cap mono">7 GOODS FACE-UP</span></div>
+    <div class="counter">
+      <div class="cards">
+        <div class="card rare a-cyan sel"><span class="selring">SELECTED ◇</span><span class="cc"></span>
+          <div class="ch"><span class="cn">AI Cores</span><span class="pip"><i></i><i></i><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-cyan)" stroke-width="1.4"><polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/></svg></div>
+          <div class="ft"><span class="ty">Rare // Data</span><span class="vl">7</span></div><span class="strip"></span></div>
+
+        <div class="card rare a-gold"><span class="cc"></span>
+          <div class="ch"><span class="cn">Implants</span><span class="pip"><i></i><i></i><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-gold)" stroke-width="1.4"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4" fill="var(--rare-gold)" stroke="none"/></svg></div>
+          <div class="ft"><span class="ty">Rare // Cyber</span><span class="vl">6</span></div><span class="strip"></span></div>
+
+        <div class="card a-grn"><span class="cc"></span>
+          <div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div>
+          <div class="ft"><span class="ty">Common // SW</span><span class="vl">3</span></div><span class="strip"></span></div>
+
+        <div class="card rare a-mag sel"><span class="selring">SELECTED ◇</span><span class="cc"></span>
+          <div class="ch"><span class="cn">Corp Data</span><span class="pip"><i></i><i></i><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-magenta)" stroke-width="1.4"><polygon points="20,6 30,13 27,31 20,35 13,31 10,13"/><circle cx="20" cy="20" r="3" fill="var(--rare-magenta)" stroke="none"/></svg></div>
+          <div class="ft"><span class="ty">Rare // Intel</span><span class="vl">5</span></div><span class="strip"></span></div>
+
+        <div class="card a-pur"><span class="cc"></span>
+          <div class="ch"><span class="cn">Pharma</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-purple)" stroke-width="1.4"><rect x="15" y="8" width="10" height="6"/><path d="M16 14h8v16a4 4 0 0 1-8 0z"/></svg></div>
+          <div class="ft"><span class="ty">Common // Bio</span><span class="vl">2</span></div><span class="strip"></span></div>
+
+        <div class="card a-org"><span class="cc"></span>
+          <div class="ch"><span class="cn">Weaponry</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-orange)" stroke-width="1.4"><rect x="8" y="16" width="24" height="8" rx="2"/><circle cx="28" cy="20" r="2"/></svg></div>
+          <div class="ft"><span class="ty">Common // Arms</span><span class="vl">2</span></div><span class="strip"></span></div>
+
+        <div class="card a-grn"><span class="cc"></span>
+          <div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div>
+          <div class="ft"><span class="ty">Common // SW</span><span class="vl">3</span></div><span class="strip"></span></div>
+      </div>
+
+      <div class="deckcol">
+        <div class="deck">
+          <div class="layer"></div><div class="layer"></div>
+          <div class="face"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="cnt">31</span></div>
+        </div>
+        <span class="k">DECK</span>
+        <div class="discard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></div>
+        <span class="k">DISCARD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- flow markers -->
+  <div class="flow" style="right:318px;top:150px;flex-direction:column;gap:3px">
+    <svg viewBox="0 0 22 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 6.5H2M8 2 2 6.5l6 4.5"/></svg><span style="font-size:6.5px">DRAW</span>
+  </div>
+  <div class="flow" style="left:786px;top:430px;flex-direction:column;gap:3px">
+    <span style="font-size:6.5px">TAKE ↓</span>
+    <svg viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="1.4" style="width:13px;height:22px"><path d="M6.5 2v18M2 13l4.5 6 4.5-6"/></svg>
+  </div>
+  <div class="flow sell" style="left:316px;top:600px">
+    <svg viewBox="0 0 22 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 6.5h18M14 2l6 4.5-6 4.5"/></svg><span>SELL ▸ PRICE WALL</span>
+  </div>
+
+  <!-- ================= RIVALS (top-right) ================= -->
+  <div class="rivals">
+    <div class="glass rival active"><div class="sheen"></div>
+      <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <div class="top"><div class="who"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><span class="nm">VULT-3R</span></div>
+        <span class="stt"><i></i><b>EXEC</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">5</span></div><div class="st"><span class="k">FLEET</span><span class="v">3</span></div><div class="st"><span class="k">SCORE</span><span class="v">38</span></div></div>
+    </div>
+    <div class="glass rival"><div class="sheen"></div>
+      <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <div class="top"><div class="who"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><span class="nm">NØMAD</span></div>
+        <span class="stt"><i></i><b>IDLE</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">4</span></div><div class="st"><span class="k">FLEET</span><span class="v">2</span></div><div class="st"><span class="k">SCORE</span><span class="v">41</span></div></div>
+    </div>
+    <div class="glass rival"><div class="sheen"></div>
+      <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <div class="top"><div class="who"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><span class="nm">SPECTRE-9</span></div>
+        <span class="stt"><i></i><b>IDLE</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">6</span></div><div class="st"><span class="k">FLEET</span><span class="v">4</span></div><div class="st"><span class="k">SCORE</span><span class="v">29</span></div></div>
+    </div>
+  </div>
+
+  <!-- ================= TERMINAL (right rail) ================= -->
+  <div class="glass term"><div class="sheen"></div>
+    <div class="th"><span class="pr">&gt;_<span class="c">|</span></span><span class="tl">System // Feed</span>
+      <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 15l6-6 6 6"/></svg></span></div>
+    <div class="tb">
+      <div class="scan"></div>
+      <div class="ln"><span class="g">&gt;</span> nomad sold 3× cracked software &nbsp;<span class="cr">+11 cr</span></div>
+      <div class="ln"><span class="g">&gt;</span> spectre-9 took 1× ai cores from market</div>
+      <div class="ln"><span class="g">&gt;</span> vult-3r drew 2 · fleet swept ×3 <span class="cr">+2 cr</span></div>
+      <div class="ln you"><span class="g">&gt;</span> 2 goods selected · sell or exchange</div>
+      <div class="cur"><span class="g">&gt;</span> <i></i></div>
+    </div>
+  </div>
+
+  <!-- ================= OPERATOR ZONE ================= -->
+  <div class="op">
+    <div class="opbg"></div>
+
+    <div class="fleet">
+      <div class="k"><span class="lab" style="font-size:9px">Drone Fleet</span><span class="cnt">4</span></div>
+      <div class="cluster">
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+      </div>
+    </div>
+
+    <div class="glass ophud"><div class="sheen"></div>
+      <div class="top"><div class="who"><div class="av"><span>◈</span></div><span class="nm">Operator // You</span></div></div>
+      <div class="score"><b>52</b><span class="u">CR</span></div>
+      <div class="mini"><div class="st"><span class="k">HAND</span><span class="v">6</span></div><div class="st"><span class="k">FLEET</span><span class="v">4</span></div><div class="st"><span class="k">BONUS</span><span class="v">2</span></div></div>
+    </div>
+
+    <div class="hand">
+      <div class="lab2 cap mono">YOUR HAND // 6</div>
+      <div class="hc" style="transform:rotate(-11deg) translateY(16px)"><div class="card a-grn" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">3</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(-6deg) translateY(6px)"><div class="card a-org" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Weaponry</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-orange)" stroke-width="1.4"><rect x="8" y="16" width="24" height="8" rx="2"/><circle cx="28" cy="20" r="2"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">2</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(-2deg)"><div class="card rare a-gold" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Implants</span><span class="pip"><i></i><i></i><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-gold)" stroke-width="1.4"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4" fill="var(--rare-gold)" stroke="none"/></svg></div><div class="ft"><span class="ty">Rare</span><span class="vl">6</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(2deg)"><div class="card a-pur" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Pharma</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-purple)" stroke-width="1.4"><rect x="15" y="8" width="10" height="6"/><path d="M16 14h8v16a4 4 0 0 1-8 0z"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">2</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(6deg) translateY(6px)"><div class="card rare a-cyan" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">AI Cores</span><span class="pip"><i></i><i></i><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-cyan)" stroke-width="1.4"><polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/></svg></div><div class="ft"><span class="ty">Rare</span><span class="vl">7</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(11deg) translateY(16px)"><div class="card a-grn" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">3</span></div><span class="strip"></span></div></div>
+    </div>
+
+    <div class="dock">
+      <div class="drow">
+        <button class="btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="10" height="13" rx="1.5"/><rect x="12" y="4" width="8" height="11" rx="1.5"/></svg>Take 1 Card</button>
+        <button class="btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="10" rx="4" ry="3"/><ellipse cx="15" cy="12" rx="4" ry="3"/><path d="M4 18q9 4 16 0"/></svg>Take Drones</button>
+      </div>
+      <div class="drow">
+        <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="6" width="9" height="12" rx="1.5"/><circle cx="18" cy="12" r="4"/><path d="M18 10v4M16.4 11h3.2"/></svg>Sell Selected</button>
+        <button class="btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="7" height="10" rx="1.5"/><rect x="14" y="7" width="7" height="10" rx="1.5"/><path d="M10 10l4 0M10 10l-1.6-1.6M14 14l-4 0M14 14l1.6 1.6"/></svg>Exchange</button>
+        <div class="stepper"><span class="sb">−</span><span class="win"><b>2</b></span><span class="sb">+</span></div>
+      </div>
+      <div class="drow">
+        <span class="hint">2 selected · sell @ 12 cr / exchange +2 fleet</span>
+        <button class="btn sys"><span class="br">[</span>Reset Match<span class="br">]</span></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body></html>

@@ -1,0 +1,20 @@
+<!-- @dsCard group="Spacing & Layout" viewport="700x230" name="Board Layout" subtitle="Single-screen HUD regions" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../styles.css">
+<style>body{padding:16px;display:flex;flex-direction:column;gap:8px;height:198px;box-sizing:border-box;background:var(--bg-page)}
+.zone{border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 8px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ui)}
+.note{font:400 9px/1.3 var(--font-body);color:var(--text-muted)}</style></head><body>
+<div style="display:flex;gap:8px;height:36px">
+  <div class="zone" style="flex:1">Bot 01</div><div class="zone" style="flex:1">Bot 02</div><div class="zone" style="flex:1">Bot 03</div>
+  <div class="zone" style="width:140px">Tokens / Deck</div>
+</div>
+<div style="display:flex;gap:8px;flex:1">
+  <div class="zone" style="flex:2.6">Market Row — 5 cards, centered</div>
+  <div class="zone" style="flex:1">Terminal Log</div>
+</div>
+<div style="display:flex;gap:8px;height:44px">
+  <div class="zone" style="flex:2">Operator Hand</div>
+  <div class="zone" style="flex:1">Stats</div>
+  <div class="zone" style="width:150px">Actions</div>
+</div>
+<div class="note">24px board margin · 24px between regions · 12px between cards · bots top, market center, operator bottom. Actions bottom-right, log right.</div>
+</body></html>

@@ -1,0 +1,86 @@
+<!-- @dsCard group="Assets" viewport="620x760" name="Card: Cracked Software (Common Front)" subtitle="Style anchor — common-tier card frame, plain green line, no glow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Card — Cracked Software</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#3ddc84; }
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 36%, #0d1512 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.45;pointer-events:none}
+
+.card{position:relative;width:380px;height:532px;
+  background:linear-gradient(160deg,#121722 0%,#0b0f16 100%);
+  clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);
+  box-shadow:0 22px 50px rgba(0,0,0,.55)}
+
+.border{position:absolute;inset:6px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  border:1px solid rgba(61,220,132,.55);pointer-events:none}
+
+.name{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:288px;height:40px;
+  background:linear-gradient(#0f1712,#0a120e);border:1px solid rgba(61,220,132,.4);
+  display:grid;place-items:center}
+.name span{font:600 8px/1 var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:rgba(61,220,132,.35)}
+
+.illus{position:absolute;top:80px;left:24px;right:24px;bottom:90px;
+  background:radial-gradient(circle at 50% 44%, #0b1512 0%, #06090c 74%);
+  border:1px solid rgba(61,220,132,.22);overflow:hidden;display:grid;place-items:center}
+.illus::before{content:"";position:absolute;inset:0;background:var(--texture-scanline);opacity:.35}
+.win{position:relative;filter:drop-shadow(0 0 6px rgba(61,220,132,.35))}
+
+.type{position:absolute;bottom:30px;left:28px;font:600 7px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.value{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px}
+.value .v{font:600 28px/1 var(--font-mono);color:var(--core)}
+.value .u{font:600 8px/1.3 var(--font-display);letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted)}
+.tier{position:absolute;bottom:28px;right:28px;font:600 7px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(61,220,132,.4);padding:4px 7px}
+
+@keyframes scrollcode{0%{transform:translateY(0)}100%{transform:translateY(-34px)}}
+</style></head><body>
+
+<div class="card">
+  <div class="border"></div>
+
+  <div class="name"><span>Card name</span></div>
+
+  <div class="illus">
+    <div class="win">
+      <svg viewBox="0 0 200 200" width="200" height="200">
+        <defs>
+          <linearGradient id="pane" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(61,220,132,.16)"/><stop offset="100%" stop-color="rgba(10,20,16,.55)"/>
+          </linearGradient>
+          <clipPath id="scr"><rect x="42" y="72" width="120" height="96"/></clipPath>
+        </defs>
+        <g transform="rotate(-4 100 110)">
+          <rect x="38" y="46" width="128" height="128" rx="3" fill="url(#pane)" stroke="rgba(61,220,132,.55)" stroke-width="1.5"/>
+          <rect x="38" y="46" width="128" height="22" rx="3" fill="rgba(61,220,132,.12)"/>
+          <rect x="38" y="64" width="128" height="4" fill="rgba(61,220,132,.25)"/>
+          <circle cx="52" cy="57" r="3.4" fill="none" stroke="var(--core)" stroke-width="1.2"/>
+          <rect x="61" y="53" width="7" height="7" fill="none" stroke="rgba(61,220,132,.7)" stroke-width="1.2"/>
+          <text x="154" y="60" text-anchor="end" font-family="var(--font-mono)" font-size="8" letter-spacing="1" fill="rgba(61,220,132,.85)">sh_//crk</text>
+          <path d="M166,68 l-6,11 l6,11 l-7,13 l7,13 l-5,15 l5,15" fill="none" stroke="rgba(61,220,132,.5)" stroke-width="1.2"/>
+          <g clip-path="url(#scr)">
+            <g style="animation:scrollcode 2.8s linear infinite" font-family="var(--font-mono)" font-size="8" letter-spacing=".5">
+              <text x="48" y="84" fill="rgba(61,220,132,.9)">$ patch --bypass</text>
+              <text x="48" y="98" fill="rgba(61,220,132,.6)">0xA4 6F 22 keygen</text>
+              <text x="48" y="112" fill="rgba(61,220,132,.85)">if(lic==0) return 1</text>
+              <text x="48" y="126" fill="rgba(61,220,132,.55)">> auth::spoof(root)</text>
+              <text x="48" y="140" fill="rgba(61,220,132,.9)">01101 nop nop jmp</text>
+              <text x="48" y="154" fill="rgba(61,220,132,.6)">crack.ok // v2.3</text>
+              <text x="48" y="118" dy="34" fill="rgba(61,220,132,.9)">$ patch --bypass</text>
+              <text x="48" y="132" dy="34" fill="rgba(61,220,132,.6)">0xA4 6F 22 keygen</text>
+              <text x="48" y="146" dy="34" fill="rgba(61,220,132,.85)">if(lic==0) return 1</text>
+            </g>
+          </g>
+          <rect x="42" y="72" width="120" height="96" fill="url(#pane)" opacity=".18"/>
+          <rect x="48" y="160" width="8" height="3" fill="var(--core)"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="type">Common // Software</div>
+  <div class="value"><span class="v">3</span><span class="u">PTS</span></div>
+  <div class="tier">Common</div>
+</div>
+
+</body></html>

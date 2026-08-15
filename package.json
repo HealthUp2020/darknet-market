@@ -1,0 +1,19 @@
+{
+  "name": "game",
+  "module": "server.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run server.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "sim": "bun scripts/simulate.ts",
+    "build": "rm -rf dist && bun build ./public/index.html --outdir dist --minify && cp -R public/backgrounds dist/backgrounds && touch dist/.nojekyll"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

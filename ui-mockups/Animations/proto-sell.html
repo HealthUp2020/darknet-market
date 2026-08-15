@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<!--
+  NIGHT MARKET — SELL COLLECTION  ·  self-contained motion prototype
+  ============================================================================
+  Select hand cards, then SELL. The selected cards LIFT together; each sold
+  card's VALUE TOKEN detaches and travels in a STAGGERED arcing STREAM (70ms
+  apart) down to the OPERATOR CR readout — each landing with a soft settle,
+  then absorbing into the readout as a "+N CR" eases up and fades. The CR
+  number counts up smoothly and gives one gentle scale "punch" on each arrival.
+  The sold cards ease out with a soft dissolve; the remaining hand re-fans.
+  Refines the existing token-spend animation toward Everdell weight + arc.
+
+  MOTION LANGUAGE  ·  "Everdell-style" (Dire Wolf) — feel only, not the art
+    Gentle, tactile, unhurried, weighty, sequenced. ease =
+    cubic-bezier(.34,.08,.16,1). Landings damp a ~5% overshoot in ONE step.
+    travel 340–520ms · micro 150–200ms · stagger 70–90ms · ARCING path
+    (rise + shadow bloom at pickup, lower + tighten on landing). Neon brightens
+    gently, never strobes; rare tier keeps its glow.
+
+  KEYFRAME / ANIMATION SPEC  (lift straight into the game)
+  ---------------------------------------------------------------------------
+  name        driver  property changes                          dur    easing
+  selBreathe  CSS kf  selected card ring glows softly (valid)   1.8s   ease-in-out loop
+  liftTogether WAAPI  selected cards rise -26px + scale 1.03    170ms  cubic-bezier
+                      (anticipation before the stream)                 (.34,.08,.16,1)
+  tokenStream WAAPI   value token pops from card, arcs down to  460ms  cubic-bezier
+                      the CR readout (staggered 70ms), squash          (.34,.08,.16,1)
+                      on landing, then absorbs (shrink+fade)
+  tokenShadow WAAPI   drop-shadow blooms mid-arc, tightens on   ==stream  ↑
+                      landing (weight cue)
+  crCount     rAF     CR number eases toward new total          ~380ms smooth damped
+  crPunch     WAAPI   readout number scale 1→1.13→1 on arrival  200ms  ease-hud
+  creditFloat CSS kf  "+N CR" translateY 0→-18px, opacity 1→0   640ms  ease-out
+  dissolve    WAAPI   sold card opacity→0, scale .9, blur 3px   300ms  ease-out
+  refan       CSS tr  remaining cards ease to new fan positions 420ms  cubic-bezier
+  dust        CSS kf  light motes settle at the readout         620ms  ease-out
+  hoverLift   CSS tr  card lifts -14px + faint accent glow      160ms  ease-hud
+  ---------------------------------------------------------------------------
+  prefers-reduced-motion: NO travel — CR count-ups quickly in place, sold cards
+  cross-fade out, remaining cards reposition instantly. No arc, no dust.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHT MARKET — Sell Collection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#0a0e16; --bg-panel:#141a24; --bg-inset:#070a10;
+  --text-primary:#e6eef7; --text-muted:#566a84; --text-secondary:#92a5bc;
+  --border-panel:#26334a; --border-subtle:#1a2333; --border-dim:#232f44;
+  --accent-ui:#4fc3d9;
+  --rare-cyan:#00e5ff; --rare-gold:#ffc94d; --rare-magenta:#ff2d96;
+  --common-green:#6fa07d; --common-orange:#b97a4b; --common-purple:#8578ad;
+  --glow-cyan:0 0 6px rgba(0,229,255,.55),0 0 20px rgba(0,229,255,.28),0 0 48px rgba(0,229,255,.12);
+  --glow-gold:0 0 6px rgba(255,201,77,.55),0 0 20px rgba(255,201,77,.28),0 0 48px rgba(255,201,77,.12);
+  --glow-magenta:0 0 6px rgba(255,45,150,.55),0 0 20px rgba(255,45,150,.28),0 0 48px rgba(255,45,150,.12);
+  --font-display:'Chakra Petch','Trebuchet MS',sans-serif;
+  --font-mono:'IBM Plex Mono','Consolas',monospace;
+  --cut:12px;
+  --clip-card:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);
+  --EE:cubic-bezier(.34,.08,.16,1);
+  --ease-hud:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 50% 0%,#0d1420 0%,var(--bg-page) 64%);
+  color:var(--text-primary);font-family:var(--font-display);
+  display:flex;flex-direction:column;align-items:center;gap:26px;min-height:100%;padding:34px 24px 44px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px)}
+
+.head{display:flex;align-items:center;gap:14px;width:100%;max-width:900px}
+.head .ttl{font:600 16px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--text-primary);text-shadow:0 0 12px rgba(79,195,217,.25)}
+.head .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.5),transparent)}
+.head .cap{font:500 10px/1 var(--font-mono);letter-spacing:.22em;color:var(--text-muted)}
+
+/* ---- CR readout (the sink) ---- */
+.sink{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 40px 18px;
+  background:linear-gradient(180deg,rgba(20,26,36,.7),rgba(10,14,22,.5));
+  border:1px solid var(--border-panel);border-top:1px solid rgba(79,195,217,.5);
+  box-shadow:0 0 44px rgba(79,195,217,.12),inset 0 0 30px rgba(79,195,217,.05);
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
+.sink .slab{font:600 9px/1 var(--font-display);letter-spacing:.28em;text-transform:uppercase;color:var(--text-muted)}
+.sink .crrow{display:flex;align-items:baseline;gap:8px}
+.sink .crnum{font:600 44px/1 var(--font-mono);color:var(--accent-ui);text-shadow:0 0 16px rgba(79,195,217,.45);transform-origin:50% 60%}
+.sink .cru{font:600 12px/1 var(--font-display);letter-spacing:.24em;color:var(--text-secondary)}
+.crfloat{position:fixed;font:600 15px/1 var(--font-mono);pointer-events:none;z-index:70;
+  animation:creditFloat .64s ease-out forwards;white-space:nowrap;text-shadow:0 0 10px currentColor}
+@keyframes creditFloat{0%{opacity:0;transform:translate(-50%,4px) scale(.9)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-18px) scale(1)}}
+
+/* ============================ GAME CARD ============================ */
+.handwrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px}
+.handlab{font:600 9px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
+.hand{position:relative;width:640px;height:230px}
+.card{position:absolute;left:50%;bottom:6px;width:118px;height:166px;margin-left:-59px;display:flex;flex-direction:column;
+  transform-origin:50% 122%;background:var(--bg-panel);border:1px solid var(--cl);clip-path:var(--clip-card);cursor:pointer;
+  transition:transform .42s var(--EE),box-shadow .3s ease-out,border-color .3s ease-out}
+.card .cc{position:absolute;top:0;right:0;width:var(--cut);height:var(--cut);background:var(--gl);border-left:1px solid var(--cl)}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;gap:4px}
+.card .cn{font:600 10px/1.1 var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--nm)}
+.card .pip{display:flex;gap:2px;margin-right:4px;flex-shrink:0}
+.card .pip i{width:4px;height:4px;background:var(--c);transform:rotate(45deg)}
+.card .well{flex:1;margin:0 1px;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 1px,transparent 1px 3px),repeating-linear-gradient(135deg,var(--bg-inset) 0 8px,#0b1018 8px 16px);
+  display:grid;place-items:center;overflow:hidden}
+.card .well svg{width:44%;height:44%;opacity:.95}
+.card .ft{display:flex;align-items:flex-end;justify-content:space-between;padding:7px 9px 9px;gap:4px}
+.card .ty{font:600 6px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.card .vwrap{display:flex;align-items:baseline;gap:3px}
+.card .vl{font:600 17px/1 var(--font-mono);color:var(--c)}
+.card .vu{font:600 6px/1 var(--font-display);letter-spacing:.12em;color:var(--text-muted)}
+.card .strip{position:absolute;left:0;bottom:0;width:16px;height:2px;background:var(--c)}
+.card.rare{box-shadow:var(--gw)}
+.card.rare .cn{text-shadow:0 0 7px var(--c)}
+.card.rare .vl{text-shadow:0 0 10px var(--c)}
+.card.rare .well svg{filter:drop-shadow(0 0 5px var(--c))}
+
+.card:hover{transform:var(--t) translateY(-14px)!important;z-index:30}
+.card.sel{transform:var(--t) translateY(-24px)!important;z-index:25;border-color:var(--cl);
+  box-shadow:0 18px 34px rgba(0,0,0,.5),0 0 20px var(--gl)}
+.card.sel.rare{box-shadow:0 18px 34px rgba(0,0,0,.5),var(--gw)}
+.card.sel::after{content:"";position:absolute;inset:-1px;clip-path:var(--clip-card);pointer-events:none;
+  border:1px solid var(--cl);animation:selBreathe 1.8s ease-in-out infinite}
+@keyframes selBreathe{0%,100%{opacity:.3;box-shadow:0 0 8px var(--gl)}50%{opacity:.75;box-shadow:0 0 18px var(--gl)}}
+.card .selk{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font:600 6px/1 var(--font-display);letter-spacing:.18em;
+  color:var(--nm);white-space:nowrap;opacity:0;transition:opacity .2s ease-out}
+.card.sel .selk{opacity:1}
+
+/* rarity palettes */
+.a-cyan{--c:var(--rare-cyan);--cl:var(--rare-cyan);--nm:var(--rare-cyan);--gw:var(--glow-cyan);--gl:rgba(0,229,255,.14);--gc1:rgba(0,229,255,.5);--gc2:rgba(0,229,255,.24);--gc3:rgba(0,229,255,.1)}
+.a-mag{--c:var(--rare-magenta);--cl:var(--rare-magenta);--nm:var(--rare-magenta);--gw:var(--glow-magenta);--gl:rgba(255,45,150,.14)}
+.a-gold{--c:var(--rare-gold);--cl:var(--rare-gold);--nm:var(--rare-gold);--gw:var(--glow-gold);--gl:rgba(255,201,77,.14)}
+.a-grn{--c:var(--common-green);--cl:color-mix(in srgb,var(--common-green) 60%,transparent);--nm:var(--text-primary);--gw:none;--gl:rgba(111,160,125,.12)}
+.a-org{--c:var(--common-orange);--cl:color-mix(in srgb,var(--common-orange) 60%,transparent);--nm:var(--text-primary);--gw:none;--gl:rgba(185,122,75,.12)}
+.a-pur{--c:var(--common-purple);--cl:color-mix(in srgb,var(--common-purple) 60%,transparent);--nm:var(--text-primary);--gw:none;--gl:rgba(133,120,173,.12)}
+
+/* ---- value token chip (flies to the readout) ---- */
+.flylayer{position:fixed;inset:0;pointer-events:none;z-index:60}
+.token{position:fixed;width:54px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  background:linear-gradient(150deg,rgba(32,44,60,.97),rgba(13,19,29,.97));
+  border:1px solid var(--cl);will-change:transform,filter;
+  clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)}
+.token::before{content:"";position:absolute;inset:3px;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);border:1px solid var(--gl)}
+.token .tv{font:600 22px/1 var(--font-mono);color:var(--c)}
+.token .tu{font:600 6px/1 var(--font-display);letter-spacing:.2em;color:var(--text-muted)}
+.token.rare{box-shadow:var(--gw)}
+.token.rare .tv{text-shadow:0 0 10px var(--c)}
+
+/* ---- dust ---- */
+.mote{position:absolute;width:4px;height:4px;border-radius:50%;pointer-events:none;z-index:70;background:var(--mc);box-shadow:0 0 6px var(--mc);animation:dust .62s ease-out forwards}
+@keyframes dust{0%{opacity:0;transform:translate(0,0) scale(.4)}22%{opacity:.9}100%{opacity:0;transform:translate(var(--mx),var(--my)) scale(0)}}
+
+/* ---- controls ---- */
+.controls{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;max-width:900px}
+.btn{position:relative;font:600 11px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--bg-page);background:var(--accent-ui);border:none;padding:14px 26px;cursor:pointer;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);box-shadow:0 0 18px rgba(79,195,217,.35);transition:transform .16s var(--ease-hud),box-shadow .16s var(--ease-hud)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 26px rgba(79,195,217,.55)}
+.btn:active{transform:translateY(0)}
+.btn .amt{font-family:var(--font-mono);margin-left:8px;opacity:.85}
+.btn.ghost{background:transparent;color:var(--accent-ui);border:1px solid rgba(79,195,217,.4);box-shadow:none}
+.btn.ghost:hover{box-shadow:0 0 16px rgba(79,195,217,.25)}
+.btn:disabled{opacity:.4;cursor:default;box-shadow:none;transform:none}
+.note{font:500 10px/1.4 var(--font-mono);letter-spacing:.05em;color:var(--text-muted);max-width:320px}
+.note b{color:var(--text-secondary);font-weight:600}
+
+@media (prefers-reduced-motion:reduce){.card.sel::after{animation:none;opacity:.5}}
+</style>
+</head>
+<body>
+
+<div class="head"><span class="ttl">Sell Collection</span><span class="rule"></span><span class="cap">HAND → CR</span></div>
+
+<div class="sink" id="sink">
+  <span class="slab">Operator Credits</span>
+  <div class="crrow"><span class="crnum" id="crnum">128</span><span class="cru">CR</span></div>
+</div>
+
+<div class="handwrap"><span class="handlab">Your Hand — tap to select, then sell</span>
+  <div class="hand" id="hand"></div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="sell">◆ Sell Selected<span class="amt" id="amt">+15 CR</span></button>
+  <button class="btn ghost" id="reset">Reset</button>
+  <span class="note">Selected cards lift; their value tokens arc to the <b>CR readout</b> in a staggered stream and count it up. Honors reduced-motion.</span>
+</div>
+
+<div class="flylayer" id="flylayer"></div>
+
+<script>
+const HAND = [
+  {n:'AI Cores',   t:'Rare // Data',  v:7, cls:'a-cyan', rare:true,  sel:true,  svg:'<polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/>'},
+  {n:'Cracked SW', t:'Common // SW',  v:3, cls:'a-grn',  rare:false, sel:false, svg:'<rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/>'},
+  {n:'Corp Data',  t:'Rare // Intel', v:5, cls:'a-mag',  rare:true,  sel:true,  svg:'<polygon points="20,6 30,13 27,31 20,35 13,31 10,13"/><circle cx="20" cy="20" r="3" fill="var(--rare-magenta)" stroke="none"/>'},
+  {n:'Pharma',     t:'Common // Bio', v:2, cls:'a-pur',  rare:false, sel:false, svg:'<rect x="15" y="8" width="10" height="6"/><path d="M16 14h8v16a4 4 0 0 1-8 0z"/>'},
+  {n:'Bioware',    t:'Common // Bio', v:3, cls:'a-grn',  rare:false, sel:true,  svg:'<path d="M20 8v24M14 12l6 5 6-5M14 22l6 5 6-5"/>'},
+];
+const strokeFor = c => c.rare
+  ? (c.cls==='a-cyan'?'var(--rare-cyan)':c.cls==='a-gold'?'var(--rare-gold)':'var(--rare-magenta)')
+  : (c.cls==='a-grn'?'var(--common-green)':c.cls==='a-org'?'var(--common-orange)':'var(--common-purple)');
+
+const EE='cubic-bezier(.34,.08,.16,1)';
+const hand=document.getElementById('hand'), flylayer=document.getElementById('flylayer'),
+      crnum=document.getElementById('crnum'), sink=document.getElementById('sink'),
+      sellBtn=document.getElementById('sell'), amt=document.getElementById('amt'),
+      resetBtn=document.getElementById('reset');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+
+let busy=false, crShown=128, crTarget=128, raf=null, crSettle=null;
+const centerOf=r=>({x:r.left+r.width/2,y:r.top+r.height/2});
+
+function makeCard(c){
+  const el=document.createElement('div');
+  el.className=`card ${c.cls}${c.rare?' rare':''}${c.sel?' sel':''}`;
+  el.innerHTML=`<span class="selk">◇ SELL</span><span class="cc"></span>
+    <div class="ch"><span class="cn">${c.n}</span><span class="pip">${'<i></i>'.repeat(c.rare?3:1)}</span></div>
+    <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="${strokeFor(c)}" stroke-width="1.4">${c.svg}</svg></div>
+    <div class="ft"><span class="ty">${c.t}</span><span class="vwrap"><span class="vl">${c.v}</span><span class="vu">CR</span></span></div>
+    <span class="strip"></span>`;
+  el._data=c; return el;
+}
+function handTf(i,n){ const t=i-(n-1)/2, rot=t*6.2, x=t*58, y=Math.pow(Math.abs(t),1.35)*8; return `translateX(${x}px) translateY(${y}px) rotate(${rot}deg)`; }
+function layoutHand(animate){
+  const cards=[...hand.children], n=cards.length;
+  cards.forEach((el,i)=>{
+    const tf=handTf(i,n); el._t=tf; el.style.setProperty('--t',tf);
+    if(!animate) el.style.transition='none';
+    el.style.transform=tf; el.style.zIndex=10+i;
+    if(!animate) requestAnimationFrame(()=>el.style.transition='');
+  });
+}
+function build(){
+  hand.innerHTML=''; flylayer.innerHTML='';
+  crShown=128; crTarget=128; crnum.textContent='128';
+  HAND.forEach(c=>hand.appendChild(makeCard({...c})));
+  layoutHand(false); busy=false; sellBtn.disabled=false; updateAmt();
+}
+function updateAmt(){
+  const sum=[...hand.children].filter(c=>c.classList.contains('sel')).reduce((a,c)=>a+c._data.v,0);
+  amt.textContent=(sum>0?'+':'')+sum+' CR';
+  sellBtn.disabled = sum===0 || busy;
+}
+
+/* -------- CR counter -------- */
+function tickCR(){
+  crShown += (crTarget-crShown)*0.16;
+  if(Math.abs(crTarget-crShown)<0.5){ crShown=crTarget; crnum.textContent=Math.round(crShown); raf=null; return; }
+  crnum.textContent=Math.round(crShown); raf=requestAnimationFrame(tickCR);
+}
+function crPunch(){ crnum.animate([{transform:'scale(1)'},{transform:'scale(1.13)'},{transform:'scale(1)'}],{duration:220,easing:'cubic-bezier(.2,.9,.25,1)'}); }
+function floatN(n,color){
+  const r=sink.getBoundingClientRect();
+  const f=document.createElement('div'); f.className='crfloat';
+  f.textContent='+'+n+' CR'; f.style.color=color;
+  f.style.left=(r.left+r.width/2)+'px'; f.style.top=(r.top+8)+'px';
+  flylayer.appendChild(f); f.addEventListener('animationend',()=>f.remove());
+}
+function addCR(n,color){ crTarget+=n; if(raf) cancelAnimationFrame(raf); tickCR(); crPunch(); floatN(n,color);
+  clearTimeout(crSettle); crSettle=setTimeout(()=>{ crShown=crTarget; crnum.textContent=Math.round(crTarget); },700); }
+
+function dust(cx,cy,color){
+  for(let k=0;k<6;k++){
+    const m=document.createElement('span'); m.className='mote';
+    const ang=-Math.PI/2+(Math.random()-.5)*2.0, dist=14+Math.random()*22;
+    m.style.setProperty('--mx',Math.cos(ang)*dist+'px'); m.style.setProperty('--my',(Math.sin(ang)*dist-6)+'px');
+    m.style.setProperty('--mc',color); m.style.position='fixed';
+    m.style.left=(cx-2+(Math.random()-.5)*18)+'px'; m.style.top=(cy-2+(Math.random()-.5)*18)+'px';
+    m.style.animationDelay=(Math.random()*60)+'ms';
+    flylayer.appendChild(m); m.addEventListener('animationend',()=>m.remove());
+  }
+}
+function dissolve(card){
+  card.animate([{opacity:1,filter:'blur(0)'},{opacity:0,filter:'blur(3px)',transform:card._t+' translateY(-30px) scale(.9)'}],
+    {duration:300,easing:'ease-out',fill:'forwards'});
+  setTimeout(()=>{ card.remove(); }, 300);
+}
+
+/* -------- SELL -------- */
+function flyToken(card,onLand){
+  const c=card._data, color=getComputedStyle(card).getPropertyValue('--c').trim();
+  const cardR=card.getBoundingClientRect();
+  const origin={x:cardR.left+cardR.width/2, y:cardR.top+cardR.height*0.80};
+  const sinkC=centerOf(sink.getBoundingClientRect());
+  const dx=sinkC.x-origin.x, dy=sinkC.y-origin.y;
+
+  const tok=document.createElement('div');
+  tok.className=`token ${c.cls}${c.rare?' rare':''}`;
+  tok.innerHTML=`<span class="tv">${c.v}</span><span class="tu">CR</span>`;
+  tok.style.left=origin.x+'px'; tok.style.top=origin.y+'px';
+  flylayer.appendChild(tok);
+
+  const kf=[
+    {offset:0,   opacity:0, transform:`translate(-50%,-50%) rotate(-8deg) scaleX(.55) scaleY(.55)`, filter:'drop-shadow(0 4px 8px rgba(0,0,0,.4))'},
+    {offset:.14, opacity:1, transform:`translate(calc(-50% + ${dx*0.05}px),calc(-50% + ${-10}px)) rotate(-4deg) scaleX(1.06) scaleY(1.06)`, filter:'drop-shadow(0 10px 16px rgba(0,0,0,.45))'},
+    {offset:.55, opacity:1, transform:`translate(calc(-50% + ${dx*0.5}px),calc(-50% + ${dy*0.5 - 34}px)) rotate(4deg) scaleX(1.02) scaleY(1.02)`, filter:'drop-shadow(0 26px 34px rgba(0,0,0,.45))'},
+    {offset:.85, opacity:1, transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy-3}px)) rotate(0deg) scaleX(1.07) scaleY(.93)`, filter:'drop-shadow(0 12px 18px rgba(0,0,0,.45))'},
+    {offset:.92, opacity:1, transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) rotate(0deg) scaleX(.99) scaleY(1.02)`, filter:'drop-shadow(0 8px 12px rgba(0,0,0,.4))'},
+    {offset:1,   opacity:0, transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) rotate(0deg) scaleX(.5) scaleY(.5)`, filter:'drop-shadow(0 4px 8px rgba(0,0,0,.35))'},
+  ];
+  tok.animate(kf,{duration:460,easing:EE,fill:'both'});
+  setTimeout(()=>{                       // ~landing (offset .85)
+    addCR(c.v, color||'#4fc3d9');
+    dust(sinkC.x, sinkC.y, c.rare?(color||'#4fc3d9'):'rgba(180,210,230,.9)');
+  }, 460*0.85);
+  setTimeout(()=>{ tok.remove(); onLand&&onLand(); }, 460);
+}
+
+function sell(){
+  if(busy) return;
+  const selected=[...hand.children].filter(c=>c.classList.contains('sel'));
+  if(!selected.length) return;
+  busy=true; sellBtn.disabled=true; resetBtn.disabled=true;
+
+  if(reduce.matches){
+    selected.forEach(card=>{ addCR(card._data.v, getComputedStyle(card).getPropertyValue('--c').trim()); });
+    selected.forEach(card=>{ card.animate([{opacity:1},{opacity:0}],{duration:220,easing:'ease-out',fill:'forwards'}); setTimeout(()=>card.remove(),220); });
+    setTimeout(()=>{ layoutHand(false); busy=false; resetBtn.disabled=false; updateAmt(); },300);
+    return;
+  }
+
+  // lift selected together (anticipation)
+  selected.forEach(card=>card.animate(
+    [{transform:card._t+' translateY(-24px) scale(1)'},{transform:card._t+' translateY(-34px) scale(1.03)'}],
+    {duration:170,easing:EE,fill:'forwards'}));
+
+  let landed=0;
+  setTimeout(()=>{
+    selected.forEach((card,i)=>{
+      setTimeout(()=>{
+        card.querySelector('.selk')?.remove();
+        flyToken(card, ()=>{ if(++landed===selected.length) finalize(); });
+        setTimeout(()=>dissolve(card), 150);   // card eases out as its token departs
+      }, i*70);
+    });
+  },150);
+}
+function finalize(){
+  layoutHand(true);
+  setTimeout(()=>{ busy=false; resetBtn.disabled=false; updateAmt(); }, 200);
+}
+
+/* -------- wire -------- */
+hand.addEventListener('click',e=>{ if(busy) return; const card=e.target.closest('.card'); if(!card) return; card.classList.toggle('sel'); updateAmt(); });
+sellBtn.addEventListener('click',sell);
+resetBtn.addEventListener('click',build);
+build();
+</script>
+</body>
+</html>

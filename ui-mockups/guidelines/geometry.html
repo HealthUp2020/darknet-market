@@ -1,0 +1,26 @@
+<!-- @dsCard group="Spacing & Layout" viewport="700x180" name="Corner Geometry" subtitle="Angled cuts over rounding" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../styles.css">
+<style>body{padding:20px;display:flex;gap:24px;align-items:flex-start}
+.g{flex:1;display:flex;flex-direction:column;gap:8px}
+.n{font:600 9px/1.2 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary)}
+.u{font:400 9px/1.4 var(--font-body);color:var(--text-muted)}</style></head><body>
+<div class="g">
+  <div style="height:70px;background:var(--bg-panel);border:1px solid var(--border-panel);clip-path:var(--clip-panel)"></div>
+  <div class="n">--clip-panel</div><div class="u">Panels: 12px cut, top-left + bottom-right</div>
+</div>
+<div class="g">
+  <div style="height:70px;width:50px;background:var(--bg-panel);border:1px solid var(--border-panel);clip-path:var(--clip-card)"></div>
+  <div class="n">--clip-card</div><div class="u">Cards: single 12px cut, top-right</div>
+</div>
+<div class="g">
+  <div style="height:34px;width:120px;background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.55);clip-path:var(--clip-btn);margin-top:18px"></div>
+  <div class="n">--clip-btn</div><div class="u">Buttons: 7px cut, top-left + bottom-right</div>
+</div>
+<div class="g">
+  <div style="display:flex;gap:10px;align-items:center;margin-top:14px">
+    <div style="width:44px;height:44px;border-radius:var(--radius-round);border:2px solid var(--border-panel);background:var(--bg-panel)"></div>
+    <div style="width:60px;height:26px;border-radius:var(--radius-sm);border:1px solid var(--border-panel);background:var(--bg-panel)"></div>
+  </div>
+  <div class="n">Radius exceptions</div><div class="u">Round: value tokens only. 2px: system chips/inputs.</div>
+</div>
+</body></html>

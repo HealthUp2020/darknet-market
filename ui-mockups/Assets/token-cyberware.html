@@ -1,0 +1,172 @@
+<!-- @dsCard group="Assets" viewport="720x520" name="Token: Black Market Cyberware (Rare)" subtitle="Style anchor — chrome ocular implant, gold neon" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Black Market Cyberware Token</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#f4ff5c; --core-deep:#d4dd3a; }
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;
+  background:radial-gradient(120% 120% at 50% 40%, #16160d 0%, var(--bg-page) 70%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.6;pointer-events:none}
+
+.stage{position:relative;width:300px;height:340px;display:grid;place-items:center}
+.stage::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle, rgba(244,255,92,.26) 0%, rgba(244,255,92,.09) 38%, transparent 68%);
+  filter:blur(6px);animation:breathe 4.5s var(--ease-hud) infinite}
+
+.token{position:relative;width:280px;height:280px;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg, #2b333e 0deg 3deg, #1c232c 3deg 6deg),
+    radial-gradient(circle at 38% 32%, #333c48, #10151c 78%);
+  box-shadow:
+    0 0 0 1px #05080c,
+    inset 0 2px 6px rgba(255,255,255,.10),
+    inset 0 -10px 22px rgba(0,0,0,.75),
+    0 22px 50px rgba(0,0,0,.6),
+    0 0 40px rgba(244,255,92,.32), 0 0 90px rgba(244,255,92,.16);
+  display:grid;place-items:center}
+
+.strip{position:absolute;inset:8px;border-radius:50%;
+  border:2px solid rgba(244,255,92,.85);
+  box-shadow:0 0 10px rgba(244,255,92,.65), inset 0 0 12px rgba(244,255,92,.4);
+  -webkit-mask:conic-gradient(from -8deg, #000 0 316deg, transparent 316deg 360deg);
+          mask:conic-gradient(from -8deg, #000 0 316deg, transparent 316deg 360deg)}
+
+.well{position:absolute;inset:26px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%, #14140a 0%, #05060b 70%);
+  box-shadow:inset 0 0 26px rgba(0,0,0,.9), inset 0 0 2px rgba(244,255,92,.3);
+  display:grid;place-items:center;overflow:hidden}
+
+.ring{position:absolute;border-radius:50%;border:1px solid transparent}
+.ring.r1{inset:6px;border-top-color:rgba(244,255,92,.7);border-right-color:rgba(244,255,92,.26);
+  box-shadow:0 0 8px rgba(244,255,92,.38);animation:spin 8s linear infinite}
+.ring.r2{inset:20px;border:1px dashed rgba(244,255,92,.28);animation:spin 13s linear infinite reverse}
+.ticks{position:absolute;inset:12px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, rgba(244,255,92,.45) 0deg .6deg, transparent .6deg 15deg);
+  -webkit-mask:radial-gradient(circle, transparent 0 44%, #000 44% 47%, transparent 47%);
+          mask:radial-gradient(circle, transparent 0 44%, #000 44% 47%, transparent 47%);
+  animation:spin 22s linear infinite reverse}
+
+.implant{position:relative;width:160px;height:160px;filter:drop-shadow(0 0 9px rgba(244,255,92,.6));animation:pulse 3.4s var(--ease-hud) infinite}
+
+.notch{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:60px;height:34px;
+  background:linear-gradient(#232b34,#12171e);
+  clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);
+  border-top:1px solid rgba(244,255,92,.5);
+  box-shadow:0 4px 10px rgba(0,0,0,.6), 0 0 14px rgba(244,255,92,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.notch .val{font:600 20px/1 var(--font-mono);color:var(--core);text-shadow:0 0 8px rgba(244,255,92,.9)}
+.notch .lbl{font:600 6px/1 var(--font-display);letter-spacing:.22em;color:var(--text-muted);margin-top:1px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 7px rgba(244,255,92,.5))}50%{filter:drop-shadow(0 0 16px rgba(244,255,92,.9))}}
+
+.spec{max-width:220px}
+.spec .tag{font:500 10px/1 var(--font-mono);letter-spacing:.2em;color:var(--core);text-shadow:0 0 8px rgba(244,255,92,.55)}
+.spec h1{font:600 22px/1.05 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--text-primary);margin:10px 0 4px}
+.spec .rare{display:inline-flex;align-items:center;gap:6px;font:600 9px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(244,255,92,.5);padding:5px 9px;clip-path:var(--clip-btn);box-shadow:0 0 12px rgba(244,255,92,.28);background:rgba(244,255,92,.06)}
+.spec ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:9px}
+.spec li{font:400 11px/1.4 var(--font-body);color:var(--text-secondary);display:flex;gap:9px;align-items:flex-start}
+.spec li b{color:var(--text-muted);font:600 8px/1.5 var(--font-display);letter-spacing:.14em;text-transform:uppercase;width:52px;flex-shrink:0}
+.dot{color:var(--core)}
+</style></head><body>
+
+<div class="stage">
+  <div class="token">
+    <div class="strip"></div>
+    <div class="well">
+      <div class="ticks"></div>
+      <div class="ring r1"></div><div class="ring r2"></div>
+      <div class="implant">
+        <svg viewBox="0 0 200 200" width="160" height="160">
+          <defs>
+            <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#eef2f6"/>
+              <stop offset="30%" stop-color="#b8c0c9"/>
+              <stop offset="55%" stop-color="#727b85"/>
+              <stop offset="100%" stop-color="#333b44"/>
+            </linearGradient>
+            <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#dfe5eb"/>
+              <stop offset="50%" stop-color="#8b939d"/>
+              <stop offset="100%" stop-color="#3c444d"/>
+            </linearGradient>
+            <radialGradient id="pupil" cx="42%" cy="38%" r="65%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="30%" stop-color="#fbff9e"/>
+              <stop offset="65%" stop-color="#f4ff5c"/>
+              <stop offset="100%" stop-color="#5c6414"/>
+            </radialGradient>
+            <radialGradient id="lensdark" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#1b1c10"/>
+              <stop offset="100%" stop-color="#050609"/>
+            </radialGradient>
+            <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8"/></filter>
+          </defs>
+
+          <!-- chrome bezel -->
+          <circle cx="100" cy="100" r="82" fill="url(#chrome)"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#20262d" stroke-width="1.5"/>
+          <circle cx="100" cy="100" r="70" fill="url(#lensdark)"/>
+          <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2"/>
+
+          <!-- exposed wiring (behind blades) -->
+          <g fill="none" stroke-linecap="round">
+            <path d="M58,150 Q84,140 96,120" stroke="#23282f" stroke-width="5"/>
+            <path d="M58,150 Q84,140 96,120" stroke="rgba(244,255,92,.55)" stroke-width="1.4"/>
+            <path d="M150,146 Q120,138 108,118" stroke="#23282f" stroke-width="5"/>
+            <path d="M150,146 Q120,138 108,118" stroke="rgba(244,255,92,.4)" stroke-width="1.2"/>
+            <path d="M100,168 Q100,150 100,132" stroke="#23282f" stroke-width="4"/>
+            <path d="M100,168 Q100,150 100,132" stroke="rgba(244,255,92,.5)" stroke-width="1.1"/>
+          </g>
+          <g fill="#161b12" stroke="#3a4149" stroke-width="1">
+            <rect x="52" y="146" width="12" height="8" rx="1"/>
+            <rect x="146" y="142" width="12" height="8" rx="1"/>
+          </g>
+          <g fill="var(--core)"><circle cx="58" cy="150" r="1.6"/><circle cx="152" cy="146" r="1.6"/></g>
+
+          <!-- iris blades (6) -->
+          <g stroke="#2b323a" stroke-width="1">
+            <g><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+            <g transform="rotate(60 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+            <g transform="rotate(120 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+            <g transform="rotate(180 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+            <g transform="rotate(240 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+            <g transform="rotate(300 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+          </g>
+
+          <!-- lens -->
+          <circle cx="100" cy="100" r="30" fill="url(#lensdark)"/>
+          <circle cx="100" cy="100" r="19" fill="url(#pupil)" filter="url(#soft)"/>
+          <circle cx="100" cy="100" r="5.5" fill="#ffffff" filter="url(#soft)"/>
+          <path d="M84,88 A20 20 0 0 1 112,84" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.4" stroke-linecap="round"/>
+
+          <!-- rivets on bezel -->
+          <g fill="url(#chrome)" stroke="#242b32" stroke-width="1">
+            <circle cx="100" cy="26" r="4"/><circle cx="164" cy="63" r="4"/><circle cx="164" cy="137" r="4"/>
+            <circle cx="100" cy="174" r="4"/><circle cx="36" cy="137" r="4"/><circle cx="36" cy="63" r="4"/>
+          </g>
+          <!-- top bezel specular -->
+          <path d="M42,60 A78 78 0 0 1 158,60" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="notch"><span class="val">6</span><span class="lbl">PTS</span></div>
+  </div>
+</div>
+
+<div class="spec">
+  <div class="tag">TOKEN // RARE</div>
+  <h1>Black Market Cyberware</h1>
+  <span class="rare"><span style="width:5px;height:5px;background:var(--core);transform:rotate(45deg);box-shadow:0 0 6px var(--core)"></span>Rare tier</span>
+  <ul>
+    <li><b>Glow</b><span>Neon gold <span class="dot">#F4FF5C</span> — strong rare-tier bloom.</span></li>
+    <li><b>Core</b><span>Sleek chrome ocular implant — iris blades around a gold-lit lens.</span></li>
+    <li><b>Wiring</b><span>Exposed bio-mech cables with lit connector plugs.</span></li>
+    <li><b>Rim</b><span>Brushed dark metal with a gold light strip arc.</span></li>
+    <li><b>Value</b><span>Numeral notch at the base — placeholder <span class="dot">6</span> (use 5 or 6).</span></li>
+  </ul>
+</div>
+
+</body></html>

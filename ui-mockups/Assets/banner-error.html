@@ -1,0 +1,70 @@
+<!-- @dsCard group="Assets" viewport="760x220" name="Banner: Error / System Alert" subtitle="Style anchor — red-tinted glass, glitch edge, no baked text" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Error Banner</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #150d10 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.banner{position:relative;width:600px;box-sizing:border-box;display:flex;align-items:stretch;gap:0;
+  background:linear-gradient(180deg,rgba(74,35,35,.62),rgba(48,22,22,.7));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--sys-error-border);
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  box-shadow:0 0 14px rgba(255,70,60,.32),0 0 40px rgba(255,70,60,.14),var(--shadow-panel)}
+/* glitch/static texture along edges */
+.banner .noise{position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  background-image:repeating-radial-gradient(circle at 0 0,rgba(255,255,255,.08) 0 1px,transparent 1px 2px),
+    repeating-radial-gradient(circle at 6px 3px,rgba(255,120,110,.10) 0 1px,transparent 1px 3px);
+  background-size:5px 5px,8px 8px;animation:jitter .45s steps(3) infinite}
+.banner .scan{position:absolute;inset:0;pointer-events:none;opacity:.4;background:var(--texture-scanline);
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+/* left glitch bar */
+.banner .glitchbar{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sys-error);
+  box-shadow:0 0 8px rgba(255,70,60,.8);animation:flick 1.3s steps(6) infinite}
+
+/* icon zone */
+.icon{position:relative;width:64px;flex-shrink:0;display:grid;place-items:center;
+  border-right:1px solid rgba(255,95,86,.3);background:rgba(255,70,60,.08)}
+.icon svg{width:28px;height:28px;color:var(--sys-error);filter:drop-shadow(0 0 6px rgba(255,70,60,.7));animation:ipulse 1.6s var(--ease-hud) infinite}
+
+/* content zone */
+.content{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:14px 18px}
+.code{display:flex;align-items:center;gap:8px}
+.code .tag{font:600 8px/1 var(--font-mono);letter-spacing:.14em;color:var(--sys-error);text-shadow:0 0 6px rgba(255,70,60,.5)}
+.code .chip{width:44px;height:8px;border-radius:2px;background:rgba(255,95,86,.3)}
+/* reserved empty text lines */
+.line{height:9px;border-radius:2px;background:linear-gradient(90deg,rgba(230,238,247,.28),rgba(230,238,247,.05))}
+.line.l1{width:78%}.line.l2{width:52%}
+
+/* dismiss */
+.close{position:relative;width:44px;flex-shrink:0;display:grid;place-items:center;color:rgba(255,150,140,.6);
+  border-left:1px solid rgba(255,95,86,.25);font:500 12px/1 var(--font-mono)}
+
+@keyframes jitter{0%{transform:translate(0,0)}33%{transform:translate(-1px,1px)}66%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
+@keyframes flick{0%,100%{opacity:1}20%{opacity:.4}40%{opacity:.9}60%{opacity:.5}}
+@keyframes ipulse{0%,100%{opacity:1}50%{opacity:.55}}
+</style></head><body>
+
+<div class="banner">
+  <div class="glitchbar"></div>
+  <div class="noise"></div>
+  <div class="scan"></div>
+
+  <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l9.5 16.5h-19z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.6" r=".6" fill="currentColor" stroke="none"/>
+    </svg>
+  </div>
+
+  <div class="content">
+    <div class="code"><span class="tag">SYS.ERR //</span><span class="chip"></span></div>
+    <div class="line l1"></div>
+    <div class="line l2"></div>
+  </div>
+
+  <div class="close">[x]</div>
+</div>
+
+</body></html>

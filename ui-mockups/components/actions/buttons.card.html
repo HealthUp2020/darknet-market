@@ -1,0 +1,32 @@
+<!-- @dsCard group="Components" viewport="700x240" name="Buttons" subtitle="Gameplay vs system voice, all states" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>window.__dsReady=new Promise(function(r){var s=document.createElement('script');s.src='../../_ds_bundle.js';s.onload=r;s.onerror=r;document.head.appendChild(s)});</script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head><body style="padding:20px"><div id="root"></div>
+<script type="text/babel">
+window.__dsReady.then(()=>{
+const NS=(()=>{for(const k of Object.getOwnPropertyNames(window)){try{const v=window[k];if(v&&typeof v==='object'&&v.Button&&v.GameCard)return v}catch(e){}}return{}})();
+const {Button}=NS;
+const L=({children})=><span style={{font:'500 8px/1 var(--font-mono)',color:'var(--text-muted)',width:110,flexShrink:0}}>{children}</span>;
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div style={{display:'flex',alignItems:'center',gap:12}}><L>gameplay</L>
+      <Button primary>Execute trade</Button>
+      <Button>Take card</Button>
+      <Button size="sm">Sell</Button>
+      <Button size="lg">Confirm</Button>
+      <Button disabled>Trade</Button>
+    </div>
+    <div style={{display:'flex',alignItems:'center',gap:12}}><L>system</L>
+      <Button variant="system">Reset match</Button>
+      <Button variant="system" size="sm">Settings</Button>
+      <Button variant="system" disabled>Undo</Button>
+      <span style={{font:'400 9px/1.4 var(--font-body)',color:'var(--text-muted)'}}>square + mono + brackets — never competes with gameplay</span>
+    </div>
+    <div style={{font:'400 9px/1.4 var(--font-body)',color:'var(--text-muted)',borderTop:'1px solid var(--border-subtle)',paddingTop:10}}>Hover: brighter fill + cyan UI glow · Press: darker fill, 1px down · Disabled: .38 opacity, desaturated. One primary per screen.</div>
+  </div>
+);
+});
+</script></body></html>

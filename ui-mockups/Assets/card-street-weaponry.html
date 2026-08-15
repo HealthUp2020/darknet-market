@@ -1,0 +1,85 @@
+<!-- @dsCard group="Assets" viewport="620x760" name="Card: Street Weaponry (Common Front)" subtitle="Style anchor — common-tier card frame, plain orange line, no glow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Card — Street Weaponry</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#d9603f; }
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 36%, #17110d 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.45;pointer-events:none}
+
+.card{position:relative;width:380px;height:532px;
+  background:linear-gradient(160deg,#121722 0%,#0b0f16 100%);
+  clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);
+  box-shadow:0 22px 50px rgba(0,0,0,.55)}
+
+.border{position:absolute;inset:6px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  border:1px solid rgba(217,96,63,.55);pointer-events:none}
+
+.name{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:288px;height:40px;
+  background:linear-gradient(#17120f,#12100b);border:1px solid rgba(217,96,63,.4);
+  display:grid;place-items:center}
+.name span{font:600 8px/1 var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:rgba(217,96,63,.4)}
+
+.illus{position:absolute;top:80px;left:24px;right:24px;bottom:90px;
+  background:radial-gradient(circle at 50% 44%, #150f0b 0%, #08060c 74%);
+  border:1px solid rgba(217,96,63,.22);overflow:hidden;display:grid;place-items:center}
+.illus::before{content:"";position:absolute;inset:0;background:var(--texture-scanline);opacity:.35}
+.part{position:relative;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
+
+.type{position:absolute;bottom:30px;left:28px;font:600 7px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.value{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px}
+.value .v{font:600 28px/1 var(--font-mono);color:var(--core)}
+.value .u{font:600 8px/1.3 var(--font-display);letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted)}
+.tier{position:absolute;bottom:28px;right:28px;font:600 7px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(217,96,63,.4);padding:4px 7px}
+</style></head><body>
+
+<div class="card">
+  <div class="border"></div>
+
+  <div class="name"><span>Card name</span></div>
+
+  <div class="illus">
+    <div class="part">
+      <svg viewBox="0 0 220 200" width="210" height="190">
+        <defs>
+          <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5b6169"/><stop offset="18%" stop-color="#8b929b"/>
+            <stop offset="45%" stop-color="#464c54"/><stop offset="100%" stop-color="#23282e"/>
+          </linearGradient>
+          <linearGradient id="steel2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6b7178"/><stop offset="50%" stop-color="#3a4046"/><stop offset="100%" stop-color="#1c2025"/>
+          </linearGradient>
+          <clipPath id="slideClip"><path d="M28,80 h156 a11 11 0 0 1 11,11 v24 a11 11 0 0 1 -11,11 h-156 a11 11 0 0 1 -11,-11 v-24 a11 11 0 0 1 11,-11 z"/></clipPath>
+        </defs>
+        <g transform="rotate(-8 110 105)">
+          <path d="M28,80 h156 a11 11 0 0 1 11,11 v24 a11 11 0 0 1 -11,11 h-156 a11 11 0 0 1 -11,-11 v-24 a11 11 0 0 1 11,-11 z" fill="url(#steel)" stroke="#191d22" stroke-width="1.5"/>
+          <rect x="124" y="86" width="42" height="18" rx="2" fill="#0c0f13" stroke="#191d22" stroke-width="1"/>
+          <g stroke="#20252b" stroke-width="3" opacity=".8">
+            <line x1="42" y1="86" x2="36" y2="118"/><line x1="52" y1="86" x2="46" y2="118"/>
+            <line x1="62" y1="86" x2="56" y2="118"/><line x1="72" y1="86" x2="66" y2="118"/>
+          </g>
+          <rect x="176" y="72" width="7" height="9" fill="url(#steel2)" stroke="#191d22" stroke-width="1"/>
+          <rect x="30" y="72" width="11" height="8" fill="url(#steel2)" stroke="#191d22" stroke-width="1"/>
+          <circle cx="188" cy="103" r="5.5" fill="#0a0d11" stroke="#33393f" stroke-width="1.5"/>
+          <g clip-path="url(#slideClip)">
+            <g stroke="rgba(255,255,255,.14)" stroke-width="1">
+              <line x1="30" y1="92" x2="124" y2="89"/><line x1="46" y1="110" x2="156" y2="108"/><line x1="62" y1="100" x2="146" y2="102"/>
+            </g>
+            <g stroke="rgba(0,0,0,.5)" stroke-width="1.2">
+              <line x1="72" y1="95" x2="116" y2="97"/><line x1="94" y1="112" x2="156" y2="113"/><line x1="34" y1="106" x2="68" y2="107"/>
+            </g>
+            <text x="94" y="102" font-family="var(--font-mono)" font-size="9" letter-spacing="1" fill="rgba(217,96,63,.85)">KG-9 // 9mm</text>
+            <rect x="20" y="84" width="168" height="3" fill="rgba(255,255,255,.22)"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="type">Common // Weaponry</div>
+  <div class="value"><span class="v">2</span><span class="u">PTS</span></div>
+  <div class="tier">Common</div>
+</div>
+
+</body></html>

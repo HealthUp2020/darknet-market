@@ -1,0 +1,72 @@
+<!-- @dsCard group="Assets" viewport="720x360" name="Button: New Game (System)" subtitle="Style anchor — system/reset action, neutral white-cyan" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Button — New Game</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --sys:#cfe6ec; --sys-dim:#8fb4bd; }
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.row{display:flex;gap:64px;align-items:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.state{font:600 8px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
+
+/* system button: same clipped shape family, but muted neutral — not gameplay cyan.
+   flatter (no glass fill), thin neutral border, dashed inner frame to read as "meta". */
+.btn{position:relative;width:118px;height:96px;box-sizing:border-box;
+  background:rgba(207,230,236,.03);
+  border:1px solid rgba(207,230,236,.32);
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  display:grid;place-items:center;color:var(--sys-dim);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease-hud),box-shadow var(--dur) var(--ease-hud),color var(--dur-fast),border-color var(--dur)}
+.btn .frame{position:absolute;inset:6px;pointer-events:none;
+  border:1px dashed rgba(207,230,236,.2);
+  clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)}
+.btn svg{width:46px;height:46px;position:relative;transition:filter var(--dur),transform .5s var(--ease-hud)}
+
+/* hover: neutral white-cyan glow (softer + whiter than gameplay), not saturated cyan */
+.btn.hover{background:rgba(207,230,236,.09);color:var(--sys);border-color:rgba(207,230,236,.6);
+  box-shadow:0 0 10px rgba(207,230,236,.3),0 0 24px rgba(207,230,236,.12)}
+.btn.hover svg{filter:drop-shadow(0 0 5px rgba(207,230,236,.8));transform:rotate(-150deg)}
+</style></head><body>
+
+<div class="row">
+  <div class="col">
+    <div class="btn" id="b1">
+      <div class="frame"></div>
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <!-- circular refresh arrow -->
+        <path d="M38 16a16 16 0 1 0 3 11"/>
+        <path d="M40 8v9h-9"/>
+        <!-- power-cycle glyph in center -->
+        <g stroke-width="1.6">
+          <path d="M24 20v6"/>
+          <path d="M19.5 22a6 6 0 1 0 9 0" opacity=".85"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state">Default</div>
+  </div>
+
+  <div class="col">
+    <div class="btn hover">
+      <div class="frame"></div>
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(-150deg);filter:drop-shadow(0 0 5px rgba(207,230,236,.8))">
+        <path d="M38 16a16 16 0 1 0 3 11"/>
+        <path d="M40 8v9h-9"/>
+        <g stroke-width="1.6">
+          <path d="M24 20v6"/>
+          <path d="M19.5 22a6 6 0 1 0 9 0" opacity=".85"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state" style="color:var(--sys)">Hover / Active</div>
+  </div>
+</div>
+
+<script>
+  const b=document.getElementById('b1');
+  b.addEventListener('mouseenter',()=>b.classList.add('hover'));
+  b.addEventListener('mouseleave',()=>b.classList.remove('hover'));
+</script>
+</body></html>

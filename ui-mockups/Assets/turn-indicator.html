@@ -1,0 +1,70 @@
+<!-- @dsCard group="Assets" viewport="720x360" name="Turn Indicator (Text Strip)" subtitle="Style anchor — slim HUD readout, color-shiftable status dot" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Turn Indicator</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.stack{display:flex;flex-direction:column;gap:18px}
+.tag{font:600 8px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2px}
+
+/* slim holographic readout strip — --c drives the whole state color */
+.turnbar{position:relative;width:420px;height:40px;box-sizing:border-box;display:flex;align-items:center;gap:12px;
+  padding:0 16px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 12%,rgba(10,14,22,.85)),rgba(10,14,22,.85));
+  border:1px solid color-mix(in srgb,var(--c) 55%,transparent);
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  box-shadow:0 0 12px color-mix(in srgb,var(--c) 35%,transparent),inset 0 0 12px rgba(0,0,0,.5)}
+.turnbar .scan{position:absolute;inset:0;pointer-events:none;overflow:hidden;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+.turnbar .scan::before{content:"";position:absolute;left:0;right:0;height:200%;top:-50%;
+  background:var(--texture-scanline);animation:drift 6s linear infinite;opacity:.6}
+/* sweeping light glint */
+.turnbar .glint{position:absolute;top:0;bottom:0;width:60px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--c) 22%,transparent),transparent);
+  animation:sweep 3.4s var(--ease-hud) infinite}
+
+/* pulsing status dot */
+.dot{position:relative;width:12px;height:12px;flex-shrink:0}
+.dot i{position:absolute;inset:0;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c),0 0 16px color-mix(in srgb,var(--c) 60%,transparent)}
+.dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);animation:ring 1.8s var(--ease-hud) infinite}
+.dot.go i{box-shadow:none}.dot.go::after{animation:none;opacity:.4}
+
+/* reserved text zone */
+.txt{flex:1;height:11px;border-radius:2px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 32%,transparent),color-mix(in srgb,var(--c) 6%,transparent) 60%,transparent)}
+.chev{flex-shrink:0;color:var(--c);font:600 12px/1 var(--font-mono);opacity:.7}
+
+@keyframes drift{to{transform:translateY(50%)}}
+@keyframes sweep{0%{left:-60px}55%,100%{left:100%}}
+@keyframes ring{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+</style></head><body>
+
+<div class="stack">
+  <div>
+    <div class="tag">Player turn — cyan</div>
+    <div class="turnbar" style="--c:#4fc3d9">
+      <div class="scan"></div><div class="glint"></div>
+      <span class="dot"><i></i></span><span class="txt"></span><span class="chev">&gt;&gt;</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="tag">Bot turn — magenta</div>
+    <div class="turnbar" style="--c:#ff2e88">
+      <div class="scan"></div><div class="glint"></div>
+      <span class="dot"><i></i></span><span class="txt"></span><span class="chev">&gt;&gt;</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="tag">Game over — gray</div>
+    <div class="turnbar" style="--c:#6c7a88">
+      <div class="scan"></div>
+      <span class="dot go"><i></i></span><span class="txt"></span><span class="chev">—</span>
+    </div>
+  </div>
+</div>
+
+</body></html>

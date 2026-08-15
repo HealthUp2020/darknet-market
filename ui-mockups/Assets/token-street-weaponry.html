@@ -1,0 +1,133 @@
+<!-- @dsCard group="Assets" viewport="720x520" name="Token: Street Weaponry (Common)" subtitle="Style anchor — stripped pistol slide, muted orange, no glow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Street Weaponry Token</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#d9603f; --core-deep:#b04a2e; }
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;
+  background:radial-gradient(120% 120% at 50% 40%, #17110d 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.stage{position:relative;width:300px;height:340px;display:grid;place-items:center}
+/* common-tier: NO bloom halo */
+
+.token{position:relative;width:280px;height:280px;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg, #262b33 0deg 3deg, #1a1f26 3deg 6deg),
+    radial-gradient(circle at 38% 32%, #2b313a, #0e1218 78%);
+  box-shadow:
+    0 0 0 1px #05080c,
+    inset 0 2px 5px rgba(255,255,255,.06),
+    inset 0 -10px 22px rgba(0,0,0,.75),
+    0 20px 44px rgba(0,0,0,.55);
+  display:grid;place-items:center}
+
+.strip{position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(217,96,63,.55)}
+
+.well{position:absolute;inset:26px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%, #150f0b 0%, #06070b 72%);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.9);
+  display:grid;place-items:center;overflow:hidden}
+
+.ticks{position:absolute;inset:14px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, rgba(217,96,63,.22) 0deg .5deg, transparent .5deg 30deg);
+  -webkit-mask:radial-gradient(circle, transparent 0 45%, #000 45% 47%, transparent 47%);
+          mask:radial-gradient(circle, transparent 0 45%, #000 45% 47%, transparent 47%)}
+
+.part{position:relative;width:166px;height:150px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.6))}
+
+.notch{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:60px;height:34px;background:linear-gradient(#20252d,#101419);
+  clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);
+  border-top:1px solid rgba(217,96,63,.45);
+  box-shadow:0 4px 10px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.notch .val{font:600 20px/1 var(--font-mono);color:var(--core)}
+.notch .lbl{font:600 6px/1 var(--font-display);letter-spacing:.22em;color:var(--text-muted);margin-top:1px}
+
+.spec{max-width:220px}
+.spec .tag{font:500 10px/1 var(--font-mono);letter-spacing:.2em;color:var(--core)}
+.spec h1{font:600 22px/1.05 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--text-primary);margin:10px 0 4px}
+.spec .rare{display:inline-flex;align-items:center;gap:6px;font:600 9px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(217,96,63,.45);padding:5px 9px;clip-path:var(--clip-btn);background:rgba(217,96,63,.05)}
+.spec ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:9px}
+.spec li{font:400 11px/1.4 var(--font-body);color:var(--text-secondary);display:flex;gap:9px;align-items:flex-start}
+.spec li b{color:var(--text-muted);font:600 8px/1.5 var(--font-display);letter-spacing:.14em;text-transform:uppercase;width:52px;flex-shrink:0}
+.dot{color:var(--core)}
+</style></head><body>
+
+<div class="stage">
+  <div class="token">
+    <div class="strip"></div>
+    <div class="well">
+      <div class="ticks"></div>
+      <div class="part">
+        <svg viewBox="0 0 210 190" width="166" height="150">
+          <defs>
+            <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5b6169"/>
+              <stop offset="18%" stop-color="#8b929b"/>
+              <stop offset="45%" stop-color="#464c54"/>
+              <stop offset="100%" stop-color="#23282e"/>
+            </linearGradient>
+            <linearGradient id="steel2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6b7178"/>
+              <stop offset="50%" stop-color="#3a4046"/>
+              <stop offset="100%" stop-color="#1c2025"/>
+            </linearGradient>
+            <clipPath id="slideClip"><path d="M26,74 h150 a10 10 0 0 1 10,10 v22 a10 10 0 0 1 -10,10 h-150 a10 10 0 0 1 -10,-10 v-22 a10 10 0 0 1 10,-10 z"/></clipPath>
+          </defs>
+
+          <g transform="rotate(-8 105 100)">
+            <!-- pistol slide body -->
+            <path d="M26,74 h150 a10 10 0 0 1 10,10 v22 a10 10 0 0 1 -10,10 h-150 a10 10 0 0 1 -10,-10 v-22 a10 10 0 0 1 10,-10 z" fill="url(#steel)" stroke="#191d22" stroke-width="1.5"/>
+
+            <!-- ejection port -->
+            <rect x="118" y="80" width="40" height="16" rx="2" fill="#0c0f13" stroke="#191d22" stroke-width="1"/>
+            <!-- slide serrations (rear grip cuts) -->
+            <g stroke="#20252b" stroke-width="3" opacity=".8">
+              <line x1="40" y1="80" x2="34" y2="110"/><line x1="50" y1="80" x2="44" y2="110"/>
+              <line x1="60" y1="80" x2="54" y2="110"/><line x1="70" y1="80" x2="64" y2="110"/>
+            </g>
+            <!-- front sight + rear sight -->
+            <rect x="168" y="68" width="6" height="8" fill="url(#steel2)" stroke="#191d22" stroke-width="1"/>
+            <rect x="30" y="68" width="10" height="7" fill="url(#steel2)" stroke="#191d22" stroke-width="1"/>
+            <!-- barrel opening -->
+            <circle cx="180" cy="95" r="5" fill="#0a0d11" stroke="#33393f" stroke-width="1.5"/>
+
+            <!-- clipped scratches + engraving -->
+            <g clip-path="url(#slideClip)">
+              <g stroke="rgba(255,255,255,.14)" stroke-width="1">
+                <line x1="30" y1="86" x2="120" y2="83"/><line x1="45" y1="102" x2="150" y2="100"/>
+                <line x1="60" y1="92" x2="140" y2="94"/>
+              </g>
+              <g stroke="rgba(0,0,0,.5)" stroke-width="1.2">
+                <line x1="70" y1="88" x2="112" y2="90"/><line x1="90" y1="104" x2="150" y2="105"/>
+                <line x1="34" y1="98" x2="66" y2="99"/>
+              </g>
+              <!-- burnt-orange stamped marking -->
+              <text x="92" y="94" font-family="var(--font-mono)" font-size="8" letter-spacing="1" fill="rgba(217,96,63,.85)">KG-9 // 9mm</text>
+              <!-- top specular streak -->
+              <rect x="20" y="78" width="160" height="3" fill="rgba(255,255,255,.22)"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="notch"><span class="val">2</span><span class="lbl">PTS</span></div>
+  </div>
+</div>
+
+<div class="spec">
+  <div class="tag">TOKEN // COMMON</div>
+  <h1>Street Weaponry</h1>
+  <span class="rare"><span style="width:5px;height:5px;background:var(--core);transform:rotate(45deg)"></span>Common tier</span>
+  <ul>
+    <li><b>Accent</b><span>Burnt orange-red <span class="dot">#D9603F</span> — subdued, <b style="width:auto;display:inline">no</b> neon glow.</span></li>
+    <li><b>Core</b><span>Stripped-down pistol slide — ejection port, sights, barrel opening, rear grip serrations.</span></li>
+    <li><b>Texture</b><span>Scratched gunmetal with a stamped orange "KG-9 // 9mm" marking.</span></li>
+    <li><b>Rim</b><span>Matte dark metal with a single thin orange line (no light strip, no rings).</span></li>
+    <li><b>Value</b><span>Numeral notch at the base — placeholder <span class="dot">2</span> (use 1, 2, 3 or 4).</span></li>
+  </ul>
+</div>
+
+</body></html>

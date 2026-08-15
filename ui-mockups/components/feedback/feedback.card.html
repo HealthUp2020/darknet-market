@@ -1,0 +1,20 @@
+<!-- @dsCard group="Components" viewport="700x180" name="System Banners" subtitle="Terminal-voiced feedback on tinted glass" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>window.__dsReady=new Promise(function(r){var s=document.createElement('script');s.src='../../_ds_bundle.js';s.onload=r;s.onerror=r;document.head.appendChild(s)});</script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head><body style="padding:20px"><div id="root"></div>
+<script type="text/babel">
+window.__dsReady.then(()=>{
+const NS=(()=>{for(const k of Object.getOwnPropertyNames(window)){try{const v=window[k];if(v&&typeof v==='object'&&v.Button&&v.GameCard)return v}catch(e){}}return{}})();
+const {SystemBanner}=NS;
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <div style={{display:'flex',flexDirection:'column',gap:10,maxWidth:560}}>
+    <SystemBanner kind="error" code="402">Insufficient credits for this trade.</SystemBanner>
+    <SystemBanner kind="success" onDismiss={()=>{}}>Trade executed. +14 CR added to ledger.</SystemBanner>
+    <SystemBanner kind="info">VULT-3R is calculating a counter-offer.</SystemBanner>
+  </div>
+);
+});
+</script></body></html>

@@ -1,0 +1,90 @@
+<!-- @dsCard group="Assets" viewport="720x360" name="Button: Take All Drones" subtitle="Style anchor — gameplay button, default + hover states, icon only" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Button — Take All Drones</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.row{display:flex;gap:64px;align-items:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.state{font:600 8px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
+
+.btn{position:relative;width:118px;height:96px;box-sizing:border-box;
+  background:var(--accent-ui-glass);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(79,195,217,.55);
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  display:grid;place-items:center;color:var(--accent-ui);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease-hud),box-shadow var(--dur) var(--ease-hud),color var(--dur-fast)}
+.btn .scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.4;pointer-events:none;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.btn .cn{position:absolute;width:9px;height:9px;border:1px solid rgba(79,195,217,.6)}
+.btn .cn.tr{top:5px;right:5px;border-left:0;border-bottom:0}
+.btn .cn.bl{bottom:5px;left:5px;border-right:0;border-top:0}
+.btn svg{width:50px;height:50px;position:relative;transition:filter var(--dur)}
+
+.btn.hover{background:rgba(79,195,217,.18);color:#aef1fb;
+  box-shadow:var(--glow-ui),inset 0 0 14px rgba(79,195,217,.2);border-color:var(--accent-ui)}
+.btn.hover svg{filter:drop-shadow(0 0 6px rgba(79,195,217,.9))}
+.btn.hover .d1{transform:translate(2px,1px)}
+.btn.hover .d2{transform:translate(-2px,1px)}
+.btn .d1,.btn .d2{transition:transform .2s var(--ease-hud)}
+</style></head><body>
+
+<div class="row">
+  <div class="col">
+    <div class="btn" id="b1">
+      <div class="scan"></div><div class="cn tr"></div><div class="cn bl"></div>
+      <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <!-- sweep arc -->
+        <path d="M8 40q18 8 36 0" opacity=".5"/>
+        <path d="M40 40l4 0 0-4" opacity=".5"/>
+        <!-- back drones (dim) -->
+        <g class="d1" opacity=".5">
+          <g transform="translate(13 15) scale(.62)"><line x1="2" y1="4" x2="10" y2="10"/><line x1="22" y1="4" x2="14" y2="10"/><ellipse cx="12" cy="13" rx="7" ry="4.5" fill="rgba(79,195,217,.12)"/><circle cx="12" cy="13" r="2.4"/></g>
+        </g>
+        <g class="d2" opacity=".5">
+          <g transform="translate(30 15) scale(.62)"><line x1="2" y1="4" x2="10" y2="10"/><line x1="22" y1="4" x2="14" y2="10"/><ellipse cx="12" cy="13" rx="7" ry="4.5" fill="rgba(79,195,217,.12)"/><circle cx="12" cy="13" r="2.4"/></g>
+        </g>
+        <!-- front drone (bright) -->
+        <g transform="translate(18 19)">
+          <line x1="3" y1="5" x2="13" y2="13"/><line x1="29" y1="5" x2="19" y2="13"/>
+          <line x1="3" y1="5" x2="0" y2="2"/><line x1="29" y1="5" x2="32" y2="2"/>
+          <ellipse cx="16" cy="17" rx="9" ry="6" fill="rgba(79,195,217,.2)"/>
+          <circle cx="16" cy="17" r="3.4"/><circle cx="16" cy="17" r="1" fill="currentColor"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state">Default</div>
+  </div>
+
+  <div class="col">
+    <div class="btn hover">
+      <div class="scan"></div><div class="cn tr"></div><div class="cn bl"></div>
+      <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 40q18 8 36 0" opacity=".6"/>
+        <path d="M40 40l4 0 0-4" opacity=".6"/>
+        <g class="d1" opacity=".55">
+          <g transform="translate(13 15) scale(.62)"><line x1="2" y1="4" x2="10" y2="10"/><line x1="22" y1="4" x2="14" y2="10"/><ellipse cx="12" cy="13" rx="7" ry="4.5" fill="rgba(79,195,217,.16)"/><circle cx="12" cy="13" r="2.4"/></g>
+        </g>
+        <g class="d2" opacity=".55">
+          <g transform="translate(30 15) scale(.62)"><line x1="2" y1="4" x2="10" y2="10"/><line x1="22" y1="4" x2="14" y2="10"/><ellipse cx="12" cy="13" rx="7" ry="4.5" fill="rgba(79,195,217,.16)"/><circle cx="12" cy="13" r="2.4"/></g>
+        </g>
+        <g transform="translate(18 19)">
+          <line x1="3" y1="5" x2="13" y2="13"/><line x1="29" y1="5" x2="19" y2="13"/>
+          <line x1="3" y1="5" x2="0" y2="2"/><line x1="29" y1="5" x2="32" y2="2"/>
+          <ellipse cx="16" cy="17" rx="9" ry="6" fill="rgba(79,195,217,.28)"/>
+          <circle cx="16" cy="17" r="3.4"/><circle cx="16" cy="17" r="1" fill="currentColor"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state" style="color:var(--accent-ui)">Hover / Active</div>
+  </div>
+</div>
+
+<script>
+  const b=document.getElementById('b1');
+  b.addEventListener('mouseenter',()=>b.classList.add('hover'));
+  b.addEventListener('mouseleave',()=>b.classList.remove('hover'));
+</script>
+</body></html>

@@ -1,0 +1,74 @@
+<!-- @dsCard group="Assets" viewport="720x360" name="Button: Take 1 Card" subtitle="Style anchor — gameplay button, default + hover states, icon only" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Button — Take 1 Card</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.row{display:flex;gap:64px;align-items:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.state{font:600 8px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
+
+/* base gameplay button — angled sci-fi corners, dark glass, thin cyan border */
+.btn{position:relative;width:118px;height:96px;box-sizing:border-box;
+  background:var(--accent-ui-glass);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(79,195,217,.55);
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  display:grid;place-items:center;color:var(--accent-ui);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease-hud),box-shadow var(--dur) var(--ease-hud),color var(--dur-fast),transform var(--dur-fast)}
+.btn .scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.4;pointer-events:none;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+/* inner corner accents */
+.btn .cn{position:absolute;width:9px;height:9px;border:1px solid rgba(79,195,217,.6)}
+.btn .cn.tr{top:5px;right:5px;border-left:0;border-bottom:0}
+.btn .cn.bl{bottom:5px;left:5px;border-right:0;border-top:0}
+.btn svg{width:42px;height:42px;position:relative;filter:none;transition:filter var(--dur)}
+
+/* hover / active variant — brighter fill + strong cyan glow */
+.btn.hover{background:rgba(79,195,217,.18);color:#aef1fb;
+  box-shadow:var(--glow-ui),inset 0 0 14px rgba(79,195,217,.2);border-color:var(--accent-ui)}
+.btn.hover svg{filter:drop-shadow(0 0 6px rgba(79,195,217,.9))}
+.btn.hover .lift{transform:translateY(-3px)}
+</style></head><body>
+
+<div class="row">
+  <div class="col">
+    <div class="btn" id="b1">
+      <div class="scan"></div><div class="cn tr"></div><div class="cn bl"></div>
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="9" y="20" width="17" height="23" rx="2" opacity=".45"/>
+        <rect x="17" y="16" width="17" height="23" rx="2" opacity=".45"/>
+        <g class="lift" style="transition:transform .2s">
+          <rect x="25" y="6" width="16" height="22" rx="2" fill="rgba(79,195,217,.14)"/>
+          <path d="M29 17h8M29 21h5"/>
+          <path d="M33 30v7M30 34l3 3 3-3"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state">Default</div>
+  </div>
+
+  <div class="col">
+    <div class="btn hover">
+      <div class="scan"></div><div class="cn tr"></div><div class="cn bl"></div>
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="9" y="20" width="17" height="23" rx="2" opacity=".45"/>
+        <rect x="17" y="16" width="17" height="23" rx="2" opacity=".45"/>
+        <g class="lift">
+          <rect x="25" y="6" width="16" height="22" rx="2" fill="rgba(79,195,217,.2)"/>
+          <path d="M29 17h8M29 21h5"/>
+          <path d="M33 30v7M30 34l3 3 3-3"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state" style="color:var(--accent-ui)">Hover / Active</div>
+  </div>
+</div>
+
+<script>
+  const b=document.getElementById('b1');
+  b.addEventListener('mouseenter',()=>b.classList.add('hover'));
+  b.addEventListener('mouseleave',()=>b.classList.remove('hover'));
+</script>
+</body></html>

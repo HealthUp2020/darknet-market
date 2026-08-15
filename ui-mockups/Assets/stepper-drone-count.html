@@ -1,0 +1,58 @@
+<!-- @dsCard group="Assets" viewport="640x300" name="Stepper: +/− Drone Count" subtitle="Style anchor — compact stepper, holo readout window, no baked number" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Stepper — +/−</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;gap:0;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.wrap{display:flex;flex-direction:column;align-items:center;gap:22px}
+.stepper{display:flex;align-items:stretch;gap:8px}
+
+/* small angled-corner buttons */
+.step{position:relative;width:44px;height:44px;box-sizing:border-box;
+  background:var(--accent-ui-glass);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(79,195,217,.55);
+  clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+  display:grid;place-items:center;color:var(--accent-ui);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease-hud),box-shadow var(--dur) var(--ease-hud),color var(--dur-fast),transform var(--dur-fast)}
+.step svg{width:20px;height:20px;transition:filter var(--dur)}
+.step:hover{background:rgba(79,195,217,.18);color:#aef1fb;border-color:var(--accent-ui);box-shadow:var(--glow-ui)}
+.step:hover svg{filter:drop-shadow(0 0 5px rgba(79,195,217,.9))}
+.step:active{transform:translateY(1px);background:rgba(79,195,217,.26)}
+
+/* holographic counter readout window */
+.readout{position:relative;width:70px;box-sizing:border-box;
+  background:linear-gradient(180deg,rgba(10,20,26,.9),rgba(6,11,18,.95));
+  border:1px solid rgba(79,195,217,.5);
+  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% 100%,calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px);
+  box-shadow:inset 0 0 14px rgba(0,0,0,.8),inset 0 0 3px rgba(79,195,217,.3),0 0 10px rgba(79,195,217,.15);
+  display:grid;place-items:center;overflow:hidden}
+.readout .scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.6;pointer-events:none}
+/* faint 7-seg style ghost placeholder (no live number) */
+.readout .ghost{font:600 26px/1 var(--font-mono);color:rgba(79,195,217,.22);text-shadow:0 0 6px rgba(79,195,217,.2);letter-spacing:1px}
+/* top + bottom bracket ticks */
+.readout .tick{position:absolute;left:50%;transform:translateX(-50%);width:16px;height:2px;background:rgba(79,195,217,.5);box-shadow:0 0 4px rgba(79,195,217,.5)}
+.readout .tick.t{top:4px}.readout .tick.b{bottom:4px}
+
+.cap{font:600 8px/1 var(--font-display);letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted)}
+</style></head><body>
+
+<div class="wrap">
+  <div class="stepper">
+    <div class="step" title="decrease">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>
+    </div>
+    <div class="readout">
+      <div class="scan"></div>
+      <span class="tick t"></span><span class="tick b"></span>
+      <span class="ghost">8</span>
+    </div>
+    <div class="step" title="increase">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg>
+    </div>
+  </div>
+  <div class="cap">Drones to exchange</div>
+</div>
+
+</body></html>

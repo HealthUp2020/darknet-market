@@ -1,0 +1,142 @@
+<!-- @dsCard group="Assets" viewport="720x520" name="Token: Pharma Contraband (Common)" subtitle="Style anchor — nano-pharma vial, muted purple, no glow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pharma Contraband Token</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#8a6fd8; --core-deep:#6e56b4; }
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;
+  background:radial-gradient(120% 120% at 50% 40%, #12111a 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.stage{position:relative;width:300px;height:340px;display:grid;place-items:center}
+/* common-tier: NO bloom halo behind token */
+
+.token{position:relative;width:280px;height:280px;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg, #262b33 0deg 3deg, #1a1f26 3deg 6deg),
+    radial-gradient(circle at 38% 32%, #2b313a, #0e1218 78%);
+  box-shadow:
+    0 0 0 1px #05080c,
+    inset 0 2px 5px rgba(255,255,255,.06),
+    inset 0 -10px 22px rgba(0,0,0,.75),
+    0 20px 44px rgba(0,0,0,.55);
+  display:grid;place-items:center}
+
+/* thin matte purple line (full ring, low intensity — no glow) */
+.strip{position:absolute;inset:9px;border-radius:50%;
+  border:1px solid rgba(138,111,216,.55)}
+
+.well{position:absolute;inset:26px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%, #121019 0%, #06070b 72%);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.9);
+  display:grid;place-items:center;overflow:hidden}
+
+/* subdued marker ticks — static, dim */
+.ticks{position:absolute;inset:14px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, rgba(138,111,216,.22) 0deg .5deg, transparent .5deg 30deg);
+  -webkit-mask:radial-gradient(circle, transparent 0 45%, #000 45% 47%, transparent 47%);
+          mask:radial-gradient(circle, transparent 0 45%, #000 45% 47%, transparent 47%)}
+
+.vial{position:relative;width:150px;height:150px;filter:drop-shadow(0 0 4px rgba(138,111,216,.35))}
+.liquid{animation:slosh 5s var(--ease-hud) infinite}
+
+.notch{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:60px;height:34px;background:linear-gradient(#20252d,#101419);
+  clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);
+  border-top:1px solid rgba(138,111,216,.45);
+  box-shadow:0 4px 10px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.notch .val{font:600 20px/1 var(--font-mono);color:var(--core)}
+.notch .lbl{font:600 6px/1 var(--font-display);letter-spacing:.22em;color:var(--text-muted);margin-top:1px}
+
+@keyframes slosh{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+
+.spec{max-width:220px}
+.spec .tag{font:500 10px/1 var(--font-mono);letter-spacing:.2em;color:var(--core)}
+.spec h1{font:600 22px/1.05 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--text-primary);margin:10px 0 4px}
+.spec .rare{display:inline-flex;align-items:center;gap:6px;font:600 9px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(138,111,216,.45);padding:5px 9px;clip-path:var(--clip-btn);background:rgba(138,111,216,.05)}
+.spec ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:9px}
+.spec li{font:400 11px/1.4 var(--font-body);color:var(--text-secondary);display:flex;gap:9px;align-items:flex-start}
+.spec li b{color:var(--text-muted);font:600 8px/1.5 var(--font-display);letter-spacing:.14em;text-transform:uppercase;width:52px;flex-shrink:0}
+.dot{color:var(--core)}
+</style></head><body>
+
+<div class="stage">
+  <div class="token">
+    <div class="strip"></div>
+    <div class="well">
+      <div class="ticks"></div>
+      <div class="vial">
+        <svg viewBox="0 0 200 200" width="150" height="150">
+          <defs>
+            <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(200,210,225,.10)"/>
+              <stop offset="22%" stop-color="rgba(235,240,248,.30)"/>
+              <stop offset="50%" stop-color="rgba(150,165,185,.10)"/>
+              <stop offset="82%" stop-color="rgba(120,135,155,.20)"/>
+              <stop offset="100%" stop-color="rgba(90,100,120,.10)"/>
+            </linearGradient>
+            <linearGradient id="fluid" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#c3aef2"/>
+              <stop offset="45%" stop-color="#8a6fd8"/>
+              <stop offset="100%" stop-color="#4a3a86"/>
+            </linearGradient>
+            <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#c9cfd7"/>
+              <stop offset="45%" stop-color="#7c848e"/>
+              <stop offset="100%" stop-color="#3b424b"/>
+            </linearGradient>
+            <clipPath id="vialClip"><path d="M82,64 h36 v78 a18 18 0 0 1 -36 0 z"/></clipPath>
+          </defs>
+
+          <!-- metal cap -->
+          <rect x="80" y="40" width="40" height="10" rx="2" fill="url(#cap)" stroke="#2c333b" stroke-width="1"/>
+          <rect x="84" y="50" width="32" height="14" fill="url(#cap)" stroke="#2c333b" stroke-width="1"/>
+          <line x1="90" y1="42" x2="90" y2="48" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
+
+          <!-- glass body -->
+          <path d="M82,64 h36 v78 a18 18 0 0 1 -36 0 z" fill="url(#glass)" stroke="rgba(210,220,235,.5)" stroke-width="1.5"/>
+
+          <!-- liquid (clipped) -->
+          <g clip-path="url(#vialClip)">
+            <g class="liquid">
+              <path d="M78,92 q11,-7 22,0 t22,0 v80 h-44 z" fill="url(#fluid)"/>
+              <!-- bubbles -->
+              <circle cx="95" cy="120" r="2.4" fill="rgba(220,210,250,.6)"/>
+              <circle cx="106" cy="134" r="1.8" fill="rgba(220,210,250,.5)"/>
+              <circle cx="98" cy="150" r="1.5" fill="rgba(220,210,250,.5)"/>
+              <!-- inner luminous core -->
+              <ellipse cx="100" cy="128" rx="12" ry="22" fill="rgba(195,174,242,.35)"/>
+            </g>
+          </g>
+
+          <!-- glass vertical highlight -->
+          <rect x="88" y="66" width="4" height="86" rx="2" fill="rgba(255,255,255,.35)"/>
+
+          <!-- warning glyph label -->
+          <rect x="74" y="104" width="52" height="30" rx="2" fill="#14121b" stroke="rgba(138,111,216,.6)" stroke-width="1"/>
+          <polygon points="100,109 108,123 92,123" fill="none" stroke="var(--core)" stroke-width="1.6" stroke-linejoin="round"/>
+          <line x1="100" y1="114" x2="100" y2="119" stroke="var(--core)" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="100" cy="121.5" r="1" fill="var(--core)"/>
+          <text x="100" y="132" text-anchor="middle" font-family="var(--font-mono)" font-size="4.5" letter-spacing="1" fill="rgba(138,111,216,.8)">RX-∅ TOXIC</text>
+        </svg>
+      </div>
+    </div>
+    <div class="notch"><span class="val">2</span><span class="lbl">PTS</span></div>
+  </div>
+</div>
+
+<div class="spec">
+  <div class="tag">TOKEN // COMMON</div>
+  <h1>Pharma Contraband</h1>
+  <span class="rare"><span style="width:5px;height:5px;background:var(--core);transform:rotate(45deg)"></span>Common tier</span>
+  <ul>
+    <li><b>Accent</b><span>Muted purple <span class="dot">#8A6FD8</span> — subdued, <b style="width:auto;display:inline">no</b> neon glow.</span></li>
+    <li><b>Core</b><span>Bootleg nano-pharma ampoule — capped glass vial with glowing purple fluid and bubbles.</span></li>
+    <li><b>Label</b><span>Warning glyph plate: hazard triangle + "RX-∅ TOXIC".</span></li>
+    <li><b>Rim</b><span>Matte dark metal with a single thin purple line (no light strip, no rings).</span></li>
+    <li><b>Value</b><span>Numeral notch at the base — placeholder <span class="dot">2</span> (use 1, 2, 3 or 5).</span></li>
+  </ul>
+</div>
+
+</body></html>

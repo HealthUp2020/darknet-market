@@ -1,0 +1,474 @@
+<!-- @dsCard group="Screens" viewport="1600x900" name="Main Stage — Darknet Bazaar" subtitle="Hero mockup — full game board, mid-game moment" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>NIGHT MARKET — Main Stage</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  html,body{margin:0}
+  .stage{position:relative;width:1600px;height:900px;overflow:hidden;color:var(--text-primary);
+    font-family:var(--font-body);
+    background:
+      radial-gradient(60% 40% at 50% 8%, rgba(0,229,255,.06), transparent 70%),
+      radial-gradient(50% 40% at 12% 30%, rgba(255,45,150,.09), transparent 70%),
+      radial-gradient(45% 40% at 88% 26%, rgba(255,201,77,.06), transparent 72%),
+      radial-gradient(70% 50% at 50% 108%, rgba(0,229,255,.05), transparent 70%),
+      linear-gradient(180deg,#0a0e16 0%,#0b1220 46%,#080b12 100%)}
+
+  /* ---------- ENVIRONMENT (muted, atmospheric) ---------- */
+  .env{position:absolute;inset:0;pointer-events:none}
+  .rain{position:absolute;inset:0;opacity:.05;
+    background:repeating-linear-gradient(102deg, rgba(180,210,230,.6) 0 1px, transparent 1px 7px)}
+  .grid{position:absolute;inset:0;opacity:.5;
+    background:var(--texture-grid);background-size:var(--texture-grid-size);
+    -webkit-mask:radial-gradient(80% 70% at 50% 55%, #000 40%, transparent 90%);
+            mask:radial-gradient(80% 70% at 50% 55%, #000 40%, transparent 90%)}
+  /* hanging cables */
+  .cable{position:absolute;top:-2px;width:1px;height:120px;background:linear-gradient(#2a3542,transparent);opacity:.6}
+  .cable::after{content:"";position:absolute;bottom:0;left:-1px;width:3px;height:3px;border-radius:50%;background:#4fc3d9;opacity:.5;box-shadow:0 0 5px #4fc3d9}
+  /* holographic kanji signage, faint */
+  .sign{position:absolute;font-family:var(--font-display);writing-mode:vertical-rl;font-weight:700;letter-spacing:.1em;opacity:.14;user-select:none}
+  /* market stall counter light pool */
+  .counterlight{position:absolute;left:296px;right:470px;top:196px;height:250px;
+    background:radial-gradient(60% 90% at 50% 40%, rgba(79,195,217,.14), transparent 72%);filter:blur(6px)}
+  /* puddle reflection */
+  .puddle{position:absolute;left:50%;bottom:2px;width:780px;height:120px;transform:translateX(-50%);
+    background:radial-gradient(60% 100% at 50% 0, rgba(255,45,150,.10), rgba(0,229,255,.06) 45%, transparent 75%);
+    filter:blur(4px);opacity:.7}
+  .steam{position:absolute;border-radius:50%;background:radial-gradient(circle, rgba(190,210,225,.10), transparent 70%);filter:blur(10px)}
+
+  /* ---------- generic glass ---------- */
+  .glass{position:relative;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border:1px solid var(--glass-border-color);clip-path:var(--clip-panel);box-shadow:var(--shadow-panel)}
+  .glass>.sheen{position:absolute;inset:0;background:var(--glass-highlight);pointer-events:none;clip-path:var(--clip-panel)}
+  .lab{font:var(--type-label);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--text-secondary)}
+  .mono{font-family:var(--font-mono)}
+  .cap{font:var(--type-caption);color:var(--text-muted)}
+
+  /* ---------- turn banner ---------- */
+  .banner{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:30;
+    width:440px;height:38px;display:flex;align-items:center;gap:12px;padding:0 16px;box-sizing:border-box;
+    background:linear-gradient(90deg,rgba(79,195,217,.14),rgba(10,14,22,.85));
+    border:1px solid rgba(79,195,217,.55);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    box-shadow:0 0 14px rgba(79,195,217,.3),inset 0 0 12px rgba(0,0,0,.5)}
+  .banner .dot{width:11px;height:11px;flex-shrink:0;position:relative}
+  .banner .dot i{position:absolute;inset:0;border-radius:50%;background:var(--accent-ui);box-shadow:var(--glow-ui)}
+  .banner .dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(79,195,217,.6);animation:ring 1.8s var(--ease-hud) infinite}
+  .banner b{font:600 13px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .banner .sub{margin-left:auto;font:500 10px/1 var(--font-mono);letter-spacing:.1em;color:var(--text-muted)}
+
+  /* ---------- utility icons ---------- */
+  .util{position:absolute;top:18px;right:22px;z-index:30;display:flex;gap:8px}
+  .util .ic{width:32px;height:32px;display:grid;place-items:center;color:var(--text-secondary);
+    background:var(--glass-bg);border:1px solid var(--border-panel);
+    clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+  .util .ic svg{width:16px;height:16px}
+
+  /* ---------- rival panels ---------- */
+  .rivals{position:absolute;left:22px;top:64px;z-index:20;width:250px;display:flex;flex-direction:column;gap:10px}
+  .rival{padding:9px 12px}
+  .rival .top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .rival .who{display:flex;align-items:center;gap:8px}
+  .rival .av{width:22px;height:22px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);
+    background:linear-gradient(150deg,#1a2430,#0c131c);border:1px solid rgba(79,195,217,.35);display:grid;place-items:center;color:var(--text-muted)}
+  .rival .av svg{width:12px;height:12px}
+  .rival .nm{font:600 11px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary)}
+  .rival .stt{display:inline-flex;align-items:center;gap:5px}
+  .rival .stt i{width:5px;height:5px;border-radius:50%;background:var(--text-muted)}
+  .rival .stt b{font:500 8px/1 var(--font-mono);letter-spacing:.1em;color:var(--text-muted)}
+  .rival .stats{display:flex;gap:12px}
+  .rival .st{display:flex;flex-direction:column;gap:2px}
+  .rival .st .k{font:600 7px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted)}
+  .rival .st .v{font:600 15px/1 var(--font-mono);color:var(--text-primary)}
+  .rival.active{border-color:rgba(79,195,217,.6);box-shadow:var(--glow-ui),var(--shadow-panel)}
+  .rival.active .nm{color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .rival.active .stt i{background:var(--accent-ui);box-shadow:var(--glow-ui);animation:ds-pulse 1.6s infinite}
+  .rival.active .stt b{color:var(--accent-ui)}
+  .rival .lock{position:absolute;top:9px;right:11px;color:var(--text-muted);opacity:.5}
+  .rival .lock svg{width:12px;height:12px}
+
+  /* ---------- market ---------- */
+  .market{position:absolute;left:290px;right:452px;top:70px;z-index:15}
+  .market .hd{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .market .hd .ttl{font:600 15px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--text-primary)}
+  .market .hd .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.4),transparent)}
+  .counter{display:flex;align-items:flex-end;gap:10px;padding:16px 16px 18px;
+    background:linear-gradient(180deg,rgba(20,26,36,.5),rgba(10,14,22,.35));
+    border:1px solid var(--border-panel);border-top:1px solid rgba(79,195,217,.3);
+    clip-path:var(--clip-panel)}
+  .cards{display:flex;gap:9px;flex:1}
+
+  /* card */
+  .card{position:relative;width:100%;aspect-ratio:5/7;box-sizing:border-box;display:flex;flex-direction:column;
+    background:var(--bg-panel);border:1px solid var(--cl);clip-path:var(--clip-card);
+    transition:transform var(--dur) var(--ease-hud),box-shadow var(--dur) var(--ease-hud)}
+  .card .cc{position:absolute;top:0;right:0;width:var(--cut);height:var(--cut);background:var(--gl);border-left:1px solid var(--cl)}
+  .card .ch{display:flex;align-items:center;justify-content:space-between;padding:5px 7px;gap:4px}
+  .card .ch .cn{font:600 8px/1.1 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--nm)}
+  .card .ch .pip{display:flex;gap:2px;margin-right:6px;flex-shrink:0}
+  .card .ch .pip i{width:4px;height:4px;background:var(--c);transform:rotate(45deg)}
+  .card .well{flex:1;margin:0 1px;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+    background:var(--texture-scanline),repeating-linear-gradient(135deg,var(--bg-inset) 0 8px,#0b1018 8px 16px);
+    display:grid;place-items:center;overflow:hidden}
+  .card .well svg{width:40%;height:40%;opacity:.9}
+  .card .ft{display:flex;align-items:flex-end;justify-content:space-between;padding:5px 7px 6px;gap:4px}
+  .card .ft .ty{font:600 6px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+  .card .ft .vl{font:600 13px/1 var(--font-mono);color:var(--c)}
+  .card.rare{box-shadow:var(--gw)}
+  .card.rare .cn{text-shadow:0 0 7px var(--c)}
+  .card .strip{position:absolute;left:0;bottom:0;width:14px;height:2px;background:var(--c)}
+  .card.sel{border-color:var(--accent-ui);transform:translateY(-12px);box-shadow:var(--glow-ui)}
+  .card.sel.rare{box-shadow:var(--glow-ui),var(--gw)}
+  .card .selring{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font:600 6px/1 var(--font-display);
+    letter-spacing:.18em;color:var(--accent-ui);text-shadow:var(--glow-text-ui);white-space:nowrap}
+
+  /* accent presets */
+  .a-cyan{--c:var(--rare-cyan);--cl:var(--rare-cyan);--gl:var(--rare-cyan-glass);--gw:var(--glow-cyan);--nm:var(--rare-cyan)}
+  .a-gold{--c:var(--rare-gold);--cl:var(--rare-gold);--gl:var(--rare-gold-glass);--gw:var(--glow-gold);--nm:var(--rare-gold)}
+  .a-mag{--c:var(--rare-magenta);--cl:var(--rare-magenta);--gl:var(--rare-magenta-glass);--gw:var(--glow-magenta);--nm:var(--rare-magenta)}
+  .a-pur{--c:var(--common-purple);--cl:color-mix(in srgb,var(--common-purple) 55%,transparent);--gl:var(--common-purple-glass);--gw:none;--nm:var(--text-primary)}
+  .a-grn{--c:var(--common-green);--cl:color-mix(in srgb,var(--common-green) 55%,transparent);--gl:var(--common-green-glass);--gw:none;--nm:var(--text-primary)}
+  .a-org{--c:var(--common-orange);--cl:color-mix(in srgb,var(--common-orange) 55%,transparent);--gl:var(--common-orange-glass);--gw:none;--nm:var(--text-primary)}
+
+  /* deck + discard */
+  .deckcol{display:flex;flex-direction:column;align-items:center;gap:4px;padding-left:4px}
+  .deck{position:relative;width:76px;aspect-ratio:5/7}
+  .deck .layer{position:absolute;inset:0;background:linear-gradient(160deg,#16202c,#0b111a);
+    border:1px solid var(--border-panel);clip-path:var(--clip-card)}
+  .deck .layer:nth-child(1){transform:translate(6px,6px);opacity:.5}
+  .deck .layer:nth-child(2){transform:translate(3px,3px);opacity:.75}
+  .deck .face{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,#12202a,#070c13);
+    border:1px solid rgba(79,195,217,.4);clip-path:var(--clip-card);display:grid;place-items:center;gap:0}
+  .deck .face svg{width:30px;height:30px;color:rgba(79,195,217,.55)}
+  .deck .cnt{position:absolute;bottom:6px;left:0;right:0;text-align:center;font:600 12px/1 var(--font-mono);color:var(--accent-ui)}
+  .deckcol .k{font:600 7px/1 var(--font-display);letter-spacing:.16em;color:var(--text-muted)}
+  .discard{width:76px;aspect-ratio:5/7;border:1px dashed var(--border-panel);clip-path:var(--clip-card);
+    display:grid;place-items:center;background:rgba(255,255,255,.015)}
+  .discard svg{width:24px;height:24px;color:var(--text-muted);opacity:.6}
+
+  /* flow arrows */
+  .flow{position:absolute;z-index:16;color:rgba(79,195,217,.5);font:600 9px/1 var(--font-display);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+  .flow svg{width:20px;height:12px}
+
+  /* ---------- prices board ---------- */
+  .prices{position:absolute;left:290px;right:452px;top:472px;z-index:15;padding:12px 16px 14px}
+  .prices .hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .prices .hd .ttl{font:600 12px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary)}
+  .prices .hd .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.3),transparent)}
+  .prices .row{display:flex;align-items:flex-end;gap:14px}
+  .goods{display:flex;gap:14px;flex:1}
+  .good{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+  .stack{position:relative;width:44px;height:96px;display:flex;flex-direction:column-reverse;align-items:center}
+  .tok{width:40px;height:15px;border-radius:50%/40%;margin-top:-9px;box-sizing:border-box;
+    background:radial-gradient(circle at 50% 30%, var(--bg-panel-raised), var(--bg-inset));
+    border:1px solid var(--tc)}
+  .tok.top{height:40px;border-radius:50%;margin-top:-9px;display:grid;place-items:center;
+    background:radial-gradient(circle at 38% 30%, var(--bg-panel-raised), var(--bg-inset));
+    border:2px solid var(--tc)}
+  .tok.top b{font:600 14px/1 var(--font-mono);color:var(--tcx)}
+  .good.rare .tok.top{box-shadow:var(--tgw)}
+  .good .gl{font:600 7px/1.1 var(--font-display);letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);text-align:center;height:16px}
+  .good.rare .gl{color:var(--tcx)}
+  .t-cyan{--tc:var(--rare-cyan);--tcx:var(--rare-cyan);--tgw:var(--glow-cyan)}
+  .t-gold{--tc:var(--rare-gold);--tcx:var(--rare-gold);--tgw:var(--glow-gold)}
+  .t-mag{--tc:var(--rare-magenta);--tcx:var(--rare-magenta);--tgw:var(--glow-magenta)}
+  .t-pur{--tc:color-mix(in srgb,var(--common-purple) 60%,transparent);--tcx:var(--common-purple)}
+  .t-grn{--tc:color-mix(in srgb,var(--common-green) 60%,transparent);--tcx:var(--common-green)}
+  .t-org{--tc:color-mix(in srgb,var(--common-orange) 60%,transparent);--tcx:var(--common-orange)}
+  .sep{width:1px;align-self:stretch;background:var(--border-subtle);margin:0 2px}
+  /* bonus hexes */
+  .bonus{display:flex;gap:10px}
+  .hex{width:42px;height:38px;position:relative;filter:drop-shadow(0 0 5px rgba(255,201,77,.4))}
+  .hex .hb{position:absolute;inset:0;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:var(--rare-gold)}
+  .hex .hi{position:absolute;inset:2px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+    background:linear-gradient(160deg,var(--bg-panel-raised),var(--bg-inset));display:grid;place-items:center}
+  .hex .hi b{font:600 11px/1 var(--font-mono);color:var(--rare-gold)}
+  .bcol{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .bcol .k{font:600 7px/1 var(--font-display);letter-spacing:.1em;color:var(--text-muted)}
+  /* fixer seal */
+  .seal{width:52px;height:52px;display:grid;place-items:center}
+  .seal .dm{width:38px;height:38px;transform:rotate(45deg);border:1px solid var(--rare-magenta);background:var(--rare-magenta-glass);
+    box-shadow:var(--glow-magenta);display:grid;place-items:center}
+  .seal .dm span{transform:rotate(-45deg);font:600 16px/1 var(--font-display);color:var(--rare-magenta);text-shadow:0 0 10px var(--rare-magenta)}
+
+  /* ---------- terminal ---------- */
+  .term{position:absolute;right:22px;top:64px;width:410px;height:474px;z-index:20;display:flex;flex-direction:column;
+    border-top:2px solid var(--accent-ui)}
+  .term .th{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border-subtle);background:rgba(79,195,217,.05)}
+  .term .th .pr{font:600 12px/1 var(--font-mono);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .term .th .pr .c{animation:ds-blink-caret 1s step-end infinite}
+  .term .th .tl{font:var(--type-label);letter-spacing:.16em;color:var(--text-secondary)}
+  .term .th .x{color:var(--text-muted)}.term .th .x svg{width:14px;height:14px}
+  .term .tb{position:relative;flex:1;padding:12px 14px;overflow:hidden;font:var(--type-terminal)}
+  .term .tb .scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.5;pointer-events:none}
+  .term .tb .ln{position:relative;color:var(--text-secondary);margin-bottom:6px}
+  .term .tb .ln .g{color:var(--accent-ui-dim)}
+  .term .tb .ln .cr{color:var(--rare-gold)}
+  .term .tb .ln.you{color:var(--accent-ui)}
+  .term .tb .cur{position:relative;color:var(--accent-ui)}
+  .term .tb .cur i{display:inline-block;width:7px;height:12px;background:var(--accent-ui);box-shadow:var(--glow-ui);vertical-align:-1px;animation:ds-blink-caret 1s step-end infinite}
+
+  /* ---------- operator zone ---------- */
+  .op{position:absolute;left:0;right:0;bottom:0;height:250px;z-index:18}
+  .opbg{position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(6,9,15,.75) 40%);pointer-events:none}
+  /* HUD left */
+  .ophud{position:absolute;left:22px;bottom:22px;width:250px;padding:12px 14px}
+  .ophud .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .ophud .who{display:flex;align-items:center;gap:9px}
+  .ophud .av{width:28px;height:28px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);
+    background:linear-gradient(150deg,#1c2734,#0d141d);border:1px solid rgba(79,195,217,.5);display:grid;place-items:center}
+  .ophud .av span{font:600 12px/1 var(--font-display);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .ophud .nm{font:600 12px/1 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+  .ophud .score{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+  .ophud .score b{font:600 30px/1 var(--font-mono);color:var(--text-primary)}
+  .ophud .score .u{font:600 11px/1 var(--font-display);letter-spacing:.16em;color:var(--accent-ui)}
+  .ophud .mini{display:flex;gap:16px}
+  .ophud .mini .st{display:flex;flex-direction:column;gap:2px}
+  .ophud .mini .k{font:600 7px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted)}
+  .ophud .mini .v{font:600 15px/1 var(--font-mono);color:var(--text-primary)}
+
+  /* hand fan center */
+  .hand{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:19;display:flex;align-items:flex-end;height:210px}
+  .hand .hc{width:118px;aspect-ratio:5/7;margin:0 -14px;transform-origin:bottom center;
+    filter:drop-shadow(0 10px 16px rgba(0,0,0,.6));transition:transform var(--dur) var(--ease-hud)}
+  .hand .lab2{position:absolute;top:-6px;left:50%;transform:translateX(-50%);white-space:nowrap}
+
+  /* drone fleet */
+  .fleet{position:absolute;left:288px;bottom:26px;z-index:19;width:150px}
+  .fleet .k{margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .fleet .cluster{display:flex;flex-wrap:wrap;gap:5px;max-width:150px}
+  .drone{width:26px;height:24px;color:var(--accent-ui);opacity:.9}
+  .drone svg{width:100%;height:100%;filter:drop-shadow(0 0 3px rgba(79,195,217,.5))}
+  .fleet .cnt{font:600 13px/1 var(--font-mono);color:var(--accent-ui)}
+
+  /* action dock right */
+  .dock{position:absolute;right:22px;bottom:22px;z-index:22;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+  .drow{display:flex;gap:9px;align-items:center}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;box-sizing:border-box;cursor:pointer;
+    font:600 10px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ui);
+    background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.5);
+    clip-path:var(--clip-btn)}
+  .btn svg{width:16px;height:16px}
+  .btn.on{background:rgba(79,195,217,.18);color:#aef1fb;border-color:var(--accent-ui);box-shadow:var(--glow-ui)}
+  .btn.off{opacity:.4;filter:grayscale(.5);cursor:not-allowed}
+  .btn.primary{background:var(--accent-ui);color:#06131a;border-color:var(--accent-ui);box-shadow:var(--glow-ui)}
+  .btn.sys{background:transparent;border-color:var(--border-panel);color:var(--text-secondary);border-radius:2px;clip-path:none;font-family:var(--font-mono);letter-spacing:.08em}
+  .btn.sys .br{opacity:.5}
+  /* stepper */
+  .stepper{display:inline-flex;align-items:stretch;border:1px solid rgba(79,195,217,.4);clip-path:var(--clip-btn);background:rgba(10,14,22,.6)}
+  .stepper .sb{width:30px;display:grid;place-items:center;color:var(--accent-ui);font:600 16px/1 var(--font-mono);cursor:pointer}
+  .stepper .win{width:44px;display:grid;place-items:center;border-left:1px solid rgba(79,195,217,.3);border-right:1px solid rgba(79,195,217,.3);
+    background:rgba(0,229,255,.05)}
+  .stepper .win b{font:600 15px/1 var(--font-mono);color:var(--accent-ui);text-shadow:0 0 6px rgba(79,195,217,.6)}
+  .dock .hint{font:500 8px/1 var(--font-mono);letter-spacing:.08em;color:var(--text-muted);text-transform:uppercase}
+
+  @keyframes ring{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+</style></head>
+<body>
+<div class="stage">
+
+  <!-- ENVIRONMENT -->
+  <div class="env">
+    <div class="grid"></div>
+    <div class="counterlight"></div>
+    <div class="cable" style="left:360px"></div>
+    <div class="cable" style="left:520px;height:90px"></div>
+    <div class="cable" style="left:980px;height:150px"></div>
+    <div class="cable" style="left:1120px;height:70px"></div>
+    <div class="sign" style="left:40px;top:250px;font-size:120px;color:var(--rare-magenta)">夜市</div>
+    <div class="sign" style="right:36px;top:150px;font-size:90px;color:var(--rare-cyan)">闇市場</div>
+    <div class="sign" style="left:250px;top:120px;font-size:52px;color:var(--rare-gold);writing-mode:horizontal-tb">// DARKNET BAZAAR //</div>
+    <div class="steam" style="left:300px;bottom:180px;width:300px;height:160px"></div>
+    <div class="steam" style="right:360px;bottom:120px;width:260px;height:140px"></div>
+    <div class="rain"></div>
+    <div class="puddle"></div>
+  </div>
+
+  <!-- TURN BANNER -->
+  <div class="banner">
+    <span class="dot"><i></i></span>
+    <b>Operator // Your Move</b>
+    <span class="sub">RND 07</span>
+  </div>
+
+  <!-- UTILITY -->
+  <div class="util">
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.2A1.6 1.6 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 13.4H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 6.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v0a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></div>
+    <div class="ic" style="color:var(--accent-ui);border-color:rgba(79,195,217,.5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div>
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></div>
+  </div>
+
+  <!-- RIVAL OPERATORS -->
+  <div class="rivals">
+    <div class="glass rival active"><div class="sheen"></div>
+      <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <div class="top"><div class="who"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><span class="nm">VULT-3R</span></div>
+        <span class="stt"><i></i><b>EXEC</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">5</span></div><div class="st"><span class="k">FLEET</span><span class="v">3</span></div><div class="st"><span class="k">SCORE</span><span class="v">38</span></div></div>
+    </div>
+    <div class="glass rival"><div class="sheen"></div>
+      <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <div class="top"><div class="who"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><span class="nm">NØMAD</span></div>
+        <span class="stt"><i></i><b>IDLE</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">4</span></div><div class="st"><span class="k">FLEET</span><span class="v">2</span></div><div class="st"><span class="k">SCORE</span><span class="v">41</span></div></div>
+    </div>
+    <div class="glass rival"><div class="sheen"></div>
+      <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <div class="top"><div class="who"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></div><span class="nm">SPECTRE-9</span></div>
+        <span class="stt"><i></i><b>IDLE</b></span></div>
+      <div class="stats"><div class="st"><span class="k">HAND</span><span class="v">6</span></div><div class="st"><span class="k">FLEET</span><span class="v">4</span></div><div class="st"><span class="k">SCORE</span><span class="v">29</span></div></div>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="market">
+    <div class="hd"><span class="ttl">Darknet Market</span><span class="rule"></span><span class="cap mono">7 GOODS FACE-UP</span></div>
+    <div class="counter">
+      <div class="cards">
+        <!-- 7 cards; two selected -->
+        <div class="card rare a-cyan sel"><span class="selring">SELECTED ◇</span><span class="cc"></span>
+          <div class="ch"><span class="cn">AI Cores</span><span class="pip"><i></i><i></i><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-cyan)" stroke-width="1.4"><polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/></svg></div>
+          <div class="ft"><span class="ty">Rare // Data</span><span class="vl">7</span></div><span class="strip"></span></div>
+
+        <div class="card rare a-gold"><span class="cc"></span>
+          <div class="ch"><span class="cn">Implants</span><span class="pip"><i></i><i></i><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-gold)" stroke-width="1.4"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4" fill="var(--rare-gold)" stroke="none"/></svg></div>
+          <div class="ft"><span class="ty">Rare // Cyber</span><span class="vl">6</span></div><span class="strip"></span></div>
+
+        <div class="card a-grn"><span class="cc"></span>
+          <div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div>
+          <div class="ft"><span class="ty">Common // SW</span><span class="vl">3</span></div><span class="strip"></span></div>
+
+        <div class="card rare a-mag sel"><span class="selring">SELECTED ◇</span><span class="cc"></span>
+          <div class="ch"><span class="cn">Corp Data</span><span class="pip"><i></i><i></i><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-magenta)" stroke-width="1.4"><polygon points="20,6 30,13 27,31 20,35 13,31 10,13"/><circle cx="20" cy="20" r="3" fill="var(--rare-magenta)" stroke="none"/></svg></div>
+          <div class="ft"><span class="ty">Rare // Intel</span><span class="vl">5</span></div><span class="strip"></span></div>
+
+        <div class="card a-pur"><span class="cc"></span>
+          <div class="ch"><span class="cn">Pharma</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-purple)" stroke-width="1.4"><rect x="15" y="8" width="10" height="6"/><path d="M16 14h8v16a4 4 0 0 1-8 0z"/></svg></div>
+          <div class="ft"><span class="ty">Common // Bio</span><span class="vl">2</span></div><span class="strip"></span></div>
+
+        <div class="card a-org"><span class="cc"></span>
+          <div class="ch"><span class="cn">Weaponry</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-orange)" stroke-width="1.4"><rect x="8" y="16" width="24" height="8" rx="2"/><circle cx="28" cy="20" r="2"/></svg></div>
+          <div class="ft"><span class="ty">Common // Arms</span><span class="vl">2</span></div><span class="strip"></span></div>
+
+        <div class="card a-grn"><span class="cc"></span>
+          <div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div>
+          <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div>
+          <div class="ft"><span class="ty">Common // SW</span><span class="vl">3</span></div><span class="strip"></span></div>
+      </div>
+
+      <div class="deckcol">
+        <div class="deck">
+          <div class="layer"></div><div class="layer"></div>
+          <div class="face"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="cnt">31</span></div>
+        </div>
+        <span class="k">DECK</span>
+        <div class="discard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></div>
+        <span class="k">DISCARD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- flow arrows deck->market->hand -->
+  <div class="flow" style="right:454px;top:300px;flex-direction:column;gap:2px">
+    <svg viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 6H2M8 2 2 6l6 4"/></svg><span style="font-size:7px">DRAW</span>
+  </div>
+  <div class="flow" style="left:760px;bottom:250px;flex-direction:column;gap:2px">
+    <span style="font-size:7px">TAKE ↓</span>
+    <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.4" style="width:12px;height:20px"><path d="M6 2v16M2 12l4 6 4-6"/></svg>
+  </div>
+
+  <!-- PRICES BOARD -->
+  <div class="glass prices"><div class="sheen"></div>
+    <div class="hd"><span class="ttl">Market Prices // CR Payout</span><span class="rule"></span><span class="cap mono">TOP TOKEN = CURRENT PRICE</span></div>
+    <div class="row">
+      <div class="goods">
+        <div class="good rare t-cyan"><div class="stack"><div class="tok"></div><div class="tok"></div><div class="tok top"><b>7</b></div></div><span class="gl">AI Cores</span></div>
+        <div class="good rare t-gold"><div class="stack"><div class="tok"></div><div class="tok top"><b>6</b></div></div><span class="gl">Implants</span></div>
+        <div class="good rare t-mag"><div class="stack"><div class="tok"></div><div class="tok"></div><div class="tok top"><b>5</b></div></div><span class="gl">Corp Data</span></div>
+        <div class="good t-pur"><div class="stack"><div class="tok"></div><div class="tok"></div><div class="tok"></div><div class="tok top"><b>3</b></div></div><span class="gl">Pharma</span></div>
+        <div class="good t-grn"><div class="stack"><div class="tok"></div><div class="tok"></div><div class="tok top"><b>3</b></div></div><span class="gl">Cracked SW</span></div>
+        <div class="good t-org"><div class="stack"><div class="tok"></div><div class="tok"></div><div class="tok"></div><div class="tok top"><b>2</b></div></div><span class="gl">Weaponry</span></div>
+      </div>
+      <div class="sep"></div>
+      <div class="bonus">
+        <div class="bcol"><div class="hex" style="filter:drop-shadow(0 0 4px rgba(0,229,255,.4))"><div class="hb" style="background:var(--rare-cyan)"></div><div class="hi"><b style="color:var(--rare-cyan)">×3</b></div></div><span class="k">+2</span></div>
+        <div class="bcol"><div class="hex"><div class="hb"></div><div class="hi"><b>×4</b></div></div><span class="k">+5</span></div>
+        <div class="bcol"><div class="hex" style="filter:drop-shadow(0 0 5px rgba(255,45,150,.45))"><div class="hb" style="background:var(--rare-magenta)"></div><div class="hi"><b style="color:var(--rare-magenta)">×5+</b></div></div><span class="k">+9</span></div>
+      </div>
+      <div class="sep"></div>
+      <div class="bcol"><div class="seal"><div class="dm"><span>印</span></div></div><span class="k" style="color:var(--rare-magenta)">FIXER</span></div>
+    </div>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="glass term"><div class="sheen"></div>
+    <div class="th"><span class="pr">&gt;_<span class="c">|</span></span><span class="tl">System // Feed</span>
+      <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 15l6-6 6 6"/></svg></span></div>
+    <div class="tb">
+      <div class="scan"></div>
+      <div class="ln"><span class="g">&gt;</span> nomad sold 3× cracked software &nbsp;<span class="cr">+11 cr</span></div>
+      <div class="ln"><span class="g">&gt;</span> spectre-9 took 1× ai cores from market</div>
+      <div class="ln"><span class="g">&gt;</span> vult-3r drew 2 · fleet swept ×3 <span class="cr">+2 cr</span></div>
+      <div class="ln"><span class="g">&gt;</span> market restocked from deck [31 left]</div>
+      <div class="ln you"><span class="g">&gt;</span> 2 goods selected · sell or exchange</div>
+      <div class="cur"><span class="g">&gt;</span> <i></i></div>
+    </div>
+  </div>
+
+  <!-- OPERATOR ZONE -->
+  <div class="op">
+    <div class="opbg"></div>
+
+    <!-- fleet -->
+    <div class="fleet">
+      <div class="k"><span class="lab" style="font-size:9px">Drone Fleet</span><span class="cnt">4</span></div>
+      <div class="cluster">
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="drone"><svg viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="4" y1="5" x2="10" y2="11"/><line x1="22" y1="5" x2="16" y2="11"/><ellipse cx="13" cy="14" rx="6" ry="4"/><circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div class="glass ophud"><div class="sheen"></div>
+      <div class="top"><div class="who"><div class="av"><span>◈</span></div><span class="nm">Operator // You</span></div></div>
+      <div class="score"><b>52</b><span class="u">CR</span></div>
+      <div class="mini"><div class="st"><span class="k">HAND</span><span class="v">6</span></div><div class="st"><span class="k">FLEET</span><span class="v">4</span></div><div class="st"><span class="k">BONUS</span><span class="v">2</span></div></div>
+    </div>
+
+    <!-- HAND FAN -->
+    <div class="hand">
+      <div class="lab2 cap mono">YOUR HAND // 6</div>
+      <div class="hc" style="transform:rotate(-11deg) translateY(16px)"><div class="card a-grn" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">3</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(-6deg) translateY(6px)"><div class="card a-org" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Weaponry</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-orange)" stroke-width="1.4"><rect x="8" y="16" width="24" height="8" rx="2"/><circle cx="28" cy="20" r="2"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">2</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(-2deg)"><div class="card rare a-gold" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Implants</span><span class="pip"><i></i><i></i><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-gold)" stroke-width="1.4"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4" fill="var(--rare-gold)" stroke="none"/></svg></div><div class="ft"><span class="ty">Rare</span><span class="vl">6</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(2deg)"><div class="card a-pur" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Pharma</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-purple)" stroke-width="1.4"><rect x="15" y="8" width="10" height="6"/><path d="M16 14h8v16a4 4 0 0 1-8 0z"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">2</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(6deg) translateY(6px)"><div class="card rare a-cyan" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">AI Cores</span><span class="pip"><i></i><i></i><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--rare-cyan)" stroke-width="1.4"><polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/></svg></div><div class="ft"><span class="ty">Rare</span><span class="vl">7</span></div><span class="strip"></span></div></div>
+      <div class="hc" style="transform:rotate(11deg) translateY(16px)"><div class="card a-grn" style="height:100%"><span class="cc"></span><div class="ch"><span class="cn">Cracked SW</span><span class="pip"><i></i></span></div><div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--common-green)" stroke-width="1.4"><rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/></svg></div><div class="ft"><span class="ty">Common</span><span class="vl">3</span></div><span class="strip"></span></div></div>
+    </div>
+
+    <!-- ACTION DOCK -->
+    <div class="dock">
+      <div class="drow">
+        <button class="btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="10" height="13" rx="1.5"/><rect x="12" y="4" width="8" height="11" rx="1.5"/></svg>Take 1 Card</button>
+        <button class="btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="10" rx="4" ry="3"/><ellipse cx="15" cy="12" rx="4" ry="3"/><path d="M4 18q9 4 16 0"/></svg>Take Drones</button>
+      </div>
+      <div class="drow">
+        <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="6" width="9" height="12" rx="1.5"/><circle cx="18" cy="12" r="4"/><path d="M18 10v4M16.4 11h3.2"/></svg>Sell Selected</button>
+        <button class="btn on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="7" height="10" rx="1.5"/><rect x="14" y="7" width="7" height="10" rx="1.5"/><path d="M10 10l4 0M10 10l-1.6-1.6M14 14l-4 0M14 14l1.6 1.6"/></svg>Exchange</button>
+        <div class="stepper"><span class="sb">−</span><span class="win"><b>2</b></span><span class="sb">+</span></div>
+      </div>
+      <div class="drow">
+        <span class="hint">2 selected · sell @ 12 cr / exchange +2 fleet</span>
+        <button class="btn sys"><span class="br">[</span>Reset Match<span class="br">]</span></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body></html>

@@ -1,0 +1,22 @@
+<!-- @dsCard group="Colors" viewport="700x160" name="System / Utility" subtitle="Error, success, disabled" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../styles.css">
+<style>
+body{display:flex;gap:24px;padding:20px}
+.sw{flex:1;display:flex;flex-direction:column;gap:7px}
+.chip{height:56px;display:grid;place-items:center}
+.n{font:600 10px/1.2 var(--font-display);letter-spacing:.12em;text-transform:uppercase}
+.u{font:400 9px/1.4 var(--font-body);color:var(--text-secondary)}
+</style></head><body>
+<div class="sw">
+  <div class="chip" style="background:var(--sys-error-glass);border:1px solid var(--sys-error-border);backdrop-filter:blur(8px)"><span style="font:600 11px var(--font-mono);color:var(--sys-error)">#FF5F56</span></div>
+  <div class="n" style="color:var(--sys-error)">sys-error</div><div class="u">Errors &amp; warnings — red-tinted glass, no glow</div>
+</div>
+<div class="sw">
+  <div class="chip" style="background:var(--sys-success-glass);border:1px solid var(--sys-success-border)"><span style="font:600 11px var(--font-mono);color:var(--sys-success)">#3DDC97</span></div>
+  <div class="n" style="color:var(--sys-success)">sys-success</div><div class="u">Confirmations, completed trades</div>
+</div>
+<div class="sw">
+  <div class="chip" style="background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.55);opacity:var(--disabled-opacity);filter:var(--disabled-filter)"><span style="font:600 11px var(--font-mono);color:var(--accent-ui)">DISABLED</span></div>
+  <div class="n" style="color:var(--text-muted)">disabled state</div><div class="u">opacity .38 + grayscale(.6) brightness(.85)</div>
+</div>
+</body></html>

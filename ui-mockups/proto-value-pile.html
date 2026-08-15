@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<!--
+  NIGHT MARKET — VALUE-TOKEN PILE  ·  animated prototype (self-contained)
+  ============================================================================
+  Piles of translucent circuit-etched value tokens on the "Market Prices" board.
+  Top token = current CR payout. Selling N goods collects the top N tokens as CR;
+  they lift, fly to the OPERATOR readout, the pile settles and the new lower top
+  value is revealed. Remaining stock is unmistakable via THREE redundant channels:
+    1. COUNT CHIP  "×N"  (primary, precise — rolls down on each sale)
+    2. DEPLETION GAUGE   (segmented bar, one lit segment per remaining token)
+    3. STACK HEIGHT      (visible slivers, capped at 5 with a "+k" overflow tag)
+  Hand-rolled CSS @keyframes + Web Animations API only — no libraries.
+
+  MOTION LANGUAGE  ·  fast + damped, no bounce
+    ease  = cubic-bezier(.2,.9,.25,1)   (var --ease)
+    range = 120–320ms
+
+  KEYFRAME / ANIMATION SPEC  (lift directly into the game)
+  ---------------------------------------------------------------------------
+  name          driver   property changes                       dur     easing
+  pileIn        CSS kf   opacity 0→1, translateY(-10px→0)        260ms   --ease   (staggered +40ms bottom→top)
+  topSettle     CSS kf   brightness pulse as top value ticks in  220ms   --ease
+  lift          WAAPI    translateY 0→-14px, scale 1→1.06,       140ms   --ease
+                         box-shadow → intensified rim glow
+  fly           WAAPI    translate → readout, scale 1→0.5,       320ms   --ease
+                         opacity 1→0  (rare keeps glow in flight)
+  trail         CSS kf   ghost clone opacity .5→0, scale→0.4     320ms   linear
+  creditFloat   CSS kf   +N CR label translateY 0→-20px, op 1→0  500ms   ease-out
+  countUp       rAF      CR readout increments toward target     400ms   linear
+  countRoll     rAF      pile "×N" chip rolls DOWN by spent      250ms   linear
+  gaugeDrop     CSS tr   spent segments fade lit→extinguished    200ms   --ease
+  settleUp      WAAPI    remaining stack translateY 4px→0        180ms   --ease
+  promote       WAAPI    new top scale .96→1, value opacity 0→1  200ms   --ease
+  promoteFlash  CSS kf   soft accent flash on promoted top       260ms   ease-out
+  lowPulse      CSS kf   slow brightness pulse on LOW top token  1.6s    ease-in-out (loop)
+  activeDot     CSS kf   selected-pile marker opacity 1→.3→1     1.6s    ease-in-out (loop)
+  soldOut       CSS kf   empty slot fades to dashed SOLD OUT     200ms   ease-out
+  ---------------------------------------------------------------------------
+  STATE TIERS  ·  HEALTHY (accent) · LOW N<=2 (warning amber + slow pulse)
+                  · EMPTY N=0 (dashed "—" SOLD OUT, desaturated, unsellable)
+  prefers-reduced-motion: flight skipped — top value, count chip and gauge all
+  update with a simple 120ms fade; remaining amount still updates clearly.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHT MARKET — Value-Token Pile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================ TOKENS ============================ */
+:root{
+  --bg:#0a0e16;            /* page background        */
+  --panel:#141a24;         /* panel / token face     */
+  --border:#26334a;        /* hairline borders       */
+  --text:#e6eef7;          /* cool white             */
+  --muted:#8595ac;         /* dim label text         */
+  --cyan:#4fc3d9;          /* neutral UI accent      */
+  --warn:#ffab3d;          /* LOW-stock warning tint (non-neon amber) */
+
+  --ease:cubic-bezier(.2,.9,.25,1);   /* the ONLY easing curve */
+  --step:8px;              /* vertical peek between stacked tokens */
+
+  --glass-bg:rgba(20,26,36,.72);
+  --glass-border:rgba(79,195,217,.22);
+  --grid:linear-gradient(rgba(79,195,217,.05) 1px,transparent 1px),
+         linear-gradient(90deg,rgba(79,195,217,.05) 1px,transparent 1px);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:
+    radial-gradient(120% 90% at 50% 0%,#0d1420 0%,var(--bg) 60%);
+  color:var(--text);
+  font-family:"Chakra Petch",sans-serif;
+  display:flex;align-items:center;justify-content:center;padding:28px;
+  overflow:hidden;
+}
+body::before{ /* faint tech grid */
+  content:"";position:fixed;inset:0;background:var(--grid);background-size:26px 26px;
+  opacity:.5;pointer-events:none;
+}
+
+.frame{width:100%;max-width:1120px;position:relative;z-index:1}
+
+/* ---------- header ---------- */
+.head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+.head .kick{font-size:11px;letter-spacing:.34em;color:var(--cyan);font-weight:600}
+.head h1{margin:6px 0 0;font-size:24px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.head .sub{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:.04em;text-align:right;max-width:300px;line-height:1.5}
+
+/* ---------- main split: board | operator ---------- */
+.split{display:grid;grid-template-columns:1fr 232px;gap:22px;align-items:stretch}
+
+/* glass board slice */
+.board{
+  position:relative;background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+  padding:20px 24px 22px;
+}
+.board .bhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.board .bhead .t{font-size:11px;letter-spacing:.26em;color:var(--muted);font-weight:600}
+.board .bhead .ln{flex:1;height:1px;background:var(--border)}
+
+.piles{display:flex;justify-content:space-around;align-items:flex-end;gap:12px;min-height:320px}
+
+/* ---------- one pile ---------- */
+.pile{display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;flex:1;user-select:none;
+  padding:8px 6px 6px;position:relative;
+  clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%,0 10px);
+  transition:background 160ms var(--ease)}
+.pile.sel{background:rgba(79,195,217,.06)}
+.pile.sel{outline:1px solid rgba(79,195,217,.28);outline-offset:-1px}
+
+/* CR value readout above the stack */
+.valrow{display:flex;align-items:baseline;gap:5px;height:26px;margin-bottom:6px}
+.valrow .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:22px;line-height:1;color:var(--text)}
+.pile.sel .valrow .v{color:var(--cyan)}
+.valrow .u{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;color:var(--muted)}
+.pile.empty .valrow{opacity:.3}
+
+/* gauge + stack row */
+.stackwrap{display:flex;align-items:flex-end;gap:9px;height:150px}
+
+/* DEPLETION GAUGE — segmented vertical bar, one segment per starting token */
+.gauge{display:flex;flex-direction:column-reverse;gap:2px;width:7px;height:132px}
+.gauge .seg{flex:1;background:rgba(var(--rgb),.16);border:1px solid rgba(var(--rgb),.28);
+  transition:background 200ms var(--ease),border-color 200ms var(--ease),opacity 200ms var(--ease)}
+.gauge .seg.lit{background:rgb(var(--rgb));opacity:1}
+.pile.rare .gauge .seg.lit{box-shadow:0 0 6px rgba(var(--rgb),.5)}
+.pile.low .gauge .seg.lit{background:var(--warn);border-color:var(--warn);box-shadow:0 0 6px rgba(255,171,61,.5)}
+
+/* the sliver stack */
+.stack{position:relative;width:118px;height:132px;display:flex;justify-content:center}
+.stack .more{ /* "+k" overflow tag at the base when N>cap */
+  position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);z-index:0;
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;color:var(--muted);
+  background:var(--panel);border:1px solid var(--border);padding:1px 6px;
+  clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.stack .empty{ /* dashed "—" slot when a pile is spent */
+  position:absolute;bottom:0;width:112px;height:74px;
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 12px),0 12px);
+  border:1px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--muted);opacity:.5;filter:grayscale(.6);animation:soldOut 200ms ease-out both}
+.stack .empty .dash{font-family:"IBM Plex Mono",monospace;font-size:24px;line-height:1}
+.stack .empty .so{font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:8px;letter-spacing:.22em}
+
+/* count chip + label */
+.plabel{margin-top:12px;text-align:center}
+.plabel .nm{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.plabel .tier{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.16em;color:var(--muted);margin-top:3px}
+.pile.empty .plabel .nm{color:var(--muted)}
+
+/* COUNT CHIP  ×N */
+.count{margin-top:9px;display:inline-flex;align-items:center;gap:5px;
+  font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:14px;letter-spacing:.04em;
+  color:var(--text);background:var(--panel);border:1px solid var(--border);
+  padding:4px 11px;clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%);
+  transition:color 200ms var(--ease),border-color 200ms var(--ease)}
+.count .x{color:var(--muted);font-size:11px}
+.count .left{font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:8px;letter-spacing:.16em;color:var(--muted);margin-left:2px}
+.pile.rare .count{border-color:rgba(var(--rgb),.4)}
+.pile.low .count{color:var(--warn);border-color:var(--warn)}
+.pile.low .count .x{color:var(--warn)}
+.pile.empty .count{color:var(--muted);opacity:.6}
+
+.pile .marker{ /* selected-pile active dot */
+  margin-top:8px;width:7px;height:7px;transform:rotate(45deg);background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan);opacity:0;transition:opacity 160ms var(--ease)}
+.pile.sel .marker{opacity:1;animation:activeDot 1.6s ease-in-out infinite}
+.pile:not(.sel):hover .plabel .nm{color:#c7d6e6}
+
+/* ---------- value token (elongated chamfered acrylic chip) ---------- */
+.tok{
+  position:absolute;left:50%;width:112px;height:74px;margin-left:-56px;
+  /* chamfered octagon — angular, never rounded */
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 12px),0 12px);
+  /* translucent internally-backlit acrylic body */
+  background:
+    linear-gradient(158deg,rgba(var(--rgb),.30) 0%,rgba(var(--rgb),.12) 46%,rgba(var(--rgb),.20) 100%),
+    linear-gradient(var(--panel),var(--panel));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),           /* top specular bevel */
+    inset 0 0 16px rgba(var(--rgb),.22),           /* internal backlight */
+    inset 0 -8px 14px rgba(0,0,0,.5);
+  overflow:hidden;transform-origin:50% 100%;
+  will-change:transform,opacity;
+}
+.tok::after{ /* bright specular streak riding the top beveled edge */
+  content:"";position:absolute;top:0;left:14px;right:14px;height:12px;
+  background:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,0));
+  opacity:.7;
+}
+.tok .trace{position:absolute;inset:0;width:100%;height:100%;color:rgb(var(--rgb));pointer-events:none}
+.tok .val{
+  position:absolute;inset:0 0 8px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  z-index:2;
+}
+.tok .val .n{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:28px;line-height:1;color:rgb(var(--rgb));letter-spacing:.02em}
+.tok .val .cr{font-family:"IBM Plex Mono",monospace;font-size:8px;letter-spacing:.18em;color:var(--muted)}
+.tok .sig{position:absolute;inset:0;display:none;place-items:center;opacity:.35;color:rgb(var(--rgb))}
+
+/* rare tier — 3-layer outer neon glow (var --glow set per pile) */
+.tok.rare{box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 0 18px rgba(var(--rgb),.32),
+    inset 0 -8px 14px rgba(0,0,0,.5),
+    var(--glow);
+}
+.tok.rare .val .n{text-shadow:0 0 8px rgba(var(--rgb),.9)}
+
+/* the fully-revealed TOP token */
+.tok.top .val{display:flex}
+.tok.top .sig{display:grid}
+
+/* LOW-state top token — slow warning pulse */
+.pile.low .tok.top{animation:lowPulse 1.6s ease-in-out infinite}
+
+/* pile-up entrance (per token, staggered inline delay in JS) */
+.tok.in{animation:pileIn 260ms var(--ease) both}
+@keyframes pileIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes topSettle{ /* glow pulse as top value ticks in */
+  0%{filter:brightness(1)}
+  40%{filter:brightness(1.5)}
+  100%{filter:brightness(1)}
+}
+@keyframes promoteFlash{
+  0%{filter:brightness(1.7)}
+  100%{filter:brightness(1)}
+}
+@keyframes lowPulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.35)}
+}
+@keyframes soldOut{from{opacity:0}to{opacity:.5}}
+.tok.settle{animation:topSettle 220ms var(--ease) both}
+.tok.promote{animation:promoteFlash 260ms ease-out both}
+
+/* ---------- operator CR readout (the sink) ---------- */
+.operator{
+  position:relative;background:var(--panel);border:1px solid var(--border);
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+  padding:22px 20px;display:flex;flex-direction:column;justify-content:center;gap:6px;overflow:visible;
+}
+.operator .olab{font-size:10px;letter-spacing:.28em;color:var(--muted);font-weight:600}
+.operator .crrow{display:flex;align-items:baseline;gap:8px}
+.operator #cr{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:52px;line-height:1;color:var(--text)}
+.operator .cru{font-family:"IBM Plex Mono",monospace;font-size:16px;color:var(--cyan);letter-spacing:.1em}
+.operator .note{margin-top:14px;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted);line-height:1.6;letter-spacing:.02em}
+#sink{position:absolute;top:38px;right:26px;width:2px;height:2px} /* fly target anchor */
+.credit{ /* +N CR pop */
+  position:absolute;right:20px;top:60px;font-family:"IBM Plex Mono",monospace;font-weight:600;
+  font-size:18px;color:var(--cyan);text-shadow:0 0 10px rgba(79,195,217,.7);
+  pointer-events:none;animation:creditFloat 500ms ease-out both;
+}
+@keyframes creditFloat{
+  0%{opacity:0;transform:translateY(6px) scale(.9)}
+  20%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-20px)}
+}
+
+/* ---------- controls ---------- */
+.controls{display:flex;align-items:center;gap:14px;margin-top:18px}
+.btn{
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;
+  text-transform:uppercase;color:#03181d;background:var(--cyan);border:none;cursor:pointer;
+  padding:13px 22px;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+  box-shadow:0 0 14px rgba(79,195,217,.35);transition:filter 120ms var(--ease),transform 120ms var(--ease);
+}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border);box-shadow:none;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.hint{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;margin-left:auto}
+
+@keyframes activeDot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* flight overlay — flyers live here, above everything */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:999}
+.flyer{position:fixed;width:112px;height:74px;margin:0;
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 12px),0 12px);
+  will-change:transform,opacity;}
+.flyer.ghost{animation:trailFade 320ms linear both}
+@keyframes trailFade{from{opacity:.5}to{opacity:0;transform:scale(.4)}}
+
+@media (max-width:720px){
+  .split{grid-template-columns:1fr}
+  .operator{flex-direction:row;align-items:center;justify-content:space-between}
+}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="head">
+    <div>
+      <div class="kick">NIGHT MARKET // MARKET PRICES</div>
+      <h1>Value-Token Pile</h1>
+    </div>
+    <div class="sub">Top token = current CR payout. Count chip, gauge and stack all show tokens remaining.</div>
+  </div>
+
+  <div class="split">
+    <div class="board">
+      <div class="bhead"><span class="t">MARKET PRICES // CR PER UNIT · STOCK REMAINING</span><span class="ln"></span></div>
+      <div class="piles" id="piles"></div>
+    </div>
+
+    <div class="operator">
+      <div class="olab">OPERATOR // CREDITS</div>
+      <div class="crrow"><span id="cr">0</span><span class="cru">CR</span></div>
+      <div class="note">Sold tokens fly here and add to the balance.</div>
+      <div id="sink"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="sell">SELL &#9656;</button>
+    <button class="btn ghost" id="replay">REPLAY</button>
+    <span class="hint">CLICK A PILE TO SELECT · SELL COLLECTS TOP 2</span>
+  </div>
+</div>
+<div id="fx"></div>
+
+<script>
+/* ===================================================================
+   DATA — three goods. values are bottom→top; last = current top payout.
+   count of tokens left = values.length.
+     · AI Cores  (rare, cyan)  — plenty of stock, ×7
+     · Cracked SW (common, green) — mid-depletion, ×5
+     · Street Weaponry (common, orange) — nearly empty, ×2 (LOW → sell to EMPTY)
+   =================================================================== */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const EASE = 'cubic-bezier(.2,.9,.25,1)';
+const STEP = 8;            // px each buried token peeks above the next
+const CAP  = 5;            // max slivers rendered; overflow shown as "+k"
+const GOODS = [
+  {id:'aicore', name:'AI Cores',       rare:true,  rgb:'0,229,255',   start:[3,4,4,5,6,6,7]},
+  {id:'soft',   name:'Cracked SW',     rare:false, rgb:'111,160,125', start:[1,1,2,2,3]},
+  {id:'weapon', name:'Street Weaponry',rare:false, rgb:'185,122,75',  start:[1,2]},
+];
+// circuit-board trace artwork, reused per token (stroke = currentColor)
+const TRACE = `<svg class="trace" viewBox="0 0 112 74" preserveAspectRatio="none">
+  <g fill="none" stroke="currentColor" stroke-width="1" stroke-opacity=".45">
+    <path d="M8 22 H34 V13 M34 22 H64"/>
+    <path d="M8 54 H28 V62 M28 54 H54 V46"/>
+    <path d="M104 32 H78 V23 M78 32 H58"/>
+    <path d="M104 58 H82 V50"/>
+  </g>
+  <g fill="currentColor" fill-opacity=".7">
+    <rect x="32" y="11" width="3" height="3"/><rect x="62" y="20" width="3" height="3"/>
+    <rect x="26" y="60" width="3" height="3"/><rect x="52" y="44" width="3" height="3"/>
+    <rect x="76" y="21" width="3" height="3"/><rect x="80" y="48" width="3" height="3"/>
+  </g></svg>`;
+// central sigil for the top token
+const SIGIL = `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
+  <polygon points="20,4 33,12 33,28 20,36 7,28 7,12" stroke-opacity=".55"/>
+  <polygon points="20,11 27,15 27,25 20,29 13,25 13,15" stroke-opacity=".4"/>
+  <path d="M20 4 V11 M20 29 V36 M7 12 L13 15 M33 12 L27 15 M7 28 L13 25 M33 28 L27 25" stroke-opacity=".5"/>
+</svg>`;
+
+const glowOf = rgb => `0 0 6px rgba(${rgb},.55),0 0 20px rgba(${rgb},.28),0 0 48px rgba(${rgb},.12)`;
+const state = {};          // id -> { good, values, els... }
+let selected = 'aicore';
+let busy = false;
+
+/* ---------- build a token element ---------- */
+function makeTok(good, value, slot, isTop){
+  const t = document.createElement('div');
+  t.className = 'tok' + (good.rare ? ' rare' : '');
+  t.style.setProperty('--rgb', good.rgb);
+  if(good.rare) t.style.setProperty('--glow', glowOf(good.rgb));
+  t.style.bottom = (slot * STEP) + 'px';
+  t.style.zIndex = slot;
+  t.dataset.value = value;
+  t.innerHTML = TRACE +
+    `<div class="sig">${SIGIL}</div>` +
+    `<div class="val"><span class="n">${value}</span><span class="cr">CR</span></div>`;
+  if(isTop) t.classList.add('top');
+  return t;
+}
+
+/* ---------- build one pile shell ---------- */
+function buildPile(good){
+  const pile = document.createElement('div');
+  pile.className = 'pile' + (good.rare ? ' rare' : '') + (good.id === selected ? ' sel' : '');
+  pile.dataset.id = good.id;
+  pile.style.setProperty('--rgb', good.rgb);
+  pile.innerHTML = `
+    <div class="valrow"><span class="v">0</span><span class="u">CR</span></div>
+    <div class="stackwrap"><div class="gauge"></div><div class="stack"></div></div>
+    <div class="plabel">
+      <div class="nm">${good.name}</div>
+      <div class="tier">${good.rare ? 'RARE // NEON' : 'COMMON // MATTE'}</div>
+    </div>
+    <div class="count"><span class="x">×</span><span class="n">0</span><span class="left">LEFT</span></div>
+    <div class="marker"></div>`;
+  pile.addEventListener('click', () => select(good.id));
+
+  state[good.id] = {
+    good, values:[...good.start], countShown:0,
+    pileEl:pile,
+    stackEl:pile.querySelector('.stack'),
+    gaugeEl:pile.querySelector('.gauge'),
+    valEl:pile.querySelector('.valrow .v'),
+    countEl:pile.querySelector('.count .n'),
+  };
+  // build gauge segments = starting count
+  for(let i=0;i<good.start.length;i++){
+    const seg = document.createElement('div');
+    seg.className = 'seg lit';
+    state[good.id].gaugeEl.appendChild(seg);
+  }
+  renderStack(good.id, /*animate*/true);
+  syncReadouts(good.id, /*roll*/false, /*animate*/true);
+  return pile;
+}
+
+/* ---------- render sliver stack (capped) from current values ---------- */
+function renderStack(id, animate){
+  const s = state[id];
+  s.stackEl.innerHTML = '';
+  const N = s.values.length;
+  if(N === 0){
+    const e = document.createElement('div');
+    e.className = 'empty'; e.innerHTML = '<span class="dash">—</span><span class="so">SOLD OUT</span>';
+    s.stackEl.appendChild(e);
+    return;
+  }
+  const shown = Math.min(N, CAP);
+  const hidden = N - shown;                // rendered as "+k"
+  const top = s.values.slice(-shown);      // the visible top `shown` values
+  top.forEach((v, i) => {
+    const isTop = (i === shown - 1);
+    const t = makeTok(s.good, v, i, isTop);
+    s.stackEl.appendChild(t);
+    if(animate){
+      // ANIM: pileIn — staggered bottom→top, top settles last then pulses
+      t.style.animationDelay = (i * 40) + 'ms';
+      t.classList.add('in');
+      if(isTop) t.addEventListener('animationend', () => {
+        t.classList.remove('in'); t.classList.add('settle');
+      }, { once:true });
+    }
+  });
+  if(hidden > 0){
+    const more = document.createElement('div');
+    more.className = 'more'; more.textContent = '+' + hidden;
+    s.stackEl.appendChild(more);
+  }
+}
+
+/* ---------- roll the "×N" count chip (rAF, 250ms) ---------- */
+function rollCount(id, to){
+  const s = state[id];
+  const from = s.countShown, t0 = performance.now(), dur = 250;
+  function step(now){
+    const k = Math.min(1, (now - t0) / dur);
+    s.countShown = Math.round(from + (to - from) * k);
+    s.countEl.textContent = s.countShown;
+    if(k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------- sync all three readouts + state tier for a pile ---------- */
+function syncReadouts(id, roll, animate){
+  const s = state[id];
+  const N = s.values.length;
+  // top CR value
+  s.valEl.textContent = N ? s.values[N-1] : '—';
+  // count chip
+  if(roll) rollCount(id, N);
+  else { s.countShown = N; s.countEl.textContent = N; }
+  // gauge — light exactly N segments (bottom-up), extinguish the rest
+  [...s.gaugeEl.children].forEach((seg, i) => seg.classList.toggle('lit', i < N));
+  // state tier
+  s.pileEl.classList.toggle('low',   N > 0 && N <= 2);
+  s.pileEl.classList.toggle('empty', N === 0);
+}
+
+/* ---------- selection ---------- */
+function select(id){
+  selected = id;
+  document.querySelectorAll('.pile').forEach(p =>
+    p.classList.toggle('sel', p.dataset.id === id));
+}
+
+/* ---------- CR readout count-up (rAF, 400ms) ---------- */
+const crEl = document.getElementById('cr');
+let crShown = 0, crTarget = 0;
+function countUp(to, dur=400){
+  const from = crShown, t0 = performance.now();
+  function step(now){
+    const k = Math.min(1, (now - t0) / dur);
+    crShown = Math.round(from + (to - from) * k);
+    crEl.textContent = crShown;
+    if(k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------- +N CR pop at the readout ---------- */
+function creditPop(n){
+  const op = document.querySelector('.operator');
+  const c = document.createElement('div');
+  c.className = 'credit'; c.textContent = '+' + n + ' CR';
+  op.appendChild(c);
+  c.addEventListener('animationend', () => c.remove(), { once:true });
+}
+
+/* ===================================================================
+   SELL — collect the top `count` tokens from the selected pile.
+   =================================================================== */
+async function sell(count = 2){
+  if(busy) return;
+  const s = state[selected];
+  if(!s || s.values.length === 0) return;
+  busy = true; setControls(false);
+
+  const n = Math.min(count, s.values.length);
+  const toks = [...s.stackEl.querySelectorAll('.tok')].slice(-n); // top n slivers
+  const values = toks.map(t => +t.dataset.value);
+
+  /* ---- reduced motion: no flight, just update readouts ---- */
+  if(REDUCED){
+    for(let i=0;i<n;i++) s.values.pop();
+    crTarget += values.reduce((a,b)=>a+b,0); countUp(crTarget, 120);
+    renderStack(selected, false);
+    syncReadouts(selected, /*roll*/false, false);
+    s.stackEl.querySelectorAll('.tok').forEach(t =>
+      t.animate([{opacity:.4},{opacity:1}], {duration:120, easing:EASE}));
+    busy = false; setControls(true); return;
+  }
+
+  const sink = document.getElementById('sink').getBoundingClientRect();
+  const fx = document.getElementById('fx');
+
+  /* ---- 1. LIFT (140ms) ---- */
+  await Promise.all(toks.map(t => t.animate(
+    [{transform:'translateY(0) scale(1)'},
+     {transform:'translateY(-14px) scale(1.06)'}],
+    {duration:140, easing:EASE, fill:'forwards'}).finished));
+
+  /* remove lifted tokens from the data + DOM so the pile can settle */
+  toks.forEach(t => t.remove());
+  for(let i=0;i<n;i++) s.values.pop();
+
+  /* ---- 4. SETTLE + DEPLETE (overlaps the flight, same beat) ---- */
+  renderStack(selected, false);
+  settleAndPromote(selected);
+  syncReadouts(selected, /*roll*/true, false);   // count rolls, gauge drops, tier updates
+
+  /* ---- 2 & 3. FLY each token to the readout, credit as it lands ---- */
+  await Promise.all(toks.map((t, i) => new Promise(res => {
+    const r = t.getBoundingClientRect();
+    const flyer = t.cloneNode(true);
+    flyer.className = 'flyer' + (s.good.rare ? ' rare' : '');
+    flyer.style.setProperty('--rgb', s.good.rgb);
+    if(s.good.rare) flyer.style.setProperty('--glow', glowOf(s.good.rgb));
+    flyer.style.left = r.left + 'px';
+    flyer.style.top  = (r.top - 14) + 'px';   // it was lifted 14px
+    fx.appendChild(flyer);
+
+    const ghost = flyer.cloneNode(true);
+    ghost.classList.add('ghost');
+    ghost.style.left = flyer.style.left; ghost.style.top = flyer.style.top;
+    ghost.addEventListener('animationend', () => ghost.remove(), { once:true });
+
+    const dx = sink.left - r.left;
+    const dy = sink.top  - (r.top - 14);
+
+    setTimeout(() => {
+      fx.appendChild(ghost);
+      // ANIM: fly — travel + shrink + fade, 320ms
+      flyer.animate(
+        [{transform:'translate(0,0) scale(1.06)', opacity:1},
+         {transform:`translate(${dx}px,${dy}px) scale(.5)`, opacity:0}],
+        {duration:320, easing:EASE, fill:'forwards'}).finished.then(() => {
+          flyer.remove();
+          creditPop(values[i]);
+          crTarget += values[i];
+          countUp(crTarget);
+          res();
+        });
+    }, i * 60);
+  })));
+
+  await new Promise(r => setTimeout(r, 120));
+  busy = false; setControls(true);
+}
+
+/* ---------- settle remaining tokens & promote the new top ---------- */
+function settleAndPromote(id){
+  const s = state[id];
+  const toks = [...s.stackEl.querySelectorAll('.tok')];
+  if(toks.length === 0) return;
+  // ANIM: settleUp — whole remaining stack eases up to close the gap (180ms)
+  toks.forEach(t => t.animate(
+    [{transform:'translateY(4px)'},{transform:'translateY(0)'}],
+    {duration:180, easing:EASE}));
+  // promote the new highest token to a full "top" token
+  const nt = toks[toks.length - 1];
+  const val = nt.querySelector('.val'), sig = nt.querySelector('.sig');
+  nt.animate([{transform:'scale(.96)'},{transform:'scale(1)'}], {duration:200, easing:EASE});
+  [val, sig].forEach(el => el && el.animate(
+    [{opacity:0},{opacity:1}], {duration:200, easing:EASE, fill:'both'}));
+  nt.classList.remove('promote'); void nt.offsetWidth; nt.classList.add('promote');
+}
+
+/* ---------- controls ---------- */
+function setControls(on){
+  document.getElementById('sell').disabled = !on;
+  document.getElementById('replay').disabled = !on;
+}
+
+/* ===================================================================
+   PILE-UP on load / reset
+   =================================================================== */
+function buildAll(){
+  const host = document.getElementById('piles');
+  host.innerHTML = '';
+  GOODS.forEach(g => host.appendChild(buildPile(g)));
+}
+function replay(){
+  if(busy) return;
+  crTarget = 0; crShown = 0; crEl.textContent = '0';
+  buildAll();
+}
+
+document.getElementById('sell').addEventListener('click', () => sell(2));
+document.getElementById('replay').addEventListener('click', replay);
+buildAll();
+</script>
+</body>
+</html>

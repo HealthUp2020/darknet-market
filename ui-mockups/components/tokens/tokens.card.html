@@ -1,0 +1,32 @@
+<!-- @dsCard group="Components" viewport="700x190" name="Tokens" subtitle="Circle = value · hex = bonus · diamond = seal" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>window.__dsReady=new Promise(function(r){var s=document.createElement('script');s.src='../../_ds_bundle.js';s.onload=r;s.onerror=r;document.head.appendChild(s)});</script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+</head><body style="padding:20px"><div id="root"></div>
+<script type="text/babel">
+window.__dsReady.then(()=>{
+const NS=(()=>{for(const k of Object.getOwnPropertyNames(window)){try{const v=window[k];if(v&&typeof v==='object'&&v.Button&&v.GameCard)return v}catch(e){}}return{}})();
+const {TokenChip}=NS;
+const G=({label,note,children})=>(
+  <div style={{flex:1,display:'flex',flexDirection:'column',gap:10}}>
+    <div style={{display:'flex',gap:12,alignItems:'center',height:64}}>{children}</div>
+    <div><div style={{font:'600 9px/1.2 var(--font-display)',letterSpacing:'.12em',textTransform:'uppercase',color:'var(--text-secondary)'}}>{label}</div>
+    <div style={{font:'400 9px/1.4 var(--font-body)',color:'var(--text-muted)',marginTop:3}}>{note}</div></div>
+  </div>);
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <div style={{display:'flex',gap:28}}>
+    <G label="Value — circle" note="Neutral machined chip, mono number, no glow">
+      <TokenChip kind="value" value={1} size={44}/><TokenChip kind="value" value={5} size={52}/><TokenChip kind="value" value={7} size={60}/>
+    </G>
+    <G label="Bonus — hexagon" note="Accent rim + subtle glow; gold by default">
+      <TokenChip kind="bonus" value={2} accent="cyan" size={50}/><TokenChip kind="bonus" value={3} size={56}/><TokenChip kind="bonus" value={5} accent="magenta" size={56}/>
+    </G>
+    <G label="Seal — diamond" note="One of a kind: magenta, 印 mark, full glow">
+      <TokenChip kind="seal" size={62}/>
+    </G>
+  </div>
+);
+});
+</script></body></html>

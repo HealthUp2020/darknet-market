@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "jaipur-sim",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "server.ts"],
+      "port": 3000
+    }
+  ]
+}

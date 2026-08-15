@@ -1,0 +1,128 @@
+<!-- @dsCard group="Assets" viewport="620x760" name="Card: Courier Drone (Special Resource)" subtitle="Style anchor — metallic silver frame marks a non-good resource" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Card — Courier Drone</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --trim:#4fc3d9; }
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 36%, #101822 0%, var(--bg-page) 70%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.card{position:relative;width:380px;height:532px;
+  background:linear-gradient(160deg,#141a24 0%,#0c1119 100%);
+  clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px);
+  box-shadow:0 24px 56px rgba(0,0,0,.6), 0 0 30px rgba(180,200,220,.16)}
+
+/* metallic silver-white border — brushed chrome, NOT a color tier */
+.border{position:absolute;inset:0;clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px);
+  background:linear-gradient(150deg,#f2f6fa 0%,#9aa6b2 24%,#e6ecf2 48%,#7f8b98 72%,#dfe6ee 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:2.5px;
+  filter:drop-shadow(0 0 3px rgba(220,230,240,.5))}
+.frame-in{position:absolute;inset:13px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  border:1px solid rgba(200,212,224,.35);pointer-events:none}
+/* corner rivets (mechanical, neutral) */
+.riv{position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f0f4f8,#6f7b88);box-shadow:0 0 3px rgba(0,0,0,.5);pointer-events:none}
+.riv.tl{top:22px;left:22px}.riv.tr{top:22px;right:22px}.riv.bl{bottom:22px;left:22px}.riv.br{bottom:22px;right:22px}
+
+/* special-resource ribbon */
+.ribbon{position:absolute;top:0;right:34px;z-index:4;
+  background:linear-gradient(#e6ecf2,#aab6c2);color:#141a24;
+  font:600 6px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;
+  padding:7px 6px 5px;clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);box-shadow:0 3px 6px rgba(0,0,0,.5)}
+
+.name{position:absolute;top:28px;left:50%;transform:translateX(-50%);width:266px;height:42px;
+  background:linear-gradient(#161d27,#0f151d);
+  clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);
+  border:1px solid rgba(200,212,224,.4);box-shadow:inset 0 0 10px rgba(0,0,0,.6);
+  display:grid;place-items:center}
+.name span{font:600 8px/1 var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:rgba(200,212,224,.4)}
+
+.illus{position:absolute;top:88px;left:26px;right:26px;bottom:96px;
+  background:radial-gradient(circle at 50% 40%, #101c26 0%, #060b12 74%);
+  border:1px solid rgba(200,212,224,.22);overflow:hidden;display:grid;place-items:center}
+.illus::before{content:"";position:absolute;inset:0;background:var(--texture-scanline);opacity:.4}
+.drone{position:relative;filter:drop-shadow(0 8px 14px rgba(0,0,0,.6));animation:hover 4s var(--ease-hud) infinite}
+.eye{animation:blink 4.5s var(--ease-hud) infinite}
+
+.type{position:absolute;bottom:32px;left:30px;font:600 7px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.tier{position:absolute;bottom:30px;right:30px;font:600 7px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:#cdd8e2;border:1px solid rgba(200,212,224,.5);padding:4px 7px}
+.role{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  font:600 9px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--trim);text-shadow:0 0 8px rgba(79,195,217,.5)}
+
+@keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes blink{0%,92%,100%{opacity:1}95%{opacity:.25}}
+</style></head><body>
+
+<div class="card">
+  <div class="border"></div>
+  <div class="frame-in"></div>
+  <div class="riv tl"></div><div class="riv tr"></div><div class="riv bl"></div><div class="riv br"></div>
+  <div class="ribbon">SPEC</div>
+
+  <div class="name"><span>Card name</span></div>
+
+  <div class="illus">
+    <div class="drone">
+      <svg viewBox="0 0 220 200" width="204" height="186">
+        <defs>
+          <linearGradient id="chassis" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fdfeff"/><stop offset="42%" stop-color="#cdd6df"/>
+            <stop offset="72%" stop-color="#8f9aa6"/><stop offset="100%" stop-color="#5a6470"/>
+          </linearGradient>
+          <linearGradient id="arm" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e8edf2"/><stop offset="100%" stop-color="#7a848f"/>
+          </linearGradient>
+          <radialGradient id="sensor" cx="42%" cy="38%" r="62%">
+            <stop offset="0%" stop-color="#dffbff"/><stop offset="38%" stop-color="#4fc3d9"/>
+            <stop offset="100%" stop-color="#0a3d49"/>
+          </radialGradient>
+          <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6"/></filter>
+        </defs>
+
+        <!-- rotor arms (X) -->
+        <g stroke="#454d57" stroke-width="1">
+          <rect x="34" y="60" width="60" height="9" rx="4" fill="url(#arm)" transform="rotate(-26 64 64)"/>
+          <rect x="126" y="60" width="60" height="9" rx="4" fill="url(#arm)" transform="rotate(26 156 64)"/>
+          <rect x="34" y="132" width="60" height="9" rx="4" fill="url(#arm)" transform="rotate(26 64 136)"/>
+          <rect x="126" y="132" width="60" height="9" rx="4" fill="url(#arm)" transform="rotate(-26 156 136)"/>
+        </g>
+        <!-- rotors -->
+        <g>
+          <g transform="translate(40 46)"><ellipse cx="0" cy="0" rx="30" ry="5" fill="rgba(79,195,217,.28)"/><circle cx="0" cy="0" r="5" fill="url(#chassis)" stroke="#454d57"/></g>
+          <g transform="translate(180 46)"><ellipse cx="0" cy="0" rx="30" ry="5" fill="rgba(79,195,217,.28)"/><circle cx="0" cy="0" r="5" fill="url(#chassis)" stroke="#454d57"/></g>
+          <g transform="translate(40 154)"><ellipse cx="0" cy="0" rx="30" ry="5" fill="rgba(79,195,217,.28)"/><circle cx="0" cy="0" r="5" fill="url(#chassis)" stroke="#454d57"/></g>
+          <g transform="translate(180 154)"><ellipse cx="0" cy="0" rx="30" ry="5" fill="rgba(79,195,217,.28)"/><circle cx="0" cy="0" r="5" fill="url(#chassis)" stroke="#454d57"/></g>
+        </g>
+
+        <!-- central body -->
+        <path d="M78,78 Q110,68 142,78 L150,108 Q110,128 70,108 Z" fill="url(#chassis)" stroke="#4a535d" stroke-width="1.5"/>
+        <!-- cyan trim lines -->
+        <path d="M80,82 Q110,74 140,82" fill="none" stroke="var(--trim)" stroke-width="1.6" filter="drop-shadow(0 0 3px #4fc3d9)"/>
+        <path d="M72,106 Q110,122 148,106" fill="none" stroke="rgba(79,195,217,.6)" stroke-width="1.2"/>
+        <!-- single optical sensor eye -->
+        <g class="eye">
+          <ellipse cx="110" cy="98" rx="26" ry="20" fill="#0a1116" stroke="#4a535d" stroke-width="1.5"/>
+          <circle cx="110" cy="98" r="13" fill="url(#sensor)" filter="url(#soft)"/>
+          <circle cx="110" cy="98" r="4" fill="#ffffff" filter="url(#soft)"/>
+          <path d="M100,92 A13 13 0 0 1 120,90" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/>
+        </g>
+        <!-- landing skids -->
+        <g stroke="#5a6470" stroke-width="3" stroke-linecap="round">
+          <line x1="88" y1="124" x2="82" y2="140"/><line x1="132" y1="124" x2="138" y2="140"/>
+          <line x1="78" y1="140" x2="98" y2="140"/><line x1="122" y1="140" x2="142" y2="140"/>
+        </g>
+        <!-- cargo pod -->
+        <rect x="98" y="122" width="24" height="14" rx="2" fill="#1a222c" stroke="var(--trim)" stroke-width="1"/>
+        <line x1="110" y1="122" x2="110" y2="136" stroke="rgba(79,195,217,.5)" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="type">Special // Logistics</div>
+  <div class="role">Courier</div>
+  <div class="tier">Resource</div>
+</div>
+
+</body></html>

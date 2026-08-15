@@ -1,0 +1,134 @@
+<!-- @dsCard group="Assets" viewport="620x760" name="Card: Illegal Implants (Rare Front)" subtitle="Style anchor — rare-tier card frame, gold, no baked text" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Card — Illegal Implants</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#f4ff5c; }
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 36%, #16160d 0%, var(--bg-page) 70%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.card{position:relative;width:380px;height:532px;
+  background:linear-gradient(160deg,#111a26 0%,#0b1017 100%);
+  clip-path:polygon(22px 0,100% 0,100% calc(100% - 22px),calc(100% - 22px) 100%,0 100%,0 22px);
+  box-shadow:0 26px 60px rgba(0,0,0,.6), 0 0 34px rgba(244,255,92,.26), 0 0 80px rgba(244,255,92,.1)}
+
+.border{position:absolute;inset:0;clip-path:polygon(22px 0,100% 0,100% calc(100% - 22px),calc(100% - 22px) 100%,0 100%,0 22px);
+  background:linear-gradient(160deg,#f4ff5c,#c9d43a 55%,#f4ff5c);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:1.5px;
+  filter:drop-shadow(0 0 4px rgba(244,255,92,.7))}
+.frame-in{position:absolute;inset:12px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  border:1px solid rgba(244,255,92,.3);pointer-events:none}
+.frame-in::before{content:"";position:absolute;inset:5px;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  border:1px solid rgba(244,255,92,.12)}
+
+.cn{position:absolute;width:34px;height:34px;pointer-events:none}
+.cn::before,.cn::after{content:"";position:absolute;background:var(--core);box-shadow:0 0 6px rgba(244,255,92,.7)}
+.cn::before{width:20px;height:2px}.cn::after{width:2px;height:20px}
+.cn.tl{top:16px;left:16px}.cn.tl::before{top:0;left:0}.cn.tl::after{top:0;left:0}
+.cn.tr{top:16px;right:16px}.cn.tr::before{top:0;right:0}.cn.tr::after{top:0;right:0}
+.cn.bl{bottom:16px;left:16px}.cn.bl::before{bottom:0;left:0}.cn.bl::after{bottom:0;left:0}
+.cn.br{bottom:16px;right:16px}.cn.br::before{bottom:0;right:0}.cn.br::after{bottom:0;right:0}
+.stud{position:absolute;width:6px;height:6px;background:var(--core);transform:rotate(45deg);box-shadow:0 0 6px rgba(244,255,92,.9);pointer-events:none}
+.stud.tl{top:26px;left:26px}.stud.tr{top:26px;right:26px}.stud.bl{bottom:26px;left:26px}.stud.br{bottom:26px;right:26px}
+
+.name{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:280px;height:44px;
+  background:linear-gradient(#1a1a0e,#14140a);
+  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);
+  border:1px solid rgba(244,255,92,.45);box-shadow:0 0 12px rgba(244,255,92,.2), inset 0 0 10px rgba(0,0,0,.6);
+  display:grid;place-items:center}
+.name span{font:600 8px/1 var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:rgba(244,255,92,.35)}
+
+.illus{position:absolute;top:88px;left:26px;right:26px;bottom:96px;
+  background:radial-gradient(circle at 50% 42%, #201f0a 0%, #0a0a05 72%);
+  border:1px solid rgba(244,255,92,.25);overflow:hidden;display:grid;place-items:center}
+.illus::before{content:"";position:absolute;inset:0;background:var(--texture-scanline);opacity:.5}
+.ring{position:absolute;border-radius:50%;border:1px solid transparent}
+.r1{width:210px;height:210px;border-top-color:rgba(244,255,92,.45);border-right-color:rgba(244,255,92,.16);animation:spin 9s linear infinite}
+.r2{width:250px;height:250px;border:1px dashed rgba(244,255,92,.2);animation:spin 17s linear infinite reverse}
+.implant{position:relative;filter:drop-shadow(0 0 15px rgba(244,255,92,.75));animation:pulse 3.4s var(--ease-hud) infinite}
+
+.type{position:absolute;bottom:32px;left:30px;font:600 7px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.value{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px}
+.value .v{font:600 30px/1 var(--font-mono);color:var(--core);text-shadow:0 0 12px rgba(244,255,92,.9)}
+.value .u{font:600 8px/1.3 var(--font-display);letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted)}
+.tier{position:absolute;bottom:30px;right:30px;font:600 7px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(244,255,92,.5);padding:4px 7px;box-shadow:0 0 8px rgba(244,255,92,.3)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 11px rgba(244,255,92,.55))}50%{filter:drop-shadow(0 0 22px rgba(244,255,92,.95))}}
+</style></head><body>
+
+<div class="card">
+  <div class="border"></div>
+  <div class="frame-in"></div>
+  <div class="cn tl"></div><div class="cn tr"></div><div class="cn bl"></div><div class="cn br"></div>
+  <div class="stud tl"></div><div class="stud tr"></div><div class="stud bl"></div><div class="stud br"></div>
+
+  <div class="name"><span>Card name</span></div>
+
+  <div class="illus">
+    <div class="ring r2"></div><div class="ring r1"></div>
+    <div class="implant">
+      <svg viewBox="0 0 200 200" width="196" height="196">
+        <defs>
+          <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#eef2f6"/><stop offset="30%" stop-color="#b8c0c9"/>
+            <stop offset="55%" stop-color="#727b85"/><stop offset="100%" stop-color="#333b44"/>
+          </linearGradient>
+          <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#dfe5eb"/><stop offset="50%" stop-color="#8b939d"/><stop offset="100%" stop-color="#3c444d"/>
+          </linearGradient>
+          <radialGradient id="pupil" cx="42%" cy="38%" r="65%">
+            <stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#fbff9e"/>
+            <stop offset="65%" stop-color="#f4ff5c"/><stop offset="100%" stop-color="#5c6414"/>
+          </radialGradient>
+          <radialGradient id="lensdark" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#1b1c10"/><stop offset="100%" stop-color="#050609"/>
+          </radialGradient>
+          <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8"/></filter>
+        </defs>
+        <circle cx="100" cy="100" r="82" fill="url(#chrome)"/>
+        <circle cx="100" cy="100" r="82" fill="none" stroke="#20262d" stroke-width="1.5"/>
+        <circle cx="100" cy="100" r="70" fill="url(#lensdark)"/>
+        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="2"/>
+        <g fill="none" stroke-linecap="round">
+          <path d="M58,150 Q84,140 96,120" stroke="#23282f" stroke-width="5"/>
+          <path d="M58,150 Q84,140 96,120" stroke="rgba(244,255,92,.55)" stroke-width="1.4"/>
+          <path d="M150,146 Q120,138 108,118" stroke="#23282f" stroke-width="5"/>
+          <path d="M150,146 Q120,138 108,118" stroke="rgba(244,255,92,.4)" stroke-width="1.2"/>
+          <path d="M100,168 Q100,150 100,132" stroke="#23282f" stroke-width="4"/>
+          <path d="M100,168 Q100,150 100,132" stroke="rgba(244,255,92,.5)" stroke-width="1.1"/>
+        </g>
+        <g fill="#161b12" stroke="#3a4149" stroke-width="1">
+          <rect x="52" y="146" width="12" height="8" rx="1"/><rect x="146" y="142" width="12" height="8" rx="1"/>
+        </g>
+        <g fill="var(--core)"><circle cx="58" cy="150" r="1.6"/><circle cx="152" cy="146" r="1.6"/></g>
+        <g stroke="#2b323a" stroke-width="1">
+          <g><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+          <g transform="rotate(60 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+          <g transform="rotate(120 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+          <g transform="rotate(180 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+          <g transform="rotate(240 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+          <g transform="rotate(300 100 100)"><polygon points="86,42 114,42 107,72 93,72" fill="url(#blade)"/></g>
+        </g>
+        <circle cx="100" cy="100" r="30" fill="url(#lensdark)"/>
+        <circle cx="100" cy="100" r="19" fill="url(#pupil)" filter="url(#soft)"/>
+        <circle cx="100" cy="100" r="5.5" fill="#ffffff" filter="url(#soft)"/>
+        <path d="M84,88 A20 20 0 0 1 112,84" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.4" stroke-linecap="round"/>
+        <g fill="url(#chrome)" stroke="#242b32" stroke-width="1">
+          <circle cx="100" cy="26" r="4"/><circle cx="164" cy="63" r="4"/><circle cx="164" cy="137" r="4"/>
+          <circle cx="100" cy="174" r="4"/><circle cx="36" cy="137" r="4"/><circle cx="36" cy="63" r="4"/>
+        </g>
+        <path d="M42,60 A78 78 0 0 1 158,60" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="type">Rare // Cyberware</div>
+  <div class="value"><span class="v">6</span><span class="u">PTS</span></div>
+  <div class="tier">Rare</div>
+</div>
+
+</body></html>

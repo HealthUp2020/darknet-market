@@ -1,0 +1,91 @@
+<!-- @dsCard group="Assets" viewport="620x760" name="Card: Pharma Contraband (Common Front)" subtitle="Style anchor — common-tier card frame, plain purple line, no glow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Card — Pharma Contraband</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#8a6fd8; }
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 36%, #12111a 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.45;pointer-events:none}
+
+.card{position:relative;width:380px;height:532px;
+  background:linear-gradient(160deg,#121722 0%,#0b0f16 100%);
+  clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);
+  box-shadow:0 22px 50px rgba(0,0,0,.55)}
+
+/* common-tier: single plain thin purple line, NO glow, NO ornate corners */
+.border{position:absolute;inset:6px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  border:1px solid rgba(138,111,216,.55);pointer-events:none}
+
+.name{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:288px;height:40px;
+  background:linear-gradient(#141220,#0e0c17);
+  border:1px solid rgba(138,111,216,.4);
+  display:grid;place-items:center}
+.name span{font:600 8px/1 var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:rgba(138,111,216,.35)}
+
+.illus{position:absolute;top:80px;left:24px;right:24px;bottom:90px;
+  background:radial-gradient(circle at 50% 44%, #14111d 0%, #07060c 74%);
+  border:1px solid rgba(138,111,216,.22);overflow:hidden;display:grid;place-items:center}
+.illus::before{content:"";position:absolute;inset:0;background:var(--texture-scanline);opacity:.35}
+.vial{position:relative;filter:drop-shadow(0 0 6px rgba(138,111,216,.4));animation:slosh 5s var(--ease-hud) infinite}
+
+.type{position:absolute;bottom:30px;left:28px;font:600 7px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.value{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px}
+.value .v{font:600 28px/1 var(--font-mono);color:var(--core)}
+.value .u{font:600 8px/1.3 var(--font-display);letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted)}
+.tier{position:absolute;bottom:28px;right:28px;font:600 7px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(138,111,216,.4);padding:4px 7px}
+
+@keyframes slosh{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+</style></head><body>
+
+<div class="card">
+  <div class="border"></div>
+
+  <div class="name"><span>Card name</span></div>
+
+  <div class="illus">
+    <div class="vial">
+      <svg viewBox="0 0 200 200" width="190" height="190">
+        <defs>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(200,210,225,.10)"/><stop offset="22%" stop-color="rgba(235,240,248,.30)"/>
+            <stop offset="50%" stop-color="rgba(150,165,185,.10)"/><stop offset="82%" stop-color="rgba(120,135,155,.20)"/>
+            <stop offset="100%" stop-color="rgba(90,100,120,.10)"/>
+          </linearGradient>
+          <linearGradient id="fluid" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c3aef2"/><stop offset="45%" stop-color="#8a6fd8"/><stop offset="100%" stop-color="#4a3a86"/>
+          </linearGradient>
+          <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c9cfd7"/><stop offset="45%" stop-color="#7c848e"/><stop offset="100%" stop-color="#3b424b"/>
+          </linearGradient>
+          <clipPath id="vialClip"><path d="M78,58 h44 v96 a22 22 0 0 1 -44 0 z"/></clipPath>
+        </defs>
+        <rect x="76" y="30" width="48" height="12" rx="2" fill="url(#cap)" stroke="#2c333b" stroke-width="1"/>
+        <rect x="81" y="42" width="38" height="16" fill="url(#cap)" stroke="#2c333b" stroke-width="1"/>
+        <line x1="88" y1="32" x2="88" y2="40" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
+        <path d="M78,58 h44 v96 a22 22 0 0 1 -44 0 z" fill="url(#glass)" stroke="rgba(210,220,235,.5)" stroke-width="1.5"/>
+        <g clip-path="url(#vialClip)">
+          <g>
+            <path d="M74,90 q13,-8 26,0 t26,0 v90 h-52 z" fill="url(#fluid)"/>
+            <circle cx="94" cy="124" r="2.8" fill="rgba(220,210,250,.6)"/>
+            <circle cx="108" cy="140" r="2.1" fill="rgba(220,210,250,.5)"/>
+            <circle cx="98" cy="158" r="1.7" fill="rgba(220,210,250,.5)"/>
+            <ellipse cx="100" cy="132" rx="14" ry="26" fill="rgba(195,174,242,.35)"/>
+          </g>
+        </g>
+        <rect x="85" y="60" width="4" height="94" rx="2" fill="rgba(255,255,255,.35)"/>
+        <rect x="70" y="106" width="60" height="34" rx="2" fill="#14121b" stroke="rgba(138,111,216,.6)" stroke-width="1"/>
+        <polygon points="100,112 110,128 90,128" fill="none" stroke="var(--core)" stroke-width="1.6" stroke-linejoin="round"/>
+        <line x1="100" y1="117" x2="100" y2="123" stroke="var(--core)" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="100" cy="125.5" r="1.1" fill="var(--core)"/>
+        <text x="100" y="137" text-anchor="middle" font-family="var(--font-mono)" font-size="5" letter-spacing="1" fill="rgba(138,111,216,.8)">RX-∅ TOXIC</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="type">Common // Bioware</div>
+  <div class="value"><span class="v">2</span><span class="u">PTS</span></div>
+  <div class="tier">Common</div>
+</div>
+
+</body></html>

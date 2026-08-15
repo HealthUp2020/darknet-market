@@ -1,0 +1,105 @@
+<!-- @dsCard group="Assets" viewport="720x360" name="Panel: Player Stats (Full)" subtitle="Style anchor — glass HUD stat panel, no baked numbers" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Player Stats Panel</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.55;pointer-events:none}
+body::after{content:"";position:absolute;top:20%;left:30%;width:260px;height:180px;background:radial-gradient(circle,rgba(79,195,217,.18),transparent 70%);pointer-events:none}
+
+.panel{position:relative;width:560px;
+  background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  clip-path:var(--clip-panel);
+  border:1px solid rgba(79,195,217,.5);
+  box-shadow:var(--glow-ui), var(--shadow-panel)}
+.scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.6;pointer-events:none;clip-path:var(--clip-panel)}
+.hi{position:absolute;inset:0;background:var(--glass-highlight);pointer-events:none}
+
+/* header */
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 18px;border-bottom:1px solid var(--border-subtle)}
+.head .id{display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);
+  background:linear-gradient(150deg,#1c2734,#0d141d);border:1px solid rgba(79,195,217,.5);
+  display:grid;place-items:center}
+.avatar span{font:600 12px/1 var(--font-display);color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+.namez{width:150px;height:11px;border-radius:2px;background:linear-gradient(90deg,rgba(79,195,217,.28),transparent)}
+.turn{display:inline-flex;align-items:center;gap:6px}
+.turn .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-ui);box-shadow:var(--glow-ui);animation:ds-pulse 1.6s var(--ease-hud) infinite}
+.turn .lz{width:44px;height:8px;border-radius:2px;background:rgba(79,195,217,.3)}
+
+/* stat zones */
+.body{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:1px;background:var(--border-subtle)}
+.zone{position:relative;background:rgba(10,14,22,.55);padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;min-height:96px}
+.zlabel{display:flex;align-items:center;gap:7px}
+.zlabel svg{width:15px;height:15px;color:var(--accent-ui)}
+.zlabel .lz{width:70px;height:7px;border-radius:2px;background:rgba(146,165,188,.3)}
+.slot{display:flex;align-items:baseline;gap:8px}
+/* the reserved number box (empty — dashed placeholder) */
+.num{min-width:52px;height:40px;border:1px dashed rgba(79,195,217,.4);border-radius:2px;
+  display:grid;place-items:center;background:rgba(79,195,217,.05)}
+.num b{font:600 22px/1 var(--font-mono);color:rgba(79,195,217,.35)}
+.unit{width:26px;height:8px;border-radius:2px;background:rgba(86,106,132,.4)}
+/* score zone emphasised */
+.zone.score{background:linear-gradient(160deg,rgba(79,195,217,.10),rgba(10,14,22,.55))}
+.zone.score .num{min-width:96px;height:52px;border-color:rgba(79,195,217,.6);box-shadow:0 0 12px rgba(79,195,217,.2)}
+.zone.score .num b{font-size:32px;color:rgba(79,195,217,.45)}
+.corner{position:absolute;width:10px;height:10px;border:1px solid rgba(79,195,217,.5);pointer-events:none}
+.corner.tr{top:8px;right:8px;border-left:0;border-bottom:0}
+.corner.bl{bottom:8px;left:8px;border-right:0;border-top:0}
+
+/* footer meter zone */
+.foot{display:flex;align-items:center;gap:14px;padding:10px 18px;border-top:1px solid var(--border-subtle)}
+.meter{flex:1;height:6px;border-radius:3px;background:rgba(10,14,22,.7);overflow:hidden;border:1px solid var(--border-subtle)}
+.meter i{display:block;height:100%;width:62%;background:linear-gradient(90deg,var(--accent-ui-dim),var(--accent-ui));box-shadow:0 0 8px rgba(79,195,217,.5)}
+.foot .cap{width:60px;height:7px;border-radius:2px;background:rgba(146,165,188,.28)}
+</style></head><body>
+
+<div class="panel">
+  <div class="hi"></div>
+  <div class="scan"></div>
+
+  <div class="head">
+    <div class="id">
+      <div class="avatar"><span>◈</span></div>
+      <div class="namez"></div>
+    </div>
+    <div class="turn"><span class="dot"></span><span class="lz"></span></div>
+  </div>
+
+  <div class="body">
+    <div class="zone">
+      <div class="corner tr"></div><div class="corner bl"></div>
+      <div class="zlabel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8l8-4 8 4-8 4-8-4z"/><path d="M4 8v8l8 4 8-4V8"/></svg>
+        <span class="lz"></span>
+      </div>
+      <div class="slot"><div class="num"><b>—</b></div><div class="unit"></div></div>
+    </div>
+
+    <div class="zone">
+      <div class="corner tr"></div><div class="corner bl"></div>
+      <div class="zlabel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="6" width="14" height="9" rx="2"/><path d="M8 15v3M16 15v3M9 10h6"/></svg>
+        <span class="lz"></span>
+      </div>
+      <div class="slot"><div class="num"><b>—</b></div><div class="unit"></div></div>
+    </div>
+
+    <div class="zone score">
+      <div class="corner tr"></div><div class="corner bl"></div>
+      <div class="zlabel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>
+        <span class="lz"></span>
+      </div>
+      <div class="slot"><div class="num"><b>—</b></div><div class="unit"></div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="cap"></div>
+    <div class="meter"><i></i></div>
+  </div>
+</div>
+
+</body></html>

@@ -1,0 +1,215 @@
+<!-- @dsCard group="Guide" viewport="1280x1500" name="Style Guide" subtitle="The complete reference sheet" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>NIGHT MARKET — Style Guide</title>
+<link rel="stylesheet" href="../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>window.__dsReady=new Promise(function(r){var s=document.createElement('script');s.src='../_ds_bundle.js';s.onload=r;s.onerror=r;document.head.appendChild(s)});</script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+body{background:var(--bg-page) fixed;padding:0 0 80px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 40px}
+section{margin-top:56px}
+h2{font:var(--type-heading);letter-spacing:var(--track-heading);text-transform:uppercase;color:var(--text-primary);margin:0 0 4px;display:flex;align-items:baseline;gap:12px}
+h2 .no{font:500 11px var(--font-mono);color:var(--accent-ui)}
+.sub{font:var(--type-caption);color:var(--text-muted);margin:0 0 20px;max-width:640px}
+h3{font:var(--type-label);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--text-secondary);margin:24px 0 12px}
+.sw-row{display:flex;gap:12px}
+.sw{flex:1;display:flex;flex-direction:column;gap:5px}
+.sw .chip{height:52px;border:1px solid var(--border-subtle);display:grid;place-items:center}
+.sw .n{font:600 9px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary)}
+.sw .h{font:500 9px/1 var(--font-mono);color:var(--text-muted)}
+.sw .u{font:400 9px/1.3 var(--font-body);color:var(--text-muted)}
+.note{font:400 10px/1.5 var(--font-body);color:var(--text-muted)}
+.cols{display:flex;gap:40px}.cols>div{flex:1}
+.hex{font:500 10px var(--font-mono)}
+.grid-bg{background:var(--texture-grid);background-size:var(--texture-grid-size)}
+.ic{display:flex;flex-direction:column;gap:6px;align-items:center;width:54px}
+.ic svg{width:22px;height:22px;color:var(--text-secondary)}
+.ic span{font:500 7px/1 var(--font-mono);color:var(--text-muted)}
+</style></head><body>
+<header style="border-bottom:1px solid var(--border-panel);background:linear-gradient(180deg,rgba(79,195,217,.04),transparent)">
+  <div class="wrap" style="padding-top:48px;padding-bottom:32px">
+    <div style="font:500 10px var(--font-mono);letter-spacing:.2em;color:var(--accent-ui)">DESIGN SYSTEM // v1.0</div>
+    <h1 style="font:600 44px/1.05 var(--font-display);letter-spacing:.06em;text-transform:uppercase;color:var(--text-primary);margin:10px 0 8px">Night Market</h1>
+    <p style="font:var(--type-body);color:var(--text-secondary);max-width:560px;margin:0">Tech-noir base, neon as a signal. The board stays calm and legible — glow is reserved for rare and important elements. If everything glows, nothing is rare.</p>
+  </div>
+</header>
+<div class="wrap">
+
+<section><h2><span class="no">01</span>Color</h2>
+<p class="sub">Ghost in the Shell supplies the base: deep navy, hairline borders, cool text. Cyberpunk 2077 supplies the accents: three glowing rare hues, three matte common hues.</p>
+<h3>Base / neutral</h3>
+<div class="sw-row">
+  <div class="sw"><div class="chip" style="background:var(--bg-page)"></div><div class="n">bg-page</div><div class="h">#0A0E16</div><div class="u">board</div></div>
+  <div class="sw"><div class="chip" style="background:var(--bg-panel)"></div><div class="n">bg-panel</div><div class="h">#141A24</div><div class="u">panels, cards</div></div>
+  <div class="sw"><div class="chip" style="background:var(--bg-inset)"></div><div class="n">bg-inset</div><div class="h">#070A10</div><div class="u">wells, log</div></div>
+  <div class="sw"><div class="chip" style="background:var(--border-panel)"></div><div class="n">border-panel</div><div class="h">#26334A</div><div class="u">1px borders</div></div>
+  <div class="sw"><div class="chip" style="background:var(--bg-panel)"><span style="font:600 18px var(--font-display);color:var(--text-primary)">Aa</span></div><div class="n">text-primary</div><div class="h">#E6EEF7</div><div class="u">primary text</div></div>
+  <div class="sw"><div class="chip" style="background:var(--bg-panel)"><span style="font:600 18px var(--font-display);color:var(--text-secondary)">Aa</span></div><div class="n">text-secondary</div><div class="h">#92A5BC</div><div class="u">descriptions</div></div>
+  <div class="sw"><div class="chip" style="background:var(--bg-panel)"><span style="font:600 18px var(--font-display);color:var(--text-muted)">Aa</span></div><div class="n">text-muted</div><div class="h">#566A84</div><div class="u">labels</div></div>
+  <div class="sw"><div class="chip" style="background:var(--accent-ui)"></div><div class="n">accent-ui</div><div class="h">#4FC3D9</div><div class="u">interactive</div></div>
+</div>
+<div class="cols">
+<div><h3>Rare tier — always glows</h3>
+<div class="sw-row">
+  <div class="sw"><div class="chip" style="background:var(--rare-cyan-glass);border:1px solid var(--rare-cyan);box-shadow:var(--glow-cyan)"><span class="hex" style="color:var(--rare-cyan)">#00E5FF</span></div><div class="n" style="color:var(--rare-cyan)">rare-cyan</div><div class="u">data / intel</div></div>
+  <div class="sw"><div class="chip" style="background:var(--rare-gold-glass);border:1px solid var(--rare-gold);box-shadow:var(--glow-gold)"><span class="hex" style="color:var(--rare-gold)">#FFC94D</span></div><div class="n" style="color:var(--rare-gold)">rare-gold</div><div class="u">luxury, bonus</div></div>
+  <div class="sw"><div class="chip" style="background:var(--rare-magenta-glass);border:1px solid var(--rare-magenta);box-shadow:var(--glow-magenta)"><span class="hex" style="color:var(--rare-magenta)">#FF2D96</span></div><div class="n" style="color:var(--rare-magenta)">rare-magenta</div><div class="u">contraband, seal</div></div>
+</div></div>
+<div><h3>Common tier — never glows</h3>
+<div class="sw-row">
+  <div class="sw"><div class="chip" style="background:var(--common-purple-glass);border:1px solid color-mix(in srgb,var(--common-purple) 55%,transparent)"><span class="hex" style="color:var(--common-purple)">#8578AD</span></div><div class="n" style="color:var(--common-purple)">common-purple</div><div class="u">synth-textiles</div></div>
+  <div class="sw"><div class="chip" style="background:var(--common-green-glass);border:1px solid color-mix(in srgb,var(--common-green) 55%,transparent)"><span class="hex" style="color:var(--common-green)">#6FA07D</span></div><div class="n" style="color:var(--common-green)">common-green</div><div class="u">stims / bioware</div></div>
+  <div class="sw"><div class="chip" style="background:var(--common-orange-glass);border:1px solid color-mix(in srgb,var(--common-orange) 55%,transparent)"><span class="hex" style="color:var(--common-orange)">#B97A4B</span></div><div class="n" style="color:var(--common-orange)">common-orange</div><div class="u">scrap / salvage</div></div>
+</div></div>
+</div>
+<h3>System / utility</h3>
+<div class="sw-row" style="max-width:640px">
+  <div class="sw"><div class="chip" style="background:var(--sys-error-glass);border:1px solid var(--sys-error-border)"><span class="hex" style="color:var(--sys-error)">#FF5F56</span></div><div class="n" style="color:var(--sys-error)">sys-error</div><div class="u">errors &amp; warnings — red glass</div></div>
+  <div class="sw"><div class="chip" style="background:var(--sys-success-glass);border:1px solid var(--sys-success-border)"><span class="hex" style="color:var(--sys-success)">#3DDC97</span></div><div class="n" style="color:var(--sys-success)">sys-success</div><div class="u">confirmations</div></div>
+  <div class="sw"><div class="chip" style="background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.55);opacity:var(--disabled-opacity);filter:var(--disabled-filter)"><span class="hex" style="color:var(--accent-ui)">DISABLED</span></div><div class="n" style="color:var(--text-muted)">disabled</div><div class="u">.38 opacity + desaturate</div></div>
+</div>
+</section>
+
+<section><h2><span class="no">02</span>Typography</h2>
+<p class="sub">Chakra Petch for display, labels and body — its machined corner cuts fit the HUD. IBM Plex Mono for every number, readout and terminal line. Labels are ALL CAPS with wide tracking; body is sentence case.</p>
+<div class="cols">
+<div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div><div class="note" style="font-family:var(--font-mono)">display · 28/600 · caps · +0.06em</div><div style="font:var(--type-display);letter-spacing:var(--track-display);text-transform:uppercase;margin-top:2px">Night Market</div></div>
+    <div><div class="note" style="font-family:var(--font-mono)">heading · 18/600 · caps · +0.08em</div><div style="font:var(--type-heading);letter-spacing:var(--track-heading);text-transform:uppercase;margin-top:2px">Market // Row</div></div>
+    <div><div class="note" style="font-family:var(--font-mono)">label · 11/600 · caps · +0.18em</div><div style="font:var(--type-label);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--text-secondary);margin-top:4px">Operator credits</div></div>
+    <div><div class="note" style="font-family:var(--font-mono)">body · 14/400 · 1.55 · sentence case</div><p style="font:var(--type-body);color:var(--text-primary);margin:2px 0 0;max-width:420px">Sell three matching goods to claim the bonus. Rare goods trade higher but attract syndicate attention.</p></div>
+  </div>
+</div>
+<div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div><div class="note" style="font-family:var(--font-mono)">data-lg · 26/600 mono</div><div style="font:var(--type-data-lg);color:var(--text-primary);margin-top:4px">12,480 <span style="font-size:14px;color:var(--accent-ui)">CR</span></div></div>
+    <div><div class="note" style="font-family:var(--font-mono)">data · 14/500 mono</div><div style="font:var(--type-data);color:var(--text-primary);margin-top:4px">HAND 6/7 · DECK 31 · RND 04</div></div>
+    <div><div class="note" style="font-family:var(--font-mono)">terminal · 12/400 mono · 1.7</div>
+      <div style="background:var(--bg-inset);border:1px solid var(--border-subtle);padding:10px 12px;font:var(--type-terminal);margin-top:6px;max-width:420px">
+        <div style="color:var(--text-secondary)">&gt; vult-3r sold 3&times; synth-silk &nbsp;+6 cr</div>
+        <div style="color:var(--text-secondary)">&gt; nomad took 1&times; datashard</div>
+        <div style="color:var(--accent-ui)">&gt; your turn, operator<span style="animation:ds-blink-caret 1s step-end infinite">_</span></div>
+      </div></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section><h2><span class="no">03</span>Components</h2>
+<p class="sub">Card frames, token families, glass panels and buttons — the live components, rendered from the bundled library.</p>
+<div id="components-root"></div>
+</section>
+
+<section><h2><span class="no">04</span>Iconography</h2>
+<p class="sub">Lucide, 1.5px stroke, outline only, 24px grid. Default color text-secondary; accent + glow only when the icon itself carries rarity or state meaning. No emoji.</p>
+<div style="display:flex;gap:20px">
+  <div class="ic"><i data-lucide="arrow-left-right"></i><span>trade</span></div>
+  <div class="ic"><i data-lucide="hand"></i><span>take</span></div>
+  <div class="ic"><i data-lucide="layers"></i><span>deck</span></div>
+  <div class="ic"><i data-lucide="cpu"></i><span>bot</span></div>
+  <div class="ic"><i data-lucide="zap"></i><span>rare</span></div>
+  <div class="ic"><i data-lucide="hexagon"></i><span>bonus</span></div>
+  <div class="ic"><i data-lucide="rotate-ccw"></i><span>reset</span></div>
+  <div class="ic"><i data-lucide="triangle-alert"></i><span>error</span></div>
+  <div class="ic" style="filter:drop-shadow(0 0 5px rgba(0,229,255,.6))"><i data-lucide="gem" style="color:var(--rare-cyan)"></i><span>rare+glow</span></div>
+</div>
+</section>
+
+<section><h2><span class="no">05</span>Spacing &amp; Layout</h2>
+<p class="sub">4px base grid. 24px board margin and HUD gaps, 16px panel padding, 12px card gaps. Angled cuts: 12px on panels (TL+BR) and cards (TR), 7px on buttons.</p>
+<div class="cols">
+<div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;gap:12px"><span class="note" style="font-family:var(--font-mono);width:180px">space-2 · 8px — inside chips</span><div style="width:8px;height:12px;background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.45)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px"><span class="note" style="font-family:var(--font-mono);width:180px">space-3 · 12px — card row gap</span><div style="width:12px;height:12px;background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.45)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px"><span class="note" style="font-family:var(--font-mono);width:180px">space-4 · 16px — panel padding</span><div style="width:16px;height:12px;background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.45)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px"><span class="note" style="font-family:var(--font-mono);width:180px">space-5 · 24px — HUD gap, margins</span><div style="width:24px;height:12px;background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.45)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px"><span class="note" style="font-family:var(--font-mono);width:180px">space-6 · 32px — section gap</span><div style="width:32px;height:12px;background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.45)"></div></div>
+  </div>
+</div>
+<div>
+  <div style="display:flex;flex-direction:column;gap:5px;height:150px">
+    <div style="display:flex;gap:5px;height:26px">
+      <div class="zone" style="flex:1;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">BOT 01</div>
+      <div class="zone" style="flex:1;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">BOT 02</div>
+      <div class="zone" style="flex:1;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">BOT 03</div>
+      <div class="zone" style="width:90px;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">TOKENS</div>
+    </div>
+    <div style="display:flex;gap:5px;flex:1">
+      <div style="flex:2.6;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">MARKET ROW</div>
+      <div style="flex:1;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">LOG</div>
+    </div>
+    <div style="display:flex;gap:5px;height:30px">
+      <div style="flex:2;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">OPERATOR HAND</div>
+      <div style="flex:1;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">STATS</div>
+      <div style="width:100px;border:1px dashed rgba(79,195,217,.35);background:var(--accent-ui-glass);display:grid;place-items:center;font:600 7px var(--font-display);letter-spacing:.14em;color:var(--accent-ui)">ACTIONS</div>
+    </div>
+  </div>
+  <div class="note" style="margin-top:8px">Bots top · market center · operator bottom · log right · actions bottom-right.</div>
+</div>
+</div>
+</section>
+
+</div>
+<script type="text/babel">
+window.__dsReady.then(()=>{
+const NS=(()=>{for(const k of Object.getOwnPropertyNames(window)){try{const v=window[k];if(v&&typeof v==='object'&&v.Button&&v.GameCard)return v}catch(e){}}return{}})();
+const {Button,GameCard,TokenChip,GlassPanel,SystemBanner}=NS;
+const H3=({children})=><div style={{font:'var(--type-label)',letterSpacing:'var(--track-label)',textTransform:'uppercase',color:'var(--text-secondary)',margin:'24px 0 12px'}}>{children}</div>;
+const Stat=({l,v,c})=>(<div style={{display:'flex',flexDirection:'column',gap:3}}>
+  <span style={{font:'600 8px/1 var(--font-display)',letterSpacing:'.18em',color:'var(--text-muted)'}}>{l}</span>
+  <span style={{font:'600 20px/1 var(--font-mono)',color:c||'var(--text-primary)'}}>{v}</span></div>);
+ReactDOM.createRoot(document.getElementById('components-root')).render(<div>
+  <H3>Card frames — rare vs common</H3>
+  <div style={{display:'flex',gap:12,alignItems:'flex-end'}}>
+    <GameCard width={110} accent="cyan" name="Datashard" value={9}/>
+    <GameCard width={110} accent="gold" name="Gilded Chrome" value={8}/>
+    <GameCard width={110} accent="magenta" name="Black ICE" value={9} selected/>
+    <GameCard width={110} accent="purple" name="Synth-Silk" value={4}/>
+    <GameCard width={110} accent="green" name="Stim-Packs" value={3}/>
+    <GameCard width={110} accent="orange" name="Scrap" value={2} disabled/>
+  </div>
+  <H3>Token families</H3>
+  <div style={{display:'flex',gap:16,alignItems:'center'}}>
+    <TokenChip kind="value" value={1} size={44}/><TokenChip kind="value" value={5} size={52}/><TokenChip kind="value" value={7} size={60}/>
+    <span style={{width:24}}/>
+    <TokenChip kind="bonus" value={2} accent="cyan" size={52}/><TokenChip kind="bonus" value={3} size={56}/><TokenChip kind="bonus" value={5} accent="magenta" size={56}/>
+    <span style={{width:24}}/>
+    <TokenChip kind="seal" size={64}/>
+    <span style={{font:'400 10px/1.5 var(--font-body)',color:'var(--text-muted)',maxWidth:260}}>Circle = market value (neutral). Hexagon = bonus reward (accent rim, subtle glow). Diamond seal = one-of-a-kind (magenta, 印).</span>
+  </div>
+  <H3>Glass panels — active turn signal</H3>
+  <div style={{display:'flex',gap:16,alignItems:'flex-start'}}>
+    <GlassPanel title="Operator // You" active style={{flex:1.2}}>
+      <div style={{display:'flex',gap:24}}><Stat l="Credits" v="12,480" c="var(--accent-ui)"/><Stat l="Hand" v="6/7"/><Stat l="Bonus" v="3"/></div>
+    </GlassPanel>
+    <GlassPanel title="VULT-3R" status="THINKING" style={{flex:1}}>
+      <div style={{display:'flex',gap:24}}><Stat l="Credits" v="9,120"/><Stat l="Hand" v="4/7"/></div>
+    </GlassPanel>
+    <GlassPanel title="Feed // Log" style={{flex:1}}>
+      <div style={{font:'var(--type-terminal)',color:'var(--text-secondary)'}}>
+        <div>&gt; nomad sold 2&times; scrap</div>
+        <div style={{color:'var(--accent-ui)'}}>&gt; your turn_</div>
+      </div>
+    </GlassPanel>
+  </div>
+  <H3>Buttons — gameplay vs system</H3>
+  <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+    <Button primary>Execute trade</Button><Button>Take card</Button><Button size="sm">Sell</Button><Button disabled>Trade</Button>
+    <span style={{width:24}}/>
+    <Button variant="system">Reset match</Button><Button variant="system" disabled>Undo</Button>
+  </div>
+  <H3>System feedback</H3>
+  <div style={{display:'flex',flexDirection:'column',gap:10,maxWidth:560}}>
+    <SystemBanner kind="error" code="402">Insufficient credits for this trade.</SystemBanner>
+    <SystemBanner kind="success">Trade executed. +14 CR added to ledger.</SystemBanner>
+    <SystemBanner kind="info">VULT-3R is calculating a counter-offer.</SystemBanner>
+  </div>
+</div>);
+});
+</script>
+<script>lucide.createIcons({attrs:{'stroke-width':1.5}});</script>
+</body></html>

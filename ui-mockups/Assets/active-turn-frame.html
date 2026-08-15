@@ -1,0 +1,78 @@
+<!-- @dsCard group="Assets" viewport="720x420" name="Active-Turn Indicator" subtitle="Style anchor — pulsing cyan→magenta frame overlay" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Active-Turn Indicator</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;gap:0;
+  background:radial-gradient(120% 120% at 50% 40%, #120d18 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+/* ---- the reusable frame overlay ---- */
+/* wrap any element in .active-turn; the ::before is the animated gradient border,
+   ::after is the corner-ticks + outer bloom. Uses --cut for the panel silhouette. */
+.active-turn{position:relative;--cut:12px}
+.active-turn::before{content:"";position:absolute;inset:-3px;z-index:5;pointer-events:none;
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  background:linear-gradient(120deg,#00fff0,#4fc3d9 28%,#b06bd8 55%,#ff2e88 100%);
+  background-size:220% 220%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:2px;
+  filter:drop-shadow(0 0 5px rgba(0,255,240,.55)) drop-shadow(0 0 10px rgba(255,46,136,.4));
+  animation:at-flow 3.2s var(--ease-hud) infinite, at-pulse 1.9s var(--ease-hud) infinite}
+/* animated corner accents + soft outer wash */
+.active-turn::after{content:"";position:absolute;inset:-3px;z-index:4;pointer-events:none;
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  box-shadow:0 0 18px rgba(79,195,217,.28), 0 0 40px rgba(255,46,136,.14);
+  animation:at-pulse 1.9s var(--ease-hud) infinite}
+
+/* corner tick marks that ride the frame */
+.at-tick{position:absolute;z-index:6;width:14px;height:14px;pointer-events:none}
+.at-tick::before,.at-tick::after{content:"";position:absolute;background:#8ffff7;box-shadow:0 0 6px rgba(0,255,240,.8)}
+.at-tick::before{width:14px;height:2px}.at-tick::after{width:2px;height:14px}
+.at-tick.tl{top:-3px;left:9px}.at-tick.tl::before{top:0;left:0}.at-tick.tl::after{top:0;left:0}
+.at-tick.br{bottom:-3px;right:9px}.at-tick.br::before{bottom:0;right:0}.at-tick.br::after{bottom:0;right:0}
+
+/* "YOUR TURN" flag on the top edge */
+.at-flag{position:absolute;z-index:7;top:-13px;left:24px;pointer-events:none;
+  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;
+  background:linear-gradient(#0e1a22,#0a141c);
+  border:1px solid rgba(0,255,240,.6);clip-path:var(--clip-btn);
+  box-shadow:0 0 12px rgba(0,255,240,.4)}
+.at-flag .d{width:6px;height:6px;border-radius:50%;background:#00fff0;box-shadow:0 0 6px #00fff0;animation:ds-pulse 1.4s infinite}
+.at-flag span{font:600 8px/1 var(--font-display);letter-spacing:.24em;text-transform:uppercase;color:#8ffff7;text-shadow:0 0 8px rgba(0,255,240,.7)}
+
+@keyframes at-flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes at-pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ---- demo host panel (shows the overlay wrapping a stats panel) ---- */
+.demo{width:520px;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  clip-path:var(--clip-panel);border:1px solid var(--glass-border-color);box-shadow:var(--shadow-panel)}
+.demo .hi{position:absolute;inset:0;background:var(--glass-highlight);pointer-events:none}
+.demo .h{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border-subtle)}
+.demo .av{width:28px;height:28px;clip-path:polygon(20% 0,100% 0,100% 80%,80% 100%,0 100%,0 20%);background:linear-gradient(150deg,#1c2734,#0d141d);border:1px solid rgba(79,195,217,.5);display:grid;place-items:center}
+.demo .av span{font:600 12px/1 var(--font-display);color:var(--accent-ui)}
+.demo .nz{width:130px;height:10px;border-radius:2px;background:linear-gradient(90deg,rgba(79,195,217,.28),transparent)}
+.demo .b{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border-subtle)}
+.demo .z{background:rgba(10,14,22,.55);min-height:64px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.demo .lz{width:48px;height:6px;border-radius:2px;background:rgba(146,165,188,.3)}
+.demo .num{min-width:46px;height:30px;border:1px dashed rgba(79,195,217,.4);border-radius:2px;display:grid;place-items:center}
+.demo .num b{font:600 17px/1 var(--font-mono);color:rgba(79,195,217,.35)}
+.hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font:400 10px/1.4 var(--font-body);color:var(--text-muted)}
+</style></head><body>
+
+<div class="active-turn">
+  <span class="at-flag"><span class="d"></span><span>Your turn</span></span>
+  <span class="at-tick tl"></span><span class="at-tick br"></span>
+  <div class="demo">
+    <div class="hi"></div>
+    <div class="h"><div class="av"><span>◈</span></div><div class="nz"></div></div>
+    <div class="b">
+      <div class="z"><div class="lz"></div><div class="num"><b>—</b></div></div>
+      <div class="z"><div class="lz"></div><div class="num"><b>—</b></div></div>
+      <div class="z"><div class="lz"></div><div class="num"><b>—</b></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="hint">Wrap any panel in <code style="font-family:var(--font-mono);color:var(--accent-ui)">.active-turn</code> — the frame, corner ticks and flag are overlay-only.</div>
+
+</body></html>

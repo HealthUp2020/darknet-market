@@ -1,0 +1,42 @@
+/* NIGHT MARKET — color tokens
+   Base = calm tech-noir navy (Ghost in the Shell).
+   Neon = deliberate rarity signal, never blanket decoration (Cyberpunk 2077). */
+:root {
+  /* ---- base / neutral ---- */
+  --bg-page: #0a0e16;            /* page / board background */
+  --bg-panel: #141a24;           /* panel & card surface */
+  --bg-panel-raised: #1b2432;    /* hover rows, raised chips */
+  --bg-inset: #070a10;           /* wells: illustration areas, log screens */
+  --border-panel: #26334a;       /* default 1px panel border */
+  --border-subtle: #1a2333;      /* hairlines, dividers */
+  --text-primary: #e6eef7;       /* primary text — cool white */
+  --text-secondary: #92a5bc;     /* secondary / descriptive text */
+  --text-muted: #566a84;         /* muted labels, placeholders */
+  --accent-ui: #4fc3d9;          /* neutral cyan — interactive UI, focus, links */
+  --accent-ui-dim: #2e7d94;      /* accent on dark, pressed states */
+  --accent-ui-glass: rgba(79, 195, 217, 0.10);
+
+  /* ---- rare tier (always paired with glow, see effects.css) ---- */
+  --rare-cyan: #00e5ff;          /* rare: data / intel goods */
+  --rare-gold: #ffc94d;          /* rare: luxury / gilded goods */
+  --rare-magenta: #ff2d96;       /* rare: contraband / black ice */
+  --rare-cyan-glass: rgba(0, 229, 255, 0.10);
+  --rare-gold-glass: rgba(255, 201, 77, 0.10);
+  --rare-magenta-glass: rgba(255, 45, 150, 0.10);
+
+  /* ---- common tier (matte — NO glow, ever) ---- */
+  --common-purple: #8578ad;      /* common: synth-textiles */
+  --common-green: #6fa07d;       /* common: stims / bioware */
+  --common-orange: #b97a4b;      /* common: scrap / salvage */
+  --common-purple-glass: rgba(133, 120, 173, 0.10);
+  --common-green-glass: rgba(111, 160, 125, 0.10);
+  --common-orange-glass: rgba(185, 122, 75, 0.10);
+
+  /* ---- system / utility ---- */
+  --sys-error: #ff5f56;                       /* error & warning text/icon */
+  --sys-error-glass: rgba(255, 70, 60, 0.10); /* red-tinted glass fill */
+  --sys-error-border: rgba(255, 95, 86, 0.45);
+  --sys-success: #3ddc97;                     /* confirmation */
+  --sys-success-glass: rgba(61, 220, 151, 0.08);
+  --sys-success-border: rgba(61, 220, 151, 0.40);
+}

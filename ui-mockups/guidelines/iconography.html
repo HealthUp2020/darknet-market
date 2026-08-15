@@ -1,0 +1,23 @@
+<!-- @dsCard group="Iconography" viewport="700x210" name="Icon Style" subtitle="Lucide · 1.5px stroke · outline only" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../styles.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:22px;align-items:center}
+.ic{display:flex;flex-direction:column;gap:6px;align-items:center;width:56px}
+.ic svg{width:22px;height:22px;color:var(--text-secondary)}
+.ic span{font:500 7px/1 var(--font-mono);color:var(--text-muted)}
+.u{font:400 10px/1.5 var(--font-body);color:var(--text-secondary);max-width:600px}</style></head><body>
+<div class="row">
+  <div class="ic"><i data-lucide="arrow-left-right"></i><span>trade</span></div>
+  <div class="ic"><i data-lucide="hand"></i><span>take</span></div>
+  <div class="ic"><i data-lucide="layers"></i><span>deck</span></div>
+  <div class="ic"><i data-lucide="cpu"></i><span>bot</span></div>
+  <div class="ic"><i data-lucide="zap"></i><span>rare</span></div>
+  <div class="ic"><i data-lucide="hexagon"></i><span>bonus</span></div>
+  <div class="ic"><i data-lucide="rotate-ccw"></i><span>reset</span></div>
+  <div class="ic"><i data-lucide="triangle-alert"></i><span>error</span></div>
+  <div class="ic" style="filter:drop-shadow(0 0 5px rgba(0,229,255,.6))"><i data-lucide="gem" style="color:var(--rare-cyan)"></i><span>rare+glow</span></div>
+</div>
+<div class="u">Lucide set (CDN), 1.5px stroke, outline only — no fills, no duotone. 24px grid, render at 16/20/24px. Default color text-secondary; accent color only when the icon itself carries rarity/state meaning, and drop-shadow glow only on rare-tier icons. No emoji anywhere in the UI.</div>
+<script>lucide.createIcons({attrs:{'stroke-width':1.5}});</script>
+</body></html>

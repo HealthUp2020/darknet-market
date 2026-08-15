@@ -1,0 +1,12 @@
+/* NIGHT MARKET — base resets */
+body {
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font: var(--type-body);
+  letter-spacing: var(--track-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ui); text-decoration: none; }
+a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
+::selection { background: rgba(79, 195, 217, 0.30); }

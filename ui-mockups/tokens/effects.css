@@ -1,0 +1,39 @@
+/* NIGHT MARKET — glow, glass, texture, motion, state tokens */
+:root {
+  /* rarity glows — 3 layers: tight core / mid bloom / wide wash */
+  --glow-cyan: 0 0 6px rgba(0, 229, 255, 0.55), 0 0 20px rgba(0, 229, 255, 0.28), 0 0 48px rgba(0, 229, 255, 0.12);
+  --glow-gold: 0 0 6px rgba(255, 201, 77, 0.55), 0 0 20px rgba(255, 201, 77, 0.28), 0 0 48px rgba(255, 201, 77, 0.12);
+  --glow-magenta: 0 0 6px rgba(255, 45, 150, 0.55), 0 0 20px rgba(255, 45, 150, 0.28), 0 0 48px rgba(255, 45, 150, 0.12);
+  /* interaction glow (selection, focus, active turn) — softer, neutral cyan */
+  --glow-ui: 0 0 8px rgba(79, 195, 217, 0.45), 0 0 24px rgba(79, 195, 217, 0.16);
+  --glow-text-ui: 0 0 8px rgba(79, 195, 217, 0.65);
+
+  /* glass panels */
+  --glass-bg: rgba(20, 26, 36, 0.72);
+  --glass-blur: blur(14px);
+  --glass-border-color: rgba(79, 195, 217, 0.22);
+  --glass-highlight: linear-gradient(160deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 38%);
+  --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  /* textures */
+  --texture-scanline: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0px, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 3px);
+  --texture-grid: linear-gradient(rgba(79, 195, 217, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(79, 195, 217, 0.05) 1px, transparent 1px);
+  --texture-grid-size: 24px 24px;
+
+  /* motion */
+  --ease-hud: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+
+  /* states */
+  --disabled-opacity: 0.38;
+  --disabled-filter: grayscale(0.6) brightness(0.85);
+}
+@keyframes ds-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@keyframes ds-blink-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

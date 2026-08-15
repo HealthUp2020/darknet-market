@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<!--
+  NIGHT MARKET — "MARKET PRICES" LEFT WALL  ·  animated, panel-sized (self-contained)
+  ============================================================================
+  Compact value-token pile animation fitted to the stage's narrow LEFT wall
+  (~232px wide × ~780px tall). Six goods as stacked ticker rows + bonus/seal
+  footer + an OPERATOR CR sink at the bottom. Recessive: near-flat dark panel,
+  single cyan hairline, neon dialled WAY back (rare = faint rim tint only).
+  Sold tokens fly DOWNWARD into the CR sink. Hand-rolled CSS @keyframes + WAAPI.
+
+  MOTION LANGUAGE  ·  fast + damped, no bounce
+    ease = cubic-bezier(.2,.9,.25,1)  ·  range 120–320ms
+
+  KEYFRAME / ANIMATION SPEC  (lift straight into the game)
+  ---------------------------------------------------------------------------
+  name          driver   property changes                       dur     easing
+  pileIn        CSS kf   opacity 0→1, translateY(-8px→0)         220ms   --ease  (staggered +36ms per row)
+  chipSettle    CSS kf   brightness pulse as top value ticks in  200ms   --ease
+  lift          WAAPI    translateY 0→-10px, scale 1→1.05        130ms   --ease
+  fly           WAAPI    translateY→sink, scale 1→0.5, op 1→0    300ms   --ease  (downward)
+  trail         CSS kf   ghost clone opacity .45→0, scale→0.4    300ms   linear
+  creditFloat   CSS kf   +N CR label translateY 0→-16px, op 1→0  480ms   ease-out
+  crCount       rAF      OPERATOR CR increments toward target    380ms   linear
+  countRoll     rAF      row "×N" chip rolls DOWN by spent       240ms   linear
+  gaugeDrop     CSS tr   spent segments fade lit→dim             200ms   --ease
+  promote       WAAPI    new top chip scale .96→1, value op 0→1  190ms   --ease
+  promoteFlash  CSS kf   soft accent brightness flash            240ms   ease-out
+  lowPulse      CSS kf   slow brightness pulse on LOW top chip   1.8s    ease-in-out (loop)
+  ---------------------------------------------------------------------------
+  STATES  ·  HEALTHY (accent) · LOW N<=2 (amber tint + slow pulse) · EMPTY N=0
+             (dashed "—" SOLD OUT, desaturated, unsellable)
+  prefers-reduced-motion: flight skipped — value, ×N chip and gauge fade-update.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHT MARKET — Market Prices Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e16; --panel:#141a24; --border:#26334a; --inset:#0b111a;
+  --text:#e6eef7; --muted:#7c8ba3; --dim:#5f6f88; --cyan:#4fc3d9;
+  --warn:#ffab3d;
+  --ease:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 80% at 50% 0%,#0d1420,#0a0e16 62%);
+  color:var(--text);font-family:"Chakra Petch",sans-serif;
+  display:flex;flex-direction:column;align-items:center;gap:16px;padding:26px 20px;min-height:100%}
+
+/* ============================ THE WALL ============================ */
+.wall{position:relative;width:232px;height:780px;display:flex;flex-direction:column;padding:12px 12px 10px;
+  background:linear-gradient(180deg,rgba(12,16,23,.9),rgba(9,12,18,.88));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(79,195,217,.12);filter:saturate(.9);
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.wh{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.wh .ttl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.wh .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.25),transparent)}
+.wsub{font-family:"IBM Plex Mono",monospace;font-size:7.5px;letter-spacing:.06em;color:var(--dim);margin-bottom:9px}
+
+.rows{display:flex;flex-direction:column;gap:6px}
+
+/* ---------- one price row (~64px) ---------- */
+.row{position:relative;display:flex;align-items:center;gap:9px;padding:6px 8px;height:64px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(18,24,33,.42),rgba(9,12,18,.32));
+  border:1px solid rgba(79,195,217,.07);border-left:2px solid color-mix(in srgb,var(--ac) 30%,transparent);
+  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+  transition:border-color 160ms var(--ease),background 160ms var(--ease)}
+.row.rare{border-left-color:color-mix(in srgb,var(--ac) 50%,transparent)}
+.row.sel{background:linear-gradient(180deg,rgba(79,195,217,.09),rgba(9,12,18,.34));border-color:rgba(79,195,217,.28)}
+.row .seldot{position:absolute;top:6px;right:7px;width:5px;height:5px;transform:rotate(45deg);
+  background:var(--cyan);box-shadow:0 0 5px var(--cyan);opacity:0;transition:opacity 160ms var(--ease)}
+.row.sel .seldot{opacity:1;animation:selDot 1.6s ease-in-out infinite}
+
+/* mini chamfered acrylic chip + slivers */
+.pile{position:relative;width:42px;height:38px;flex-shrink:0}
+.sl{position:absolute;left:5px;right:5px;height:4px;background:color-mix(in srgb,var(--ac) 18%,var(--inset));
+  clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 100%,0 100%);opacity:.5}
+.chip{position:absolute;left:0;right:0;bottom:0;height:30px;display:grid;place-items:center;overflow:hidden;
+  transform-origin:50% 100%;
+  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 8px),0 8px);
+  background:linear-gradient(158deg,color-mix(in srgb,var(--ac) 24%,transparent),color-mix(in srgb,var(--ac) 9%,transparent)),var(--inset);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 0 7px color-mix(in srgb,var(--ac) 16%,transparent),inset 0 -4px 7px rgba(0,0,0,.5)}
+.chip::after{content:"";position:absolute;top:0;left:9px;right:9px;height:6px;background:linear-gradient(rgba(255,255,255,.4),transparent);opacity:.6}
+.chip .tr{position:absolute;inset:0;width:100%;height:100%;color:var(--ac);pointer-events:none}
+.chip b{position:relative;z-index:1;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:var(--ac)}
+.row.rare .chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 8px color-mix(in srgb,var(--ac) 22%,transparent),inset 0 -4px 7px rgba(0,0,0,.5)}
+
+.mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.r1{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+.nm{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.rare .nm{color:var(--text)}
+.val{display:flex;align-items:baseline;gap:2px;flex-shrink:0}
+.val b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:color-mix(in srgb,var(--ac) 82%,var(--text))}
+.val span{font-family:"IBM Plex Mono",monospace;font-size:6.5px;letter-spacing:.1em;color:var(--dim)}
+.r2{display:flex;align-items:center;gap:7px}
+/* gauge */
+.gauge{display:flex;gap:2px;flex:1}
+.gauge i{flex:1;height:5px;background:color-mix(in srgb,var(--ac) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--ac) 18%,transparent);
+  clip-path:polygon(2px 0,100% 0,calc(100% - 2px) 100%,0 100%);transition:background 200ms var(--ease),border-color 200ms var(--ease)}
+.gauge i.lit{background:color-mix(in srgb,var(--ac) 76%,transparent)}
+/* count chip */
+.cnt{display:inline-flex;align-items:center;gap:2px;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:11px;color:var(--text);
+  background:rgba(10,14,22,.5);border:1px solid rgba(79,195,217,.1);padding:1px 6px;flex-shrink:0;
+  clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);transition:color 200ms var(--ease),border-color 200ms var(--ease)}
+.cnt .x{color:var(--dim);font-size:8px}
+.row.rare .cnt{border-color:color-mix(in srgb,var(--ac) 22%,transparent)}
+/* LOW */
+.row.low .gauge i.lit{background:color-mix(in srgb,var(--warn) 78%,transparent);border-color:color-mix(in srgb,var(--warn) 52%,transparent)}
+.row.low .cnt{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 42%,transparent)}
+.row.low .cnt .x{color:var(--warn)}
+.row.low .chip{animation:lowPulse 1.8s ease-in-out infinite}
+/* EMPTY */
+.row.empty{opacity:.5;filter:grayscale(.55)}
+.row.empty .pile .chip{background:transparent;border:1px dashed var(--border);box-shadow:none}
+.row.empty .pile .chip::after,.row.empty .pile .tr,.row.empty .sl{display:none}
+.row.empty .chip b{color:var(--muted)}
+.row.empty .val b{color:var(--muted)}
+.row.empty .nm .so{color:var(--muted)}
+
+/* entrance / flashes */
+.chip.in{animation:chipIn 220ms var(--ease) both}
+@keyframes chipIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes chipSettle{0%{filter:brightness(1)}45%{filter:brightness(1.5)}100%{filter:brightness(1)}}
+@keyframes promoteFlash{0%{filter:brightness(1.6)}100%{filter:brightness(1)}}
+@keyframes lowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes selDot{0%,100%{opacity:1}50%{opacity:.3}}
+.chip.settle{animation:chipSettle 200ms var(--ease) both}
+.chip.promote{animation:promoteFlash 240ms ease-out both}
+
+/* ---------- footer: bonus + seal ---------- */
+.wfoot{margin-top:auto;padding-top:9px;border-top:1px solid rgba(79,195,217,.1)}
+.wfoot .fh{font-size:7.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.bset{display:flex;gap:8px}
+.bcol{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bcol .k{font-size:6.5px;font-weight:600;letter-spacing:.1em;color:var(--dim);font-family:"Chakra Petch"}
+.hex{width:32px;height:28px;position:relative}
+.hex .hb{position:absolute;inset:0;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:var(--rare-gold,#ffc94d);opacity:.85}
+.hex .hi{position:absolute;inset:2px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+  background:linear-gradient(160deg,#1a2230,var(--inset));display:grid;place-items:center}
+.hex .hi b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:9px}
+.seal{width:38px;height:38px;display:grid;place-items:center}
+.seal .dm{width:28px;height:28px;transform:rotate(45deg);border:1px solid color-mix(in srgb,#ff2d96 60%,transparent);
+  background:rgba(255,45,150,.1);box-shadow:0 0 7px rgba(255,45,150,.16);display:grid;place-items:center}
+.seal .dm span{transform:rotate(-45deg);font-family:"Chakra Petch";font-weight:600;font-size:12px;color:#ff2d96}
+
+/* ---------- operator CR sink ---------- */
+.opsink{margin-top:10px;padding:9px 10px;position:relative;
+  background:rgba(10,14,22,.55);border:1px solid rgba(79,195,217,.14);
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.opsink .olab{font-size:7.5px;font-weight:600;letter-spacing:.2em;color:var(--dim)}
+.opsink .crrow{display:flex;align-items:baseline;gap:5px;margin-top:2px}
+.opsink #cr{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:26px;line-height:1;color:var(--text)}
+.opsink .cru{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--cyan);letter-spacing:.08em}
+#sink{position:absolute;top:14px;right:16px;width:2px;height:2px}
+.credit{position:absolute;right:14px;top:8px;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;
+  color:var(--cyan);text-shadow:0 0 8px rgba(79,195,217,.6);pointer-events:none;animation:creditFloat 480ms ease-out both}
+@keyframes creditFloat{0%{opacity:0;transform:translateY(5px)}20%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-16px)}}
+
+/* good accents */
+.g-cyan{--ac:#00e5ff} .g-gold{--ac:#ffc94d} .g-mag{--ac:#ff2d96}
+.g-pur{--ac:#8578ad} .g-grn{--ac:#6fa07d} .g-org{--ac:#b97a4b}
+
+/* ---------- controls (review only) ---------- */
+.controls{display:flex;gap:10px;align-items:center}
+.btn{font-family:"Chakra Petch";font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:#03181d;background:var(--cyan);border:none;cursor:pointer;padding:10px 18px;
+  clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);transition:filter 120ms var(--ease),transform 120ms var(--ease)}
+.btn:hover{filter:brightness(1.12)} .btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border);box-shadow:none}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.hint{font-family:"IBM Plex Mono",monospace;font-size:8.5px;color:var(--dim);letter-spacing:.03em;max-width:232px;text-align:center}
+
+/* flight overlay */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:999}
+.flyer{position:fixed;width:42px;height:30px;
+  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 8px),0 8px)}
+.flyer.ghost{animation:trailFade 300ms linear both}
+@keyframes trailFade{from{opacity:.45}to{opacity:0;transform:scale(.4)}}
+</style>
+</head>
+<body>
+<div class="wall" id="wall">
+  <div class="wh"><span class="ttl">Market Prices</span><span class="rule"></span></div>
+  <div class="wsub">TOP TOKEN = CR PAYOUT · ×N = STOCK LEFT</div>
+  <div class="rows" id="rows"></div>
+
+  <div class="wfoot">
+    <div class="fh">Bonus // Fixer Seal</div>
+    <div class="frow">
+      <div class="bset">
+        <div class="bcol"><div class="hex"><div class="hb" style="background:#00e5ff;opacity:.7"></div><div class="hi"><b style="color:#00e5ff">×3</b></div></div><span class="k">+2</span></div>
+        <div class="bcol"><div class="hex"><div class="hb"></div><div class="hi"><b style="color:#ffc94d">×4</b></div></div><span class="k">+5</span></div>
+        <div class="bcol"><div class="hex"><div class="hb" style="background:#ff2d96;opacity:.7"></div><div class="hi"><b style="color:#ff2d96">×5+</b></div></div><span class="k">+9</span></div>
+      </div>
+      <div class="bcol"><div class="seal"><div class="dm"><span>印</span></div></div><span class="k" style="color:#ff2d96">FIXER</span></div>
+    </div>
+  </div>
+
+  <div class="opsink">
+    <div class="olab">OPERATOR // CR</div>
+    <div class="crrow"><span id="cr">0</span><span class="cru">CR</span></div>
+    <div id="sink"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="sell">SELL &#9656;</button>
+  <button class="btn ghost" id="replay">REPLAY</button>
+</div>
+<div class="hint">CLICK A ROW TO SELECT · SELL COLLECTS ITS TOP 2</div>
+<div id="fx"></div>
+
+<script>
+/* ===== data — values bottom→top, last = current top payout; count = length ===== */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const EASE='cubic-bezier(.2,.9,.25,1)';
+const GCAP=7;                       // gauge segment capacity
+const GOODS=[
+  {id:'aicore',name:'AI Cores',  cls:'g-cyan',rare:true, start:[3,4,5,6,6,7]},
+  {id:'impl',  name:'Implants',  cls:'g-gold',rare:true, start:[3,4,5,5,6]},
+  {id:'data',  name:'Corp Data', cls:'g-mag', rare:true, start:[3,4,4,5]},
+  {id:'pharma',name:'Pharma',    cls:'g-pur', rare:false,start:[1,1,2,2,3,3,3]},
+  {id:'soft',  name:'Cracked SW',cls:'g-grn', rare:false,start:[2,2,3]},
+  {id:'weap',  name:'Weaponry',  cls:'g-org', rare:false,start:[1,2]},
+];
+const TRACE=`<svg class="tr" viewBox="0 0 42 30" preserveAspectRatio="none">
+ <g stroke="currentColor" fill="none" stroke-width="1" stroke-opacity=".38"><path d="M4 9H14V6M14 9H24"/><path d="M4 21H12V24M12 21H22"/><path d="M38 13H28V19"/></g>
+ <g fill="currentColor" fill-opacity=".5"><rect x="13" y="5" width="2" height="2"/><rect x="23" y="8" width="2" height="2"/><rect x="11" y="23" width="2" height="2"/></g></svg>`;
+
+const st={}; let selected='aicore', busy=false;
+
+function chipHTML(v){ return TRACE + '<b>'+v+'</b>'; }
+
+function buildRow(g){
+  const row=document.createElement('div');
+  row.className='row '+g.cls+(g.rare?' rare':'')+(g.id===selected?' sel':'');
+  row.dataset.id=g.id;
+  row.innerHTML=`
+    <span class="seldot"></span>
+    <div class="pile"><div class="sl" style="bottom:3px"></div><div class="sl" style="bottom:7px"></div><div class="chip">${chipHTML(g.start[g.start.length-1])}</div></div>
+    <div class="mid">
+      <div class="r1"><span class="nm">${g.name}</span><span class="val"><b>0</b><span>CR</span></span></div>
+      <div class="r2"><div class="gauge"></div><span class="cnt"><span class="x">×</span><span class="n">0</span></span></div>
+    </div>`;
+  const g7=row.querySelector('.gauge');
+  for(let i=0;i<GCAP;i++){const s=document.createElement('i');g7.appendChild(s);}
+  row.addEventListener('click',()=>select(g.id));
+  st[g.id]={g,values:[...g.start],cShown:0,row,
+    chip:row.querySelector('.chip'),pile:row.querySelector('.pile'),
+    gauge:g7,valEl:row.querySelector('.val b'),cntEl:row.querySelector('.cnt .n')};
+  return row;
+}
+
+function renderChip(id,animate){
+  const s=st[id],N=s.values.length;
+  if(N===0){ s.pile.querySelectorAll('.sl').forEach(x=>x.style.display='none');
+    s.chip.innerHTML='<b>—</b>'; return; }
+  const slv=Math.min(N-1,2), sls=s.pile.querySelectorAll('.sl');
+  sls.forEach((x,i)=>x.style.display=i<slv?'block':'none');
+  s.chip.innerHTML=chipHTML(s.values[N-1]);
+  if(animate){ s.chip.classList.add('in');
+    s.chip.addEventListener('animationend',()=>{s.chip.classList.remove('in');s.chip.classList.add('settle');},{once:true}); }
+}
+
+function sync(id,roll){
+  const s=st[id],N=s.values.length;
+  s.valEl.textContent=N?s.values[N-1]:'—';
+  if(roll){ const from=s.cShown,t0=performance.now();
+    (function step(now){const k=Math.min(1,(now-t0)/240);s.cShown=Math.round(from+(N-from)*k);s.cntEl.textContent=s.cShown;if(k<1)requestAnimationFrame(step);})(performance.now());
+  } else { s.cShown=N; s.cntEl.textContent=N; }
+  [...s.gauge.children].forEach((seg,i)=>seg.classList.toggle('lit',i<N));
+  s.row.classList.toggle('low',N>0&&N<=2);
+  s.row.classList.toggle('empty',N===0);
+  if(N===0){ s.row.querySelector('.nm').innerHTML=s.g.name+' <span class="so">· SOLD OUT</span>'; }
+}
+
+function select(id){ selected=id;
+  document.querySelectorAll('.row').forEach(r=>r.classList.toggle('sel',r.dataset.id===id)); }
+
+/* CR sink count-up */
+const crEl=document.getElementById('cr'); let crShown=0,crTarget=0;
+function crCount(to,dur=380){const from=crShown,t0=performance.now();
+  (function step(now){const k=Math.min(1,(now-t0)/dur);crShown=Math.round(from+(to-from)*k);crEl.textContent=crShown;if(k<1)requestAnimationFrame(step);})(performance.now());}
+function creditPop(n){const o=document.querySelector('.opsink');const c=document.createElement('div');
+  c.className='credit';c.textContent='+'+n+' CR';o.appendChild(c);c.addEventListener('animationend',()=>c.remove(),{once:true});}
+
+/* ===== SELL ===== */
+async function sell(count=2){
+  if(busy)return; const s=st[selected]; if(!s||s.values.length===0)return;
+  busy=true; setC(false);
+  const n=Math.min(count,s.values.length);
+  const sold=s.values.slice(-n).reverse();      // top first
+
+  if(REDUCED){
+    for(let i=0;i<n;i++)s.values.pop();
+    crTarget+=sold.reduce((a,b)=>a+b,0); crCount(crTarget,120);
+    renderChip(selected,false); sync(selected,false);
+    s.chip.animate([{opacity:.4},{opacity:1}],{duration:120,easing:EASE});
+    busy=false; setC(true); return;
+  }
+
+  const sinkR=document.getElementById('sink').getBoundingClientRect();
+  const fx=document.getElementById('fx');
+  const chipR=s.chip.getBoundingClientRect();
+  const rare=s.g.rare;
+
+  // 1. LIFT the current top chip
+  await s.chip.animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-10px) scale(1.05)'}],
+    {duration:130,easing:EASE,fill:'forwards'}).finished;
+
+  // deplete data + reveal new top (same beat as flight)
+  for(let i=0;i<n;i++)s.values.pop();
+  renderChip(selected,false);
+  const nt=s.chip;
+  nt.animate([{transform:'scale(.96)'},{transform:'scale(1)'}],{duration:190,easing:EASE});
+  nt.querySelector('b').animate([{opacity:0},{opacity:1}],{duration:190,easing:EASE,fill:'both'});
+  nt.classList.remove('promote'); void nt.offsetWidth; if(s.values.length)nt.classList.add('promote');
+  sync(selected,true);
+
+  // 2 & 3. FLY each sold token DOWN to the sink, credit on land
+  const accent=getComputedStyle(s.row).getPropertyValue('--ac');
+  await Promise.all(sold.map((v,i)=>new Promise(res=>{
+    const fl=document.createElement('div'); fl.className='flyer';
+    fl.style.cssText+=`left:${chipR.left}px;top:${chipR.top-10}px;`+
+      `background:linear-gradient(158deg,color-mix(in srgb,${accent} 26%,transparent),color-mix(in srgb,${accent} 10%,transparent)),var(--inset);`+
+      `box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 8px color-mix(in srgb,${accent} ${rare?28:16}%,transparent);`;
+    fl.innerHTML=`<b style="position:absolute;inset:0;display:grid;place-items:center;font-family:'IBM Plex Mono';font-weight:600;font-size:13px;color:${accent}">${v}</b>`;
+    fx.appendChild(fl);
+    const gh=fl.cloneNode(true); gh.classList.add('ghost'); gh.style.left=fl.style.left; gh.style.top=fl.style.top;
+    gh.addEventListener('animationend',()=>gh.remove(),{once:true});
+    const dx=sinkR.left-chipR.left, dy=sinkR.top-(chipR.top-10);
+    setTimeout(()=>{ fx.appendChild(gh);
+      fl.animate([{transform:'translate(0,0) scale(1.05)',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(.5)`,opacity:0}],
+        {duration:300,easing:EASE,fill:'forwards'}).finished.then(()=>{
+          fl.remove(); creditPop(v); crTarget+=v; crCount(crTarget); res(); });
+    },i*55);
+  })));
+
+  await new Promise(r=>setTimeout(r,100));
+  busy=false; setC(true);
+}
+function setC(on){document.getElementById('sell').disabled=!on;document.getElementById('replay').disabled=!on;}
+
+/* pile-up on load / reset */
+function buildAll(){ const host=document.getElementById('rows'); host.innerHTML='';
+  GOODS.forEach((g,i)=>{ const row=buildRow(g); host.appendChild(row);
+    renderChip(g.id,false); sync(g.id,false);
+    const chip=st[g.id].chip; chip.style.animationDelay=(i*36)+'ms'; chip.classList.add('in');
+    chip.addEventListener('animationend',()=>{chip.classList.remove('in');chip.classList.add('settle');},{once:true}); }); }
+function replay(){ if(busy)return; crTarget=0;crShown=0;crEl.textContent='0'; buildAll(); }
+
+document.getElementById('sell').addEventListener('click',()=>sell(2));
+document.getElementById('replay').addEventListener('click',replay);
+buildAll();
+</script>
+</body>
+</html>

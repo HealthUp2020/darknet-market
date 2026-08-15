@@ -1,0 +1,77 @@
+<!-- @dsCard group="Assets" viewport="720x360" name="Button: Exchange Selected" subtitle="Style anchor — gameplay button, default + hover states, icon only" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Button — Exchange Selected</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1420 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.row{display:flex;gap:64px;align-items:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.state{font:600 8px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
+
+.btn{position:relative;width:118px;height:96px;box-sizing:border-box;
+  background:var(--accent-ui-glass);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(79,195,217,.55);
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  display:grid;place-items:center;color:var(--accent-ui);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease-hud),box-shadow var(--dur) var(--ease-hud),color var(--dur-fast)}
+.btn .scan{position:absolute;inset:0;background:var(--texture-scanline);opacity:.4;pointer-events:none;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.btn .cn{position:absolute;width:9px;height:9px;border:1px solid rgba(79,195,217,.6)}
+.btn .cn.tr{top:5px;right:5px;border-left:0;border-bottom:0}
+.btn .cn.bl{bottom:5px;left:5px;border-right:0;border-top:0}
+.btn svg{width:54px;height:54px;position:relative;transition:filter var(--dur)}
+.btn .swap{transform-origin:26px 26px;transition:transform .35s var(--ease-hud)}
+
+.btn.hover{background:rgba(79,195,217,.18);color:#aef1fb;
+  box-shadow:var(--glow-ui),inset 0 0 14px rgba(79,195,217,.2);border-color:var(--accent-ui)}
+.btn.hover svg{filter:drop-shadow(0 0 6px rgba(79,195,217,.9))}
+.btn.hover .swap{transform:rotate(180deg)}
+</style></head><body>
+
+<div class="row">
+  <div class="col">
+    <div class="btn" id="b1">
+      <div class="scan"></div><div class="cn tr"></div><div class="cn bl"></div>
+      <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <!-- left card -->
+        <g><rect x="4" y="16" width="16" height="21" rx="2" fill="rgba(79,195,217,.12)"/><path d="M8 22h8M8 26h5"/></g>
+        <!-- right card -->
+        <g><rect x="32" y="16" width="16" height="21" rx="2" fill="rgba(79,195,217,.12)"/><path d="M36 22h8M36 26h5"/></g>
+        <!-- circular swap arrows in the middle -->
+        <g class="swap">
+          <path d="M20 20a9 9 0 0 1 12 0" stroke-width="1.7"/>
+          <path d="M32 20l0-4.4M32 20l-4.2 1.2" stroke-width="1.7"/>
+          <path d="M32 33a9 9 0 0 1 -12 0" stroke-width="1.7"/>
+          <path d="M20 33l0 4.4M20 33l4.2-1.2" stroke-width="1.7"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state">Default</div>
+  </div>
+
+  <div class="col">
+    <div class="btn hover">
+      <div class="scan"></div><div class="cn tr"></div><div class="cn bl"></div>
+      <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <g><rect x="4" y="16" width="16" height="21" rx="2" fill="rgba(79,195,217,.2)"/><path d="M8 22h8M8 26h5"/></g>
+        <g><rect x="32" y="16" width="16" height="21" rx="2" fill="rgba(79,195,217,.2)"/><path d="M36 22h8M36 26h5"/></g>
+        <g class="swap" style="transform:rotate(180deg)">
+          <path d="M20 20a9 9 0 0 1 12 0" stroke-width="1.7"/>
+          <path d="M32 20l0-4.4M32 20l-4.2 1.2" stroke-width="1.7"/>
+          <path d="M32 33a9 9 0 0 1 -12 0" stroke-width="1.7"/>
+          <path d="M20 33l0 4.4M20 33l4.2-1.2" stroke-width="1.7"/>
+        </g>
+      </svg>
+    </div>
+    <div class="state" style="color:var(--accent-ui)">Hover / Active</div>
+  </div>
+</div>
+
+<script>
+  const b=document.getElementById('b1');
+  b.addEventListener('mouseenter',()=>b.classList.add('hover'));
+  b.addEventListener('mouseleave',()=>b.classList.remove('hover'));
+</script>
+</body></html>

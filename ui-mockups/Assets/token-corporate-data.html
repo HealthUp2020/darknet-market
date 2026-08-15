@@ -1,0 +1,148 @@
+<!-- @dsCard group="Assets" viewport="720x520" name="Token: Stolen Corporate Data (Rare)" subtitle="Style anchor — holographic data shard, magenta neon" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Stolen Corporate Data Token</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#ff2e88; --core-deep:#d61f6f; }
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;
+  background:radial-gradient(120% 120% at 50% 40%, #1a0d16 0%, var(--bg-page) 70%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.6;pointer-events:none}
+
+.stage{position:relative;width:300px;height:340px;display:grid;place-items:center}
+.stage::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,46,136,.26) 0%, rgba(255,46,136,.09) 38%, transparent 68%);
+  filter:blur(6px);animation:breathe 4.5s var(--ease-hud) infinite}
+
+.token{position:relative;width:280px;height:280px;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg, #2b333e 0deg 3deg, #1c232c 3deg 6deg),
+    radial-gradient(circle at 38% 32%, #333c48, #10151c 78%);
+  box-shadow:
+    0 0 0 1px #05080c,
+    inset 0 2px 6px rgba(255,255,255,.10),
+    inset 0 -10px 22px rgba(0,0,0,.75),
+    0 22px 50px rgba(0,0,0,.6),
+    0 0 40px rgba(255,46,136,.32), 0 0 90px rgba(255,46,136,.16);
+  display:grid;place-items:center}
+
+.strip{position:absolute;inset:8px;border-radius:50%;
+  border:2px solid rgba(255,46,136,.85);
+  box-shadow:0 0 10px rgba(255,46,136,.65), inset 0 0 12px rgba(255,46,136,.4);
+  -webkit-mask:conic-gradient(from -8deg, #000 0 316deg, transparent 316deg 360deg);
+          mask:conic-gradient(from -8deg, #000 0 316deg, transparent 316deg 360deg)}
+
+.well{position:absolute;inset:26px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%, #150a11 0%, #05060b 70%);
+  box-shadow:inset 0 0 26px rgba(0,0,0,.9), inset 0 0 2px rgba(255,46,136,.3);
+  display:grid;place-items:center;overflow:hidden}
+
+.ring{position:absolute;border-radius:50%;border:1px solid transparent}
+.ring.r1{inset:6px;border-top-color:rgba(255,46,136,.7);border-right-color:rgba(255,46,136,.26);
+  box-shadow:0 0 8px rgba(255,46,136,.38);animation:spin 8s linear infinite}
+.ring.r2{inset:20px;border:1px dashed rgba(255,46,136,.28);animation:spin 13s linear infinite reverse}
+.ticks{position:absolute;inset:12px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, rgba(255,46,136,.45) 0deg .6deg, transparent .6deg 15deg);
+  -webkit-mask:radial-gradient(circle, transparent 0 44%, #000 44% 47%, transparent 47%);
+          mask:radial-gradient(circle, transparent 0 44%, #000 44% 47%, transparent 47%);
+  animation:spin 24s linear infinite}
+
+.shard{position:relative;width:158px;height:158px;filter:drop-shadow(0 0 9px rgba(255,46,136,.6));animation:pulse 3.3s var(--ease-hud) infinite}
+.glyphs{font:700 9px/1 var(--font-mono);letter-spacing:2px;fill:rgba(255,180,214,.75)}
+
+.notch{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:60px;height:34px;background:linear-gradient(#232b34,#12171e);
+  clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);
+  border-top:1px solid rgba(255,46,136,.5);
+  box-shadow:0 4px 10px rgba(0,0,0,.6), 0 0 14px rgba(255,46,136,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.notch .val{font:600 20px/1 var(--font-mono);color:var(--core);text-shadow:0 0 8px rgba(255,46,136,.9)}
+.notch .lbl{font:600 6px/1 var(--font-display);letter-spacing:.22em;color:var(--text-muted);margin-top:1px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 7px rgba(255,46,136,.5))}50%{filter:drop-shadow(0 0 16px rgba(255,46,136,.9))}}
+@keyframes scan{0%{transform:translateY(0)}100%{transform:translateY(12px)}}
+
+.spec{max-width:220px}
+.spec .tag{font:500 10px/1 var(--font-mono);letter-spacing:.2em;color:var(--core);text-shadow:0 0 8px rgba(255,46,136,.55)}
+.spec h1{font:600 22px/1.05 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--text-primary);margin:10px 0 4px}
+.spec .rare{display:inline-flex;align-items:center;gap:6px;font:600 9px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(255,46,136,.5);padding:5px 9px;clip-path:var(--clip-btn);box-shadow:0 0 12px rgba(255,46,136,.28);background:rgba(255,46,136,.06)}
+.spec ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:9px}
+.spec li{font:400 11px/1.4 var(--font-body);color:var(--text-secondary);display:flex;gap:9px;align-items:flex-start}
+.spec li b{color:var(--text-muted);font:600 8px/1.5 var(--font-display);letter-spacing:.14em;text-transform:uppercase;width:52px;flex-shrink:0}
+.dot{color:var(--core)}
+</style></head><body>
+
+<div class="stage">
+  <div class="token">
+    <div class="strip"></div>
+    <div class="well">
+      <div class="ticks"></div>
+      <div class="ring r1"></div><div class="ring r2"></div>
+      <div class="shard">
+        <svg viewBox="0 0 200 200" width="158" height="158">
+          <defs>
+            <linearGradient id="shardg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#ffd6e8"/>
+              <stop offset="30%" stop-color="#ff5fa2"/>
+              <stop offset="70%" stop-color="#c81e6c"/>
+              <stop offset="100%" stop-color="#3d0a22"/>
+            </linearGradient>
+            <clipPath id="shardClip">
+              <polygon points="100,28 142,58 132,152 100,176 68,152 58,58"/>
+            </clipPath>
+            <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6"/></filter>
+          </defs>
+
+          <!-- holographic ghost duplicates -->
+          <polygon points="100,28 142,58 132,152 100,176 68,152 58,58" transform="translate(-5 3)" fill="rgba(60,220,255,.18)"/>
+          <polygon points="100,28 142,58 132,152 100,176 68,152 58,58" transform="translate(5 -2)" fill="rgba(255,46,136,.2)"/>
+
+          <!-- shard body -->
+          <polygon points="100,28 142,58 132,152 100,176 68,152 58,58" fill="url(#shardg)"/>
+
+          <!-- binary / glyph texture, clipped -->
+          <g clip-path="url(#shardClip)">
+            <g class="glyphs" style="animation:scan 2.2s linear infinite">
+              <text x="60" y="54">01001</text><text x="60" y="66">10 電子</text>
+              <text x="62" y="78">110100</text><text x="60" y="90">0x9F 侵</text>
+              <text x="62" y="102">01110</text><text x="60" y="114">情報 011</text>
+              <text x="64" y="126">10011</text><text x="64" y="138">0101 数</text>
+              <text x="66" y="150">1101</text><text x="66" y="162">機密</text>
+            </g>
+            <!-- scanlines -->
+            <rect x="50" y="28" width="100" height="150" fill="url(#shardg)" opacity="0"/>
+            <g stroke="rgba(255,255,255,.12)" stroke-width="1">
+              <line x1="55" y1="70" x2="145" y2="70"/><line x1="55" y1="98" x2="145" y2="98"/>
+              <line x1="55" y1="126" x2="145" y2="126"/><line x1="55" y1="154" x2="145" y2="154"/>
+            </g>
+          </g>
+
+          <!-- facet center + edge light -->
+          <polyline points="100,28 100,176" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
+          <polygon points="100,28 142,58 132,152 100,176 68,152 58,58" fill="none" stroke="rgba(255,180,214,.85)" stroke-width="1.5"/>
+          <!-- upper-left specular facet -->
+          <polygon points="100,28 100,176 68,152 58,58" fill="rgba(255,255,255,.10)"/>
+          <!-- core spark -->
+          <circle cx="100" cy="100" r="6" fill="#ffffff" filter="url(#soft)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="notch"><span class="val">5</span><span class="lbl">PTS</span></div>
+  </div>
+</div>
+
+<div class="spec">
+  <div class="tag">TOKEN // RARE</div>
+  <h1>Stolen Corporate Data</h1>
+  <span class="rare"><span style="width:5px;height:5px;background:var(--core);transform:rotate(45deg);box-shadow:0 0 6px var(--core)"></span>Rare tier</span>
+  <ul>
+    <li><b>Glow</b><span>Neon magenta <span class="dot">#FF2E88</span> — strong rare-tier bloom.</span></li>
+    <li><b>Core</b><span>Holographic data shard with scrolling binary &amp; glyph texture and RGB-split ghosting.</span></li>
+    <li><b>Rings</b><span>Two counter-rotating holographic rings + tick scale.</span></li>
+    <li><b>Rim</b><span>Brushed dark metal with a magenta light strip arc.</span></li>
+    <li><b>Value</b><span>Numeral notch at the base — fixed <span class="dot">5</span> across all copies.</span></li>
+  </ul>
+</div>
+
+</body></html>

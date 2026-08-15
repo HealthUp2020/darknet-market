@@ -1,0 +1,128 @@
+<!-- @dsCard group="Assets" viewport="720x520" name="Token: Cracked Software (Common)" subtitle="Style anchor — holo terminal fragment, muted green, no glow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cracked Software Token</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+:root{ --core:#3ddc84; --core-deep:#2ba765; }
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;
+  background:radial-gradient(120% 120% at 50% 40%, #0d1512 0%, var(--bg-page) 72%);overflow:hidden}
+body::before{content:"";position:absolute;inset:0;background:var(--texture-grid);background-size:var(--texture-grid-size);opacity:.5;pointer-events:none}
+
+.stage{position:relative;width:300px;height:340px;display:grid;place-items:center}
+/* common-tier: NO bloom halo */
+
+.token{position:relative;width:280px;height:280px;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg, #262b33 0deg 3deg, #1a1f26 3deg 6deg),
+    radial-gradient(circle at 38% 32%, #2b313a, #0e1218 78%);
+  box-shadow:
+    0 0 0 1px #05080c,
+    inset 0 2px 5px rgba(255,255,255,.06),
+    inset 0 -10px 22px rgba(0,0,0,.75),
+    0 20px 44px rgba(0,0,0,.55);
+  display:grid;place-items:center}
+
+.strip{position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(61,220,132,.55)}
+
+.well{position:absolute;inset:26px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%, #0b1512 0%, #05070b 72%);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.9);
+  display:grid;place-items:center;overflow:hidden}
+
+.ticks{position:absolute;inset:14px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg, rgba(61,220,132,.22) 0deg .5deg, transparent .5deg 30deg);
+  -webkit-mask:radial-gradient(circle, transparent 0 45%, #000 45% 47%, transparent 47%);
+          mask:radial-gradient(circle, transparent 0 45%, #000 45% 47%, transparent 47%)}
+
+.win{position:relative;width:158px;height:150px;filter:drop-shadow(0 0 4px rgba(61,220,132,.3))}
+
+.notch{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:60px;height:34px;background:linear-gradient(#20252d,#101419);
+  clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);
+  border-top:1px solid rgba(61,220,132,.45);
+  box-shadow:0 4px 10px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.notch .val{font:600 20px/1 var(--font-mono);color:var(--core)}
+.notch .lbl{font:600 6px/1 var(--font-display);letter-spacing:.22em;color:var(--text-muted);margin-top:1px}
+
+@keyframes scrollcode{0%{transform:translateY(0)}100%{transform:translateY(-26px)}}
+
+.spec{max-width:220px}
+.spec .tag{font:500 10px/1 var(--font-mono);letter-spacing:.2em;color:var(--core)}
+.spec h1{font:600 22px/1.05 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--text-primary);margin:10px 0 4px}
+.spec .rare{display:inline-flex;align-items:center;gap:6px;font:600 9px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--core);border:1px solid rgba(61,220,132,.45);padding:5px 9px;clip-path:var(--clip-btn);background:rgba(61,220,132,.05)}
+.spec ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:9px}
+.spec li{font:400 11px/1.4 var(--font-body);color:var(--text-secondary);display:flex;gap:9px;align-items:flex-start}
+.spec li b{color:var(--text-muted);font:600 8px/1.5 var(--font-display);letter-spacing:.14em;text-transform:uppercase;width:52px;flex-shrink:0}
+.dot{color:var(--core)}
+</style></head><body>
+
+<div class="stage">
+  <div class="token">
+    <div class="strip"></div>
+    <div class="well">
+      <div class="ticks"></div>
+      <div class="win">
+        <svg viewBox="0 0 200 190" width="158" height="150">
+          <defs>
+            <linearGradient id="pane" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(61,220,132,.16)"/>
+              <stop offset="100%" stop-color="rgba(10,20,16,.55)"/>
+            </linearGradient>
+            <clipPath id="scr"><rect x="42" y="66" width="116" height="86"/></clipPath>
+          </defs>
+
+          <!-- floating window fragment (slightly skewed for holo depth) -->
+          <g transform="rotate(-4 100 105)">
+            <!-- glow backing -->
+            <rect x="38" y="42" width="124" height="112" rx="3" fill="url(#pane)" stroke="rgba(61,220,132,.55)" stroke-width="1.5"/>
+            <!-- title bar -->
+            <rect x="38" y="42" width="124" height="20" rx="3" fill="rgba(61,220,132,.12)"/>
+            <rect x="38" y="58" width="124" height="4" fill="rgba(61,220,132,.25)"/>
+            <circle cx="50" cy="52" r="3" fill="none" stroke="var(--core)" stroke-width="1.2"/>
+            <rect x="58" y="49" width="6" height="6" fill="none" stroke="rgba(61,220,132,.7)" stroke-width="1.2"/>
+            <text x="150" y="55" text-anchor="end" font-family="var(--font-mono)" font-size="7" letter-spacing="1" fill="rgba(61,220,132,.85)">sh_//crk</text>
+            <!-- torn/cracked right edge -->
+            <path d="M162,62 l-6,10 l6,10 l-7,12 l7,12 l-5,14 l5,14" fill="none" stroke="rgba(61,220,132,.5)" stroke-width="1.2"/>
+
+            <!-- scrolling code -->
+            <g clip-path="url(#scr)">
+              <g style="animation:scrollcode 2.6s linear infinite" font-family="var(--font-mono)" font-size="7.5" letter-spacing=".5">
+                <text x="48" y="76" fill="rgba(61,220,132,.9)">$ patch --bypass</text>
+                <text x="48" y="88" fill="rgba(61,220,132,.6)">0xA4 6F 22 keygen</text>
+                <text x="48" y="100" fill="rgba(61,220,132,.85)">if(lic==0) return 1</text>
+                <text x="48" y="112" fill="rgba(61,220,132,.55)">> auth::spoof(root)</text>
+                <text x="48" y="124" fill="rgba(61,220,132,.9)">01101 nop nop jmp</text>
+                <text x="48" y="136" fill="rgba(61,220,132,.6)">crack.ok // v2.3</text>
+                <!-- repeat for seamless scroll -->
+                <text x="48" y="102" dy="26" fill="rgba(61,220,132,.9)">$ patch --bypass</text>
+                <text x="48" y="114" dy="26" fill="rgba(61,220,132,.6)">0xA4 6F 22 keygen</text>
+                <text x="48" y="126" dy="26" fill="rgba(61,220,132,.85)">if(lic==0) return 1</text>
+              </g>
+            </g>
+            <!-- scanline sheen -->
+            <rect x="42" y="66" width="116" height="86" fill="url(#pane)" opacity=".18"/>
+            <!-- blinking cursor -->
+            <rect x="48" y="146" width="7" height="2.5" fill="var(--core)"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="notch"><span class="val">3</span><span class="lbl">PTS</span></div>
+  </div>
+</div>
+
+<div class="spec">
+  <div class="tag">TOKEN // COMMON</div>
+  <h1>Cracked Software</h1>
+  <span class="rare"><span style="width:5px;height:5px;background:var(--core);transform:rotate(45deg)"></span>Common tier</span>
+  <ul>
+    <li><b>Accent</b><span>Terminal green <span class="dot">#3DDC84</span> — subdued, <b style="width:auto;display:inline">no</b> neon glow.</span></li>
+    <li><b>Core</b><span>Floating holographic terminal window fragment with a torn cracked edge.</span></li>
+    <li><b>Code</b><span>Green scrolling code glyphs — keygen / bypass / patch lines + blinking cursor.</span></li>
+    <li><b>Rim</b><span>Matte dark metal with a single thin green line (no light strip, no rings).</span></li>
+    <li><b>Value</b><span>Numeral notch at the base — placeholder <span class="dot">3</span> (use 1, 2, 3 or 5).</span></li>
+  </ul>
+</div>
+
+</body></html>

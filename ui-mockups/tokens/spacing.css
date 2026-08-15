@@ -1,0 +1,29 @@
+/* NIGHT MARKET — spacing & geometry tokens. 4px base grid. */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* layout conventions */
+  --pad-panel: 16px;        /* interior padding of glass panels */
+  --gap-card-row: 12px;     /* gap between cards in market / hand rows */
+  --gap-hud: 24px;          /* gap between major HUD regions */
+  --board-margin: 24px;     /* screen edge margin of the game board */
+
+  /* geometry: angled corners > rounding. Radius only for micro-elements. */
+  --radius-sm: 2px;         /* chips, inputs */
+  --radius-round: 999px;    /* circular value tokens only */
+  --cut: 12px;              /* standard corner cut */
+  --cut-sm: 7px;            /* buttons, small chips */
+  /* panel silhouette: cut top-left + bottom-right */
+  --clip-panel: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  /* card silhouette: single cut, top-right */
+  --clip-card: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+  /* button silhouette: cut top-left + bottom-right, small */
+  --clip-btn: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+}

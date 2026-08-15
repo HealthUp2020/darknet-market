@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!--
+  NIGHT MARKET — CARD HOVER / SELECT STATES  ·  self-contained motion prototype
+  ============================================================================
+  The tactile feedback vocabulary for a NIGHT MARKET card: idle, valid-to-act
+  (slow breathing glow), HOVER (gentle ~6px lift, growing shadow, faint accent
+  glow), and SELECT (raised steadily-glowing state, small cyan ring, subtle
+  "picked up" tilt). Hover eases in ~180ms; deselect eases back down. Uses the
+  existing GameCard look; hover/select any card, or REPLAY the scripted demo.
+
+  MOTION LANGUAGE  ·  "Everdell-style" (Dire Wolf) — feel only, not the art
+    Gentle, tactile, unhurried, weighty. ease = cubic-bezier(.34,.08,.16,1).
+    micro (hover/press) 150–200ms. Valid targets BREATHE (slow 1.8s glow).
+    Selection = steady lift + glow, never a strobe. Rare tier keeps its glow.
+
+  KEYFRAME / ANIMATION SPEC  (lift straight into the game)
+  ---------------------------------------------------------------------------
+  name        driver  property changes                          dur    easing
+  validBreathe CSS kf  idle-valid ring opacity + glow pulse      1.8s   ease-in-out loop
+  hoverLift   CSS tr  translateY 0→-6px, shadow grows,          180ms  cubic-bezier
+                      faint accent glow fades in                       (.34,.08,.16,1)
+  pressDip    CSS tr  translateY -6→-3px on active (tactile)     150ms  ease-hud
+  selectRaise WAAPI  translateY→-16px + scale 1.03 + tilt       200ms  cubic-bezier
+                      (settle: ~5% overshoot damped once)              (.34,.08,.16,1)
+  selectHold  CSS     raised, steady glow + cyan ring + tilt     —      (state)
+  ringDraw    CSS kf  select ring scales 1.06→1, opacity 0→1     220ms  ease-out
+  selGlow     CSS kf  selected glow gently breathes (kept)       2.4s   ease-in-out loop
+  deselectDrop WAAPI translateY→0 + scale→1 + untilt (ease down) 220ms  cubic-bezier
+  ---------------------------------------------------------------------------
+  prefers-reduced-motion: no lift/tilt travel — hover & select swap in via
+  instant/opacity state (ring + glow appear, no transform animation).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHT MARKET — Hover / Select States</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#0a0e16; --bg-panel:#141a24; --bg-inset:#070a10;
+  --text-primary:#e6eef7; --text-muted:#566a84; --text-secondary:#92a5bc;
+  --border-panel:#26334a; --border-subtle:#1a2333; --border-dim:#232f44;
+  --accent-ui:#4fc3d9;
+  --rare-cyan:#00e5ff; --rare-gold:#ffc94d; --rare-magenta:#ff2d96;
+  --common-green:#6fa07d; --common-orange:#b97a4b; --common-purple:#8578ad;
+  --glow-cyan:0 0 6px rgba(0,229,255,.55),0 0 20px rgba(0,229,255,.28),0 0 48px rgba(0,229,255,.12);
+  --glow-gold:0 0 6px rgba(255,201,77,.55),0 0 20px rgba(255,201,77,.28),0 0 48px rgba(255,201,77,.12);
+  --glow-magenta:0 0 6px rgba(255,45,150,.55),0 0 20px rgba(255,45,150,.28),0 0 48px rgba(255,45,150,.12);
+  --font-display:'Chakra Petch','Trebuchet MS',sans-serif;
+  --font-mono:'IBM Plex Mono','Consolas',monospace;
+  --cut:14px;
+  --clip-card:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);
+  --EE:cubic-bezier(.34,.08,.16,1);
+  --ease-hud:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 50% 10%,#0d1420 0%,var(--bg-page) 64%);
+  color:var(--text-primary);font-family:var(--font-display);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;min-height:100%;padding:44px 24px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px)}
+
+.head{display:flex;align-items:center;gap:14px;width:100%;max-width:860px}
+.head .ttl{font:600 16px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--text-primary);text-shadow:0 0 12px rgba(79,195,217,.25)}
+.head .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.5),transparent)}
+.head .cap{font:500 10px/1 var(--font-mono);letter-spacing:.22em;color:var(--text-muted)}
+
+.row{display:flex;gap:30px;align-items:flex-end;padding:30px 10px 44px}
+
+/* ============================ GAME CARD ============================ */
+.cardwrap{position:relative;width:150px;height:210px}
+.card{position:relative;width:100%;height:100%;display:flex;flex-direction:column;
+  background:linear-gradient(160deg,#111a26,#0b1017);border:1px solid var(--cl-dim);clip-path:var(--clip-card);cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.42);
+  transition:transform .18s var(--EE),box-shadow .18s var(--EE),border-color .22s ease-out}
+.card .cc{position:absolute;top:0;right:0;width:var(--cut);height:var(--cut);background:var(--gl);border-left:1px solid var(--cl-dim);transition:background .22s ease-out,border-color .22s ease-out}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;gap:5px}
+.card .cn{font:600 10px/1.1 var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--nm)}
+.card .pip{display:flex;gap:3px;margin-right:4px;flex-shrink:0}
+.card .pip i{width:5px;height:5px;background:var(--c);transform:rotate(45deg)}
+.card .well{flex:1;margin:0 1px;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 1px,transparent 1px 3px),repeating-linear-gradient(135deg,var(--bg-inset) 0 9px,#0b1018 9px 18px);
+  display:grid;place-items:center;overflow:hidden}
+.card .well svg{width:46%;height:46%;opacity:.9;transition:filter .22s ease-out}
+.card .ft{display:flex;align-items:flex-end;justify-content:space-between;padding:9px 11px 11px;gap:4px}
+.card .ty{font:600 6px/1.2 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.card .vwrap{display:flex;align-items:baseline;gap:3px}
+.card .vl{font:600 20px/1 var(--font-mono);color:var(--c)}
+.card .vu{font:600 6px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted)}
+.card .strip{position:absolute;left:0;bottom:0;width:18px;height:2px;background:var(--c)}
+.card.rare{border-color:var(--cl);box-shadow:0 8px 18px rgba(0,0,0,.42),var(--gw)}
+.card.rare .cn{text-shadow:0 0 7px var(--c)}
+.card.rare .vl{text-shadow:0 0 10px var(--c)}
+.card.rare .well svg{filter:drop-shadow(0 0 5px var(--c))}
+
+/* state label under each card */
+.slab{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);white-space:nowrap;
+  font:600 8px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);transition:color .2s ease-out}
+
+/* ---- VALID: slow breathing glow ring (interactive affordance) ---- */
+.cardwrap.valid .ring-valid{position:absolute;inset:-4px;clip-path:var(--clip-card);pointer-events:none;
+  border:1px solid var(--accent-ui);animation:validBreathe 1.8s ease-in-out infinite}
+@keyframes validBreathe{0%,100%{opacity:.22;box-shadow:0 0 8px rgba(79,195,217,.22)}50%{opacity:.6;box-shadow:0 0 18px rgba(79,195,217,.45)}}
+.cardwrap.valid .slab{color:var(--accent-ui)}
+
+/* ---- HOVER: gentle lift + growing shadow + faint accent glow ---- */
+.card:hover{transform:translateY(-6px);border-color:var(--cl);
+  box-shadow:0 16px 30px rgba(0,0,0,.5),0 0 16px var(--gl-strong)}
+.card.rare:hover{box-shadow:0 16px 30px rgba(0,0,0,.5),var(--gw)}
+.card:active{transform:translateY(-3px);transition-duration:.15s}
+
+/* ---- SELECT: raised, steady glow, cyan ring, subtle tilt ---- */
+.cardwrap.sel .card{border-color:var(--accent-ui);
+  box-shadow:0 22px 40px rgba(0,0,0,.55),0 0 22px rgba(79,195,217,.4);
+  animation:selGlow 2.4s ease-in-out infinite}
+.cardwrap.sel .card:hover{transform:none}   /* WAAPI owns the raised transform */
+@keyframes selGlow{0%,100%{box-shadow:0 22px 40px rgba(0,0,0,.55),0 0 18px rgba(79,195,217,.34)}50%{box-shadow:0 24px 46px rgba(0,0,0,.55),0 0 30px rgba(79,195,217,.6)}}
+.ring-sel{position:absolute;inset:-6px;clip-path:var(--clip-card);pointer-events:none;border:1.5px solid var(--accent-ui);
+  opacity:0;box-shadow:0 0 14px rgba(79,195,217,.5),inset 0 0 10px rgba(79,195,217,.18)}
+.cardwrap.sel .ring-sel{animation:ringDraw .22s ease-out forwards}
+@keyframes ringDraw{0%{opacity:0;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+.tag-sel{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font:600 7px/1 var(--font-display);letter-spacing:.24em;
+  color:var(--accent-ui);text-shadow:0 0 8px rgba(79,195,217,.6);white-space:nowrap;opacity:0;transition:opacity .2s ease-out}
+.cardwrap.sel .tag-sel{opacity:1}
+.cardwrap.sel .slab{color:var(--accent-ui)}
+
+/* rarity palettes */
+.a-cyan{--c:var(--rare-cyan);--cl:var(--rare-cyan);--cl-dim:color-mix(in srgb,var(--rare-cyan) 42%,var(--border-dim));--nm:var(--rare-cyan);--gw:var(--glow-cyan);--gl:rgba(0,229,255,.12);--gl-strong:rgba(0,229,255,.3)}
+.a-gold{--c:var(--rare-gold);--cl:var(--rare-gold);--cl-dim:color-mix(in srgb,var(--rare-gold) 42%,var(--border-dim));--nm:var(--rare-gold);--gw:var(--glow-gold);--gl:rgba(255,201,77,.12);--gl-strong:rgba(255,201,77,.3)}
+.a-mag{--c:var(--rare-magenta);--cl:var(--rare-magenta);--cl-dim:color-mix(in srgb,var(--rare-magenta) 42%,var(--border-dim));--nm:var(--rare-magenta);--gw:var(--glow-magenta);--gl:rgba(255,45,150,.12);--gl-strong:rgba(255,45,150,.3)}
+.a-grn{--c:var(--common-green);--cl:color-mix(in srgb,var(--common-green) 60%,transparent);--cl-dim:var(--border-dim);--nm:var(--text-primary);--gw:none;--gl:rgba(111,160,125,.1);--gl-strong:rgba(111,160,125,.24)}
+.a-org{--c:var(--common-orange);--cl:color-mix(in srgb,var(--common-orange) 60%,transparent);--cl-dim:var(--border-dim);--nm:var(--text-primary);--gw:none;--gl:rgba(185,122,75,.1);--gl-strong:rgba(185,122,75,.24)}
+
+.legend{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;max-width:820px;
+  font:500 10px/1.5 var(--font-mono);letter-spacing:.04em;color:var(--text-muted)}
+.legend b{color:var(--text-secondary);font-weight:600}
+.controls{display:flex;gap:16px;align-items:center}
+.btn{font:600 11px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--bg-page);background:var(--accent-ui);border:none;padding:13px 24px;cursor:pointer;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);box-shadow:0 0 18px rgba(79,195,217,.35);transition:transform .16s var(--ease-hud),box-shadow .16s var(--ease-hud)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 26px rgba(79,195,217,.55)}
+
+@media (prefers-reduced-motion:reduce){
+  .cardwrap.valid .ring-valid,.cardwrap.sel .card{animation:none}
+  .cardwrap.sel .ring-sel{animation:none;opacity:1;transform:none}
+  .card{transition:box-shadow .2s ease-out,border-color .2s ease-out}
+  .card:hover,.card:active{transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="head"><span class="ttl">Card States</span><span class="rule"></span><span class="cap">HOVER · SELECT · VALID</span></div>
+
+<div class="row" id="row"></div>
+
+<div class="legend">
+  <span><b>Idle</b> — flat, resting</span>
+  <span><b>Valid</b> — slow breathing ring (interactive)</span>
+  <span><b>Hover</b> — 6px lift + accent glow</span>
+  <span><b>Selected</b> — raised, steady glow, cyan ring, tilt</span>
+</div>
+
+<div class="controls">
+  <button class="btn" id="replay">◇ Replay Demo</button>
+</div>
+
+<script>
+const CARDS=[
+  {n:'AI Cores',   t:'Rare // Data',   v:7, cls:'a-cyan', rare:true,  svg:'<polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/>'},
+  {n:'Implants',   t:'Rare // Cyber',  v:6, cls:'a-gold', rare:true,  svg:'<circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4" fill="var(--rare-gold)" stroke="none"/>'},
+  {n:'Cracked SW', t:'Common // SW',   v:3, cls:'a-grn',  rare:false, svg:'<rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/>'},
+  {n:'Corp Data',  t:'Rare // Intel',  v:5, cls:'a-mag',  rare:true,  svg:'<polygon points="20,6 30,13 27,31 20,35 13,31 10,13"/><circle cx="20" cy="20" r="3" fill="var(--rare-magenta)" stroke="none"/>'},
+];
+const EE='cubic-bezier(.34,.08,.16,1)';
+const row=document.getElementById('row'), replay=document.getElementById('replay');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+
+CARDS.forEach((c,i)=>{
+  const w=document.createElement('div'); w.className='cardwrap';
+  w.innerHTML=`
+    <span class="ring-valid"></span>
+    <span class="ring-sel"></span>
+    <span class="tag-sel">◇ SELECTED</span>
+    <div class="card ${c.cls}${c.rare?' rare':''}">
+      <span class="cc"></span>
+      <div class="ch"><span class="cn">${c.n}</span><span class="pip">${'<i></i>'.repeat(c.rare?3:1)}</span></div>
+      <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="var(--c)" stroke-width="1.4">${c.svg}</svg></div>
+      <div class="ft"><span class="ty">${c.t}</span><span class="vwrap"><span class="vl">${c.v}</span><span class="vu">CR</span></span></div>
+      <span class="strip"></span>
+    </div>
+    <span class="slab" data-idle="Idle">Idle</span>`;
+  const card=w.querySelector('.card');
+  card.addEventListener('click',()=>toggleSelect(w));
+  row.appendChild(w);
+});
+const wraps=[...row.children];
+
+let tiltDir=1;
+function selectTilt(w){ const d=(Math.random()<.5?-1:1)*(1.5+Math.random()*1.2); w._tilt=d; return d; }
+
+function toggleSelect(w){
+  const card=w.querySelector('.card');
+  const slab=w.querySelector('.slab');
+  if(w.classList.contains('sel')){
+    w.classList.remove('sel');
+    if(reduce.matches){ card.style.transform=''; }
+    else card.animate([{transform:`translateY(-16px) rotate(${w._tilt||0}deg) scale(1.03)`},{transform:'translateY(0) rotate(0) scale(1)'}],
+      {duration:220,easing:EE}).onfinish=()=>{card.style.transform='';};
+    slab.textContent=w.classList.contains('valid')?'Valid':'Idle';
+  }else{
+    w.classList.add('sel');
+    const tilt=selectTilt(w);
+    if(reduce.matches){ card.style.transform=`translateY(-16px) rotate(${tilt}deg)`; }
+    else{
+      card.animate([
+        {transform:'translateY(0) rotate(0) scale(1)'},
+        {transform:`translateY(-19px) rotate(${tilt*1.1}deg) scale(1.045)`,offset:.72},
+        {transform:`translateY(-16px) rotate(${tilt}deg) scale(1.03)`}
+      ],{duration:220,easing:EE,fill:'forwards'});
+    }
+    slab.textContent='Selected';
+  }
+}
+
+function setValid(w,on){ w.classList.toggle('valid',on); const s=w.querySelector('.slab'); if(!w.classList.contains('sel')) s.textContent=on?'Valid':'Idle'; }
+
+/* scripted demo: show idle / valid / hover / selected side by side */
+let timers=[];
+function clearDemo(){ timers.forEach(clearTimeout); timers=[]; wraps.forEach(w=>{ w.classList.remove('sel','valid','demo-hover'); const c=w.querySelector('.card'); c.style.transform=''; w.querySelector('.slab').textContent='Idle'; }); }
+function demo(){
+  clearDemo();
+  // card 0 = valid (breathing), card 1 = hover, card 2 = idle, card 3 = selected
+  setValid(wraps[0],true);
+  // simulate hover on card 1 via forced styles
+  const hw=wraps[1], hc=hw.querySelector('.card');
+  hc.style.transform='translateY(-6px)';
+  hc.style.boxShadow=`0 16px 30px rgba(0,0,0,.5), var(--gw)`;
+  hc.style.borderColor='var(--cl)';
+  hw.querySelector('.slab').textContent='Hover';
+  // card 3 selected
+  timers.push(setTimeout(()=>toggleSelect(wraps[3]),120));
+}
+replay.addEventListener('click',demo);
+demo();
+</script>
+</body>
+</html>

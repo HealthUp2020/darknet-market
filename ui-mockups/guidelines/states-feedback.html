@@ -1,0 +1,29 @@
+<!-- @dsCard group="Effects & States" viewport="700x220" name="State Language" subtitle="Selected · active turn · disabled" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../styles.css">
+<style>body{padding:20px;display:flex;gap:28px;align-items:flex-start}
+.g{flex:1;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.n{font:600 9px/1.2 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary)}
+.u{font:400 9px/1.4 var(--font-body);color:var(--text-muted)}
+.mini{width:64px;height:90px;background:var(--bg-panel);clip-path:var(--clip-card);box-sizing:border-box}</style></head><body>
+<div class="g"><div class="n">Selected</div>
+  <div style="display:flex;gap:14px;align-items:flex-end">
+    <div class="mini" style="border:1px solid color-mix(in srgb,var(--common-green) 55%,transparent)"></div>
+    <div class="mini" style="border:1px solid var(--accent-ui);box-shadow:var(--glow-ui);transform:translateY(-6px)"></div>
+  </div>
+  <div class="u">Cyan border + UI glow + 6px lift. 200ms ease-hud.</div>
+</div>
+<div class="g"><div class="n">Active turn</div>
+  <div style="width:100%;background:var(--glass-bg);border:1px solid rgba(79,195,217,.55);clip-path:var(--clip-panel);box-shadow:var(--glow-ui);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box">
+    <span style="font:600 10px/1 var(--font-display);letter-spacing:.16em;color:var(--accent-ui);text-shadow:var(--glow-text-ui)">OPERATOR</span>
+    <span style="display:flex;gap:5px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent-ui);animation:ds-pulse 1.6s infinite"></span><span style="font:500 8px var(--font-mono);color:var(--accent-ui)">ACTIVE</span></span>
+  </div>
+  <div class="u">One glowing panel + pulsing dot. All idle panels stay muted.</div>
+</div>
+<div class="g"><div class="n">Disabled</div>
+  <div style="opacity:var(--disabled-opacity);filter:var(--disabled-filter);display:flex;gap:10px;align-items:flex-end">
+    <div class="mini" style="border:1px solid var(--rare-cyan)"></div>
+    <div style="padding:8px 14px;border:1px solid rgba(79,195,217,.55);background:var(--accent-ui-glass);clip-path:var(--clip-btn);font:600 9px/1 var(--font-display);letter-spacing:.16em;color:var(--accent-ui)">TRADE</div>
+  </div>
+  <div class="u">opacity .38 + desaturate. Glows are stripped when disabled.</div>
+</div>
+</body></html>

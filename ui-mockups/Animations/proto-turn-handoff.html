@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<!--
+  NIGHT MARKET — TURN HANDOFF  ·  self-contained motion prototype
+  ============================================================================
+  The phase-change between turns, with Everdell's smooth weighty feel. The turn
+  BANNER cross-fades/slides to the new state (OPERATOR // YOUR MOVE  ↔
+  VULT-3R // EXECUTING  ↔  MATCH // OVER) as the incoming state color washes in
+  gently. The newly-active panel (operator or a rival) eases UP and its status
+  dot begins a slow breathing pulse; the previously-active panel settles back
+  down and its dot goes quiet. Unhurried, no hard cuts. NEXT TURN cycles the
+  active seat around the table (operator → 3 rivals → operator …), and a MATCH
+  OVER state.
+
+  MOTION LANGUAGE  ·  "Everdell-style" (Dire Wolf) — feel only, not the art
+    Gentle, tactile, unhurried, sequenced. ease = cubic-bezier(.34,.08,.16,1).
+    Phase change is a cross-fade + soft slide, never a cut. Active target
+    BREATHES (slow ~1.8s glow). Neon washes in, never strobes.
+
+  KEYFRAME / ANIMATION SPEC  (lift straight into the game)
+  ---------------------------------------------------------------------------
+  name        driver  property changes                          dur    easing
+  bannerOut   WAAPI   old label slides -10px + fades out         200ms  cubic-bezier
+  bannerIn    WAAPI   new label slides 12px→0 + fades in         360ms  cubic-bezier
+                      (staggered 120ms after Out begins)               (.34,.08,.16,1)
+  colorWash   CSS tr  banner --c cross-fades bg+border+glow to   520ms  ease-in-out
+                      the incoming state color (no hard cut)
+  glintSweep  CSS kf  light glint sweeps the active banner       3.4s   ease-hud loop
+  panelRaise  WAAPI   newly-active panel translateY 0→-10px +    380ms  cubic-bezier
+                      scale 1.015, settle ~4% overshoot                (.34,.08,.16,1)
+  panelSettle WAAPI   previously-active panel eases back to rest 340ms  cubic-bezier
+  dotBreathe  CSS kf  active status dot pulses + ring expands    1.8s   ease-hud loop
+  activeWash  CSS tr  active panel border/glow fade up gently    360ms  ease-out
+  ---------------------------------------------------------------------------
+  prefers-reduced-motion: banner cross-fades in place (no slide), panels swap
+  active state via opacity/glow only (no raise), dot still breathes softly.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHT MARKET — Turn Handoff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#0a0e16; --bg-panel:#141a24; --bg-inset:#070a10;
+  --text-primary:#e6eef7; --text-muted:#566a84; --text-secondary:#92a5bc;
+  --border-panel:#26334a; --border-subtle:#1a2333; --border-dim:#232f44;
+  --accent-ui:#4fc3d9;
+  --rare-cyan:#00e5ff; --rare-gold:#ffc94d; --rare-magenta:#ff2d96;
+  --font-display:'Chakra Petch','Trebuchet MS',sans-serif;
+  --font-mono:'IBM Plex Mono','Consolas',monospace;
+  --cut:12px;
+  --clip-panel:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  --EE:cubic-bezier(.34,.08,.16,1);
+  --ease-hud:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 50% 6%,#0d1420 0%,var(--bg-page) 64%);
+  color:var(--text-primary);font-family:var(--font-display);
+  display:flex;flex-direction:column;align-items:center;gap:30px;min-height:100%;padding:38px 24px 46px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px)}
+
+.head{display:flex;align-items:center;gap:14px;width:100%;max-width:860px}
+.head .ttl{font:600 16px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--text-primary);text-shadow:0 0 12px rgba(79,195,217,.25)}
+.head .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.5),transparent)}
+.head .cap{font:500 10px/1 var(--font-mono);letter-spacing:.22em;color:var(--text-muted)}
+
+/* ---- turn banner ---- */
+.banner{position:relative;width:100%;max-width:640px;height:58px;display:flex;align-items:center;gap:16px;padding:0 22px;overflow:hidden;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 15%,rgba(10,14,22,.9)),rgba(10,14,22,.9));
+  border:1px solid color-mix(in srgb,var(--c) 55%,transparent);
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  box-shadow:0 0 18px color-mix(in srgb,var(--c) 32%,transparent),inset 0 0 16px rgba(0,0,0,.5);
+  transition:background .52s ease-in-out,border-color .52s ease-in-out,box-shadow .52s ease-in-out}
+.banner .glint{position:absolute;top:0;bottom:0;width:80px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--c) 20%,transparent),transparent);animation:sweep 3.4s var(--ease-hud) infinite}
+@keyframes sweep{0%{left:-80px}55%,100%{left:100%}}
+.banner .dot{position:relative;width:14px;height:14px;flex-shrink:0}
+.banner .dot i{position:absolute;inset:0;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c),0 0 16px color-mix(in srgb,var(--c) 60%,transparent);transition:background .52s ease-in-out}
+.banner .dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);animation:ring 1.8s var(--ease-hud) infinite}
+.banner.over .dot::after{animation:none;opacity:.3}
+.banner.over .dot i{box-shadow:none}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.banner .labelbox{position:relative;flex:1;height:22px;overflow:hidden}
+.banner .label{position:absolute;inset:0;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.banner .label .who{font:700 17px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--c);text-shadow:0 0 12px color-mix(in srgb,var(--c) 55%,transparent);transition:color .52s ease-in-out}
+.banner .label .sep{font:600 14px/1 var(--font-mono);color:color-mix(in srgb,var(--c) 50%,var(--text-muted))}
+.banner .label .what{font:600 11px/1 var(--font-display);letter-spacing:.24em;text-transform:uppercase;color:var(--text-secondary)}
+.banner .chev{flex-shrink:0;font:600 15px/1 var(--font-mono);color:var(--c);opacity:.7;transition:color .52s ease-in-out}
+
+/* ---- table of seats ---- */
+.table{display:flex;flex-direction:column;gap:16px;width:100%;max-width:860px}
+.rivals{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.seat{position:relative;background:rgba(16,21,29,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1px solid var(--rest-border);clip-path:var(--clip-panel);box-shadow:0 8px 20px rgba(0,0,0,.4);
+  transition:border-color .36s ease-out,box-shadow .36s ease-out,filter .36s ease-out;filter:saturate(.82)}
+.seat .shead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border-subtle)}
+.seat .id{display:flex;align-items:center;gap:9px}
+.seat .avatar{width:28px;height:28px;clip-path:polygon(22% 0,100% 0,100% 78%,78% 100%,0 100%,0 22%);
+  background:linear-gradient(150deg,#161e28,#0b1017);border:1px solid color-mix(in srgb,var(--c) 34%,transparent);display:grid;place-items:center}
+.seat .avatar svg{width:15px;height:15px;color:color-mix(in srgb,var(--c) 70%,var(--text-muted))}
+.seat .nm{font:600 11px/1 var(--font-display);letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+.seat .role{font:500 7px/1.3 var(--font-mono);letter-spacing:.16em;color:var(--text-muted);margin-top:3px}
+/* status dot per seat */
+.sdot{position:relative;width:11px;height:11px;flex-shrink:0}
+.sdot i{position:absolute;inset:0;border-radius:50%;background:var(--text-muted);transition:background .36s ease-out,box-shadow .36s ease-out}
+.seat .sbody{display:flex;gap:1px;background:var(--border-subtle)}
+.seat .stat{flex:1;background:rgba(9,12,19,.6);padding:10px 12px 12px;display:flex;flex-direction:column;gap:5px}
+.seat .stat .k{font:600 6px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted)}
+.seat .stat .v{font:600 16px/1 var(--font-mono);color:var(--text-primary)}
+.seat .stat .v.cr{color:var(--accent-ui)}
+.seat .stat .v .u{font:600 7px/1 var(--font-display);letter-spacing:.14em;color:var(--text-muted);margin-left:3px}
+
+/* ACTIVE seat: raised (WAAPI owns transform), glow washes up, dot breathes */
+.seat.active{border-color:color-mix(in srgb,var(--c) 70%,transparent);filter:saturate(1);
+  box-shadow:0 20px 40px rgba(0,0,0,.5),0 0 26px color-mix(in srgb,var(--c) 26%,transparent)}
+.seat.active .sdot i{background:var(--c);box-shadow:0 0 8px var(--c)}
+.seat.active .sdot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);animation:ring 1.8s var(--ease-hud) infinite}
+.seat.active .nm{color:var(--c)}
+.seat .astat{position:absolute;top:-9px;right:14px;font:600 7px/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--c);background:var(--bg-page);padding:0 8px;opacity:0;transition:opacity .3s ease-out;text-shadow:0 0 8px color-mix(in srgb,var(--c) 55%,transparent)}
+.seat.active .astat{opacity:1}
+
+/* operator seat is wider / fuller */
+.operator .sbody .stat{padding:12px 14px 14px}
+.operator .sbody .stat .v{font-size:19px}
+
+/* seat color themes */
+.c-cyan{--c:#4fc3d9;--rest-border:rgba(79,195,217,.2)}
+.c-mag{--c:#ff2d96;--rest-border:rgba(255,45,150,.16)}
+.c-gold{--c:#ffc94d;--rest-border:rgba(255,201,77,.16)}
+.c-viol{--c:#9b7bff;--rest-border:rgba(155,123,255,.16)}
+
+.controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:860px}
+.btn{font:600 11px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;color:var(--bg-page);background:var(--accent-ui);border:none;padding:14px 26px;cursor:pointer;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);box-shadow:0 0 18px rgba(79,195,217,.35);transition:transform .16s var(--ease-hud),box-shadow .16s var(--ease-hud)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 26px rgba(79,195,217,.55)}
+.btn.ghost{background:transparent;color:var(--accent-ui);border:1px solid rgba(79,195,217,.4);box-shadow:none}
+.note{font:500 10px/1.4 var(--font-mono);letter-spacing:.05em;color:var(--text-muted);max-width:300px}
+.note b{color:var(--text-secondary);font-weight:600}
+
+@media (prefers-reduced-motion:reduce){
+  .banner .glint{animation:none;opacity:0}
+}
+</style>
+</head>
+<body>
+
+<div class="head"><span class="ttl">Turn Handoff</span><span class="rule"></span><span class="cap">PHASE CHANGE</span></div>
+
+<div class="banner c-cyan" id="banner">
+  <span class="glint"></span>
+  <span class="dot"><i></i></span>
+  <div class="labelbox" id="labelbox"></div>
+  <span class="chev">&gt;&gt;</span>
+</div>
+
+<div class="table">
+  <div class="rivals" id="rivals"></div>
+  <div class="operator" id="operatorWrap"></div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="next">▷ Next Turn</button>
+  <button class="btn ghost" id="reset">Reset Match</button>
+  <span class="note">Cycles the active seat around the table; <b>MATCH // OVER</b> ends the round. Honors reduced-motion.</span>
+</div>
+
+<script>
+/* seat order: operator, then 3 rivals; then a MATCH OVER state */
+const SEATS=[
+  {id:'op',   who:'OPERATOR', what:'YOUR MOVE',  theme:'c-cyan', name:'You',      role:'HUMAN OPERATOR', cr:128, hand:6, vp:14, icon:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>'},
+  {id:'r1',   who:'VULT-3R',  what:'EXECUTING',  theme:'c-mag',  name:'Vult-3r',  role:'AGGRO BOT',      cr:96,  hand:5, vp:12, icon:'<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/>'},
+  {id:'r2',   who:'KZ-NULL',  what:'EXECUTING',  theme:'c-gold', name:'Kz-Null',  role:'HOARDER BOT',    cr:141, hand:7, vp:10, icon:'<path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/>'},
+  {id:'r3',   who:'DR-6IX',   what:'EXECUTING',  theme:'c-viol', name:'Dr-6ix',   role:'TEMPO BOT',      cr:110, hand:4, vp:13, icon:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'},
+];
+const EE='cubic-bezier(.34,.08,.16,1)';
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+const banner=document.getElementById('banner'), labelbox=document.getElementById('labelbox'),
+      rivals=document.getElementById('rivals'), operatorWrap=document.getElementById('operatorWrap'),
+      nextBtn=document.getElementById('next'), resetBtn=document.getElementById('reset');
+
+let phase=0, prevActive=null, busy=false;   // phase 0..3 = seats, 4 = match over
+
+function seatHTML(s,isOp){
+  return `<div class="seat ${s.theme}${isOp?' op':''}" data-id="${s.id}">
+    <span class="astat">${isOp?'YOUR MOVE':'EXECUTING'}</span>
+    <div class="shead">
+      <div class="id">
+        <div class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${s.icon}</svg></div>
+        <div><div class="nm">${s.name}</div><div class="role">${s.role}</div></div>
+      </div>
+      <span class="sdot"><i></i></span>
+    </div>
+    <div class="sbody">
+      <div class="stat"><span class="k">Credits</span><span class="v cr">${s.cr}<span class="u">CR</span></span></div>
+      <div class="stat"><span class="k">Hand</span><span class="v">${s.hand}</span></div>
+      <div class="stat"><span class="k">Victory</span><span class="v">${s.vp}<span class="u">VP</span></span></div>
+    </div>
+  </div>`;
+}
+function build(){
+  rivals.innerHTML=SEATS.slice(1).map(s=>seatHTML(s,false)).join('');
+  operatorWrap.innerHTML=seatHTML(SEATS[0],true);
+  phase=0; prevActive=null; busy=false;
+  setActive(SEATS[0].id, true);
+  setBanner(SEATS[0], false, true);
+}
+function seatEl(id){ return document.querySelector(`.seat[data-id="${id}"]`); }
+
+function setActive(id, instant){
+  const el=seatEl(id); if(!el) return;
+  el.classList.add('active');
+  if(instant||reduce.matches){ el.style.transform='translateY(-10px)'; return; }
+  el.animate([
+    {transform:'translateY(0) scale(1)'},
+    {transform:'translateY(-13px) scale(1.02)',offset:.7},
+    {transform:'translateY(-10px) scale(1.015)'}
+  ],{duration:380,easing:EE,fill:'forwards'});
+}
+function clearActive(id){
+  const el=seatEl(id); if(!el) return;
+  el.classList.remove('active');
+  if(reduce.matches){ el.style.transform=''; return; }
+  el.animate([{transform:'translateY(-10px) scale(1.015)'},{transform:'translateY(0) scale(1)'}],
+    {duration:340,easing:EE});
+  setTimeout(()=>{ el.style.transform=''; },340);
+}
+
+function setBanner(s, over, instant){
+  // color wash: swap theme class on banner (CSS transitions handle bg/border/glow)
+  banner.className='banner '+(over?'c-cyan over':s.theme);
+  const who = over?'MATCH':s.who;
+  const what= over?'OVER':s.what;
+  const html=`<div class="label"><span class="who">${who}</span><span class="sep">//</span><span class="what">${what}</span></div>`;
+  if(instant||reduce.matches){
+    labelbox.innerHTML=html;
+    if(!instant){ const l=labelbox.querySelector('.label'); l.animate([{opacity:0},{opacity:1}],{duration:300,easing:'ease-out'}); }
+    return;
+  }
+  const old=labelbox.querySelector('.label');
+  if(old){ old.animate([{transform:'translateX(0)',opacity:1},{transform:'translateX(-10px)',opacity:0}],{duration:200,easing:EE,fill:'forwards'}); setTimeout(()=>old.remove(),200); }
+  setTimeout(()=>{
+    labelbox.insertAdjacentHTML('beforeend',html);
+    const nw=labelbox.querySelector('.label:last-child');
+    nw.animate([{transform:'translateX(12px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:360,easing:EE,fill:'both'});
+    setTimeout(()=>{ nw.style.transform='translateX(0)'; nw.style.opacity='1'; },370);
+  },120);
+}
+
+function next(){
+  if(busy) return; busy=true;
+  const overNow = phase>=SEATS.length;         // currently showing MATCH OVER → wrap to operator
+  if(overNow){ build(); busy=false; return; }
+
+  const cur = SEATS[phase];
+  clearActive(cur.id);
+
+  phase++;
+  if(phase>=SEATS.length){
+    // MATCH OVER
+    setBanner(null, true, false);
+    busy=false; return;
+  }
+  const nx = SEATS[phase];
+  setActive(nx.id);
+  setBanner(nx, false, false);
+  setTimeout(()=>busy=false, 420);
+}
+
+nextBtn.addEventListener('click',next);
+resetBtn.addEventListener('click',()=>{ build(); });
+build();
+</script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!--
+  NIGHT MARKET — DARKNET MARKET DEAL  ·  self-contained motion prototype
+  ============================================================================
+  The DARKNET MARKET deals its 7 face-up goods. On round start / restock,
+  cards travel ONE-BY-ONE from the DECK to their market slots along a gentle
+  ARC, staggered ~82ms apart — each rising as it flies, then settling into
+  place with a soft ~5% overshoot + squash. As each lands, its neon frame
+  accent fades up (rare cards glow + breathe, commons stay matte) and a faint
+  dust of light settles. REPLAY re-deals. Uses the existing GameCard look.
+
+  MOTION LANGUAGE  ·  "Everdell-style" (Dire Wolf) — feel only, not the art
+    Gentle, tactile, unhurried, weighty, sequenced. Pieces feel physically
+    handled: lifted, arced through the air, set down with a soft settle.
+    ease = cubic-bezier(.34,.08,.16,1)  ·  landings damp a ~5% overshoot in
+    ONE step  ·  travel 360–500ms  ·  micro (hover/press) 150–200ms  ·
+    sequence stagger ~82ms  ·  ARCING path (rise + shadow bloom on pickup,
+    lower + shadow tighten on landing).  Neon brightens gently, never strobes.
+
+  KEYFRAME / ANIMATION SPEC  (lift straight into the game)
+  ---------------------------------------------------------------------------
+  name        driver  property changes                          dur    easing
+  flight      WAAPI   translate(deck→slot) along arc apex,       360–   cubic-bezier
+                      rotate(toss→rest), scaleX/Y overshoot      500ms  (.34,.08,.16,1)
+                      then squash→1, opacity 1                   (stagger 82ms)
+  flightShadow WAAPI  drop-shadow blooms at apex, tightens       ==flight  ↑
+                      on landing (weight cue)
+  deckGive    WAAPI   deck top face lifts -5px & returns         240ms  ease-hud
+  neonLit     CSS tr  border/name/value/pips/strip dim→accent,   380ms  ease-out
+                      rare gains 3-layer glow                    (fires at ~80% of flight)
+  rareBreathe CSS kf  rare glow gently pulses (kept, restrained) 3.6s   ease-in-out (loop)
+  dust        CSS kf  6 light motes drift up+out, fade+shrink    620ms  ease-out
+  hoverLift   CSS tr  dealt card lifts -8px + faint accent glow  160ms  ease-hud
+  ---------------------------------------------------------------------------
+  prefers-reduced-motion: NO travel — cards cross-fade into their slots in
+  sequence and the neon accent fades up in place. No arc, no dust drift.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHT MARKET — Deal the Darknet Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#0a0e16; --bg-panel:#141a24; --bg-inset:#070a10;
+  --text-primary:#e6eef7; --text-muted:#566a84; --text-secondary:#92a5bc;
+  --border-panel:#26334a; --border-subtle:#1a2333; --border-dim:#232f44;
+  --accent-ui:#4fc3d9;
+  --rare-cyan:#00e5ff; --rare-gold:#ffc94d; --rare-magenta:#ff2d96;
+  --common-green:#6fa07d; --common-orange:#b97a4b; --common-purple:#8578ad;
+  --glow-cyan:0 0 6px rgba(0,229,255,.55),0 0 20px rgba(0,229,255,.28),0 0 48px rgba(0,229,255,.12);
+  --glow-gold:0 0 6px rgba(255,201,77,.55),0 0 20px rgba(255,201,77,.28),0 0 48px rgba(255,201,77,.12);
+  --glow-magenta:0 0 6px rgba(255,45,150,.55),0 0 20px rgba(255,45,150,.28),0 0 48px rgba(255,45,150,.12);
+  --font-display:'Chakra Petch','Trebuchet MS',sans-serif;
+  --font-mono:'IBM Plex Mono','Consolas',monospace;
+  --cut:12px;
+  --clip-card:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);
+  --ease-everdell:cubic-bezier(.34,.08,.16,1);
+  --ease-hud:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 50% 0%,#0d1420 0%,var(--bg-page) 64%);
+  color:var(--text-primary);font-family:var(--font-display);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;min-height:100%;padding:40px 24px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px)}
+
+/* ---- header ---- */
+.head{display:flex;align-items:center;gap:14px;width:100%;max-width:1040px}
+.head .ttl{font:600 17px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text-primary);text-shadow:0 0 12px rgba(79,195,217,.25)}
+.head .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.5),transparent)}
+.head .cap{font:500 10px/1 var(--font-mono);letter-spacing:.22em;color:var(--text-muted)}
+
+/* ============================ THE TABLE ============================ */
+.table{position:relative;display:flex;align-items:center;gap:30px;
+  padding:34px 40px;max-width:1040px;
+  background:linear-gradient(180deg,rgba(20,26,36,.5),rgba(10,14,22,.34));
+  border:1px solid var(--border-panel);border-top:1px solid rgba(79,195,217,.4);
+  box-shadow:0 0 60px rgba(79,195,217,.10),inset 0 26px 52px rgba(79,195,217,.05);
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
+.table::after{content:"";position:absolute;left:170px;right:40px;top:20%;height:60%;pointer-events:none;
+  background:radial-gradient(58% 80% at 50% 42%,rgba(79,195,217,.12),transparent 72%);filter:blur(8px)}
+
+/* ---- deck stack ---- */
+.deckcol{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}
+.deck{position:relative;width:96px;height:134px}
+.deck .layer,.deck .face{position:absolute;inset:0;clip-path:var(--clip-card)}
+.deck .layer{background:linear-gradient(160deg,#16202c,#0b111a);border:1px solid var(--border-panel)}
+.deck .layer.l1{transform:translate(7px,7px);opacity:.45}
+.deck .layer.l2{transform:translate(4px,4px);opacity:.7}
+.deck .face{background:radial-gradient(circle at 50% 40%,#12202a,#070c13);
+  border:1px solid rgba(79,195,217,.4);display:grid;place-items:center;
+  box-shadow:inset 0 0 22px rgba(79,195,217,.08)}
+.deck .face svg{width:34px;height:34px;color:rgba(79,195,217,.5)}
+.deck .cnt{position:absolute;bottom:8px;left:0;right:0;text-align:center;
+  font:600 13px/1 var(--font-mono);color:var(--accent-ui)}
+.deckcol .k{font:600 8px/1 var(--font-display);letter-spacing:.18em;color:var(--text-muted)}
+
+/* ---- market rail ---- */
+.market{display:flex;gap:14px;flex:1;justify-content:center}
+.slot{position:relative;width:116px;height:162px;flex-shrink:0}
+.flyer{position:absolute;inset:0;opacity:0;transform-origin:50% 92%;will-change:transform,filter}
+
+/* ============================ GAME CARD ============================ */
+.card{position:relative;width:100%;height:100%;display:flex;flex-direction:column;
+  background:var(--bg-panel);border:1px solid var(--border-dim);clip-path:var(--clip-card);
+  transition:border-color .38s ease-out,transform .16s var(--ease-hud),box-shadow .32s ease-out}
+.card .cc{position:absolute;top:0;right:0;width:var(--cut);height:var(--cut);
+  background:rgba(255,255,255,.02);border-left:1px solid var(--border-dim);transition:background .38s ease-out,border-color .38s ease-out}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;gap:4px}
+.card .cn{font:600 9px/1.1 var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted);transition:color .38s ease-out,text-shadow .38s ease-out}
+.card .pip{display:flex;gap:2px;margin-right:4px;flex-shrink:0}
+.card .pip i{width:4px;height:4px;background:var(--text-muted);transform:rotate(45deg);transition:background .38s ease-out}
+.card .well{flex:1;margin:0 1px;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 1px,transparent 1px 3px),
+             repeating-linear-gradient(135deg,var(--bg-inset) 0 8px,#0b1018 8px 16px);
+  display:grid;place-items:center;overflow:hidden}
+.card .well svg{width:42%;height:42%;opacity:.55;transition:opacity .38s ease-out,filter .38s ease-out}
+.card .ft{display:flex;align-items:flex-end;justify-content:space-between;padding:7px 9px 8px;gap:4px}
+.card .ty{font:600 6px/1.2 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.card .vl{font:600 15px/1 var(--font-mono);color:var(--text-muted);transition:color .38s ease-out,text-shadow .38s ease-out}
+.card .strip{position:absolute;left:0;bottom:0;width:16px;height:2px;background:transparent;transition:background .38s ease-out}
+
+/* --- lit: neon accent fades up on landing --- */
+.card.lit{border-color:var(--cl)}
+.card.lit .cc{background:var(--gl);border-left-color:var(--cl)}
+.card.lit .cn{color:var(--nm)}
+.card.lit .pip i{background:var(--c)}
+.card.lit .well svg{opacity:.95}
+.card.lit .vl{color:var(--c)}
+.card.lit .strip{background:var(--c)}
+.card.lit.rare{box-shadow:var(--gw);animation:rareBreathe 3.6s var(--ease-hud) infinite;animation-delay:.4s}
+.card.lit.rare .cn{text-shadow:0 0 7px var(--c)}
+.card.lit.rare .vl{text-shadow:0 0 10px var(--c)}
+.card.lit.rare .well svg{filter:drop-shadow(0 0 5px var(--c))}
+
+/* dealt cards react to touch — tactile hover/press */
+.flyer.done .card{cursor:pointer}
+.flyer.done .card:hover{transform:translateY(-8px);box-shadow:0 14px 26px rgba(0,0,0,.5),0 0 16px var(--gl)}
+.flyer.done .card.rare:hover{box-shadow:0 14px 26px rgba(0,0,0,.5),var(--gw)}
+.flyer.done .card:active{transform:translateY(-4px)}
+
+@keyframes rareBreathe{
+  0%,100%{box-shadow:0 0 5px var(--gc1),0 0 16px var(--gc2),0 0 40px var(--gc3)}
+  50%{box-shadow:0 0 8px var(--gc1),0 0 26px var(--gc2),0 0 58px var(--gc3)}
+}
+
+/* rarity palettes */
+.a-cyan{--c:var(--rare-cyan);--cl:var(--rare-cyan);--nm:var(--rare-cyan);--gw:var(--glow-cyan);--gl:rgba(0,229,255,.12);--gc1:rgba(0,229,255,.5);--gc2:rgba(0,229,255,.24);--gc3:rgba(0,229,255,.1)}
+.a-gold{--c:var(--rare-gold);--cl:var(--rare-gold);--nm:var(--rare-gold);--gw:var(--glow-gold);--gl:rgba(255,201,77,.12);--gc1:rgba(255,201,77,.5);--gc2:rgba(255,201,77,.24);--gc3:rgba(255,201,77,.1)}
+.a-mag{--c:var(--rare-magenta);--cl:var(--rare-magenta);--nm:var(--rare-magenta);--gw:var(--glow-magenta);--gl:rgba(255,45,150,.12);--gc1:rgba(255,45,150,.5);--gc2:rgba(255,45,150,.24);--gc3:rgba(255,45,150,.1)}
+.a-grn{--c:var(--common-green);--cl:color-mix(in srgb,var(--common-green) 60%,transparent);--nm:var(--text-primary);--gw:none;--gl:rgba(111,160,125,.10)}
+.a-org{--c:var(--common-orange);--cl:color-mix(in srgb,var(--common-orange) 60%,transparent);--nm:var(--text-primary);--gw:none;--gl:rgba(185,122,75,.10)}
+.a-pur{--c:var(--common-purple);--cl:color-mix(in srgb,var(--common-purple) 60%,transparent);--nm:var(--text-primary);--gw:none;--gl:rgba(133,120,173,.10)}
+
+/* dust motes */
+.mote{position:absolute;width:4px;height:4px;border-radius:50%;pointer-events:none;z-index:40;
+  background:var(--mc);box-shadow:0 0 6px var(--mc);animation:dust .62s ease-out forwards}
+@keyframes dust{
+  0%{opacity:0;transform:translate(0,0) scale(.4)}
+  22%{opacity:.9}
+  100%{opacity:0;transform:translate(var(--mx),var(--my)) scale(0)}
+}
+
+/* ---- controls ---- */
+.controls{display:flex;align-items:center;gap:18px}
+.btn{position:relative;font:600 11px/1 var(--font-display);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--bg-page);background:var(--accent-ui);border:none;padding:13px 26px;cursor:pointer;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+  box-shadow:0 0 18px rgba(79,195,217,.35);transition:transform .16s var(--ease-hud),box-shadow .16s var(--ease-hud)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 26px rgba(79,195,217,.55)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:default;box-shadow:none;transform:none}
+.note{font:500 10px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--text-muted);max-width:340px}
+.note b{color:var(--text-secondary);font-weight:600}
+
+@media (prefers-reduced-motion:reduce){
+  .card.lit.rare{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <span class="ttl">Darknet Market</span>
+  <span class="rule"></span>
+  <span class="cap">DEAL // 7 GOODS FACE-UP</span>
+</div>
+
+<div class="table">
+  <div class="deckcol">
+    <div class="deck">
+      <div class="layer l1"></div><div class="layer l2"></div>
+      <div class="face">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        <span class="cnt" id="deckCnt">31</span>
+      </div>
+    </div>
+    <span class="k">DECK</span>
+  </div>
+  <div class="market" id="market"></div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="replay">◇ Replay Deal</button>
+  <span class="note">Cards arc from the deck one-by-one, settling with weight. <b>Rare</b> goods glow &amp; breathe; commons stay matte. Honors reduced-motion.</span>
+</div>
+
+<script>
+const CARDS = [
+  {n:'AI Cores',   t:'Rare // Data',   v:7, cls:'a-cyan', rare:true,  svg:'<polygon points="20,6 32,13 32,27 20,34 8,27 8,13"/><circle cx="20" cy="20" r="4" fill="var(--rare-cyan)" stroke="none"/>'},
+  {n:'Implants',   t:'Rare // Cyber',  v:6, cls:'a-gold', rare:true,  svg:'<circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="4" fill="var(--rare-gold)" stroke="none"/>'},
+  {n:'Cracked SW', t:'Common // SW',   v:3, cls:'a-grn',  rare:false, svg:'<rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/>'},
+  {n:'Corp Data',  t:'Rare // Intel',  v:5, cls:'a-mag',  rare:true,  svg:'<polygon points="20,6 30,13 27,31 20,35 13,31 10,13"/><circle cx="20" cy="20" r="3" fill="var(--rare-magenta)" stroke="none"/>'},
+  {n:'Pharma',     t:'Common // Bio',  v:2, cls:'a-pur',  rare:false, svg:'<rect x="15" y="8" width="10" height="6"/><path d="M16 14h8v16a4 4 0 0 1-8 0z"/>'},
+  {n:'Weaponry',   t:'Common // Arms', v:2, cls:'a-org',  rare:false, svg:'<rect x="8" y="16" width="24" height="8" rx="2"/><circle cx="28" cy="20" r="2"/>'},
+  {n:'Street Data',t:'Common // SW',   v:3, cls:'a-grn',  rare:false, svg:'<rect x="9" y="10" width="22" height="20" rx="2"/><path d="M13 16h9M13 20h6"/>'},
+];
+const REST_ROT = [-3, -2, -1, 0, 1, 2, 3];   // subtle fan — settled resting tilt
+
+const market = document.getElementById('market');
+const deck   = document.querySelector('.deck');
+const table  = document.querySelector('.table');
+const deckCnt= document.getElementById('deckCnt');
+const replay = document.getElementById('replay');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+const strokeFor = c => c.rare
+  ? (c.cls==='a-cyan'?'var(--rare-cyan)':c.cls==='a-gold'?'var(--rare-gold)':'var(--rare-magenta)')
+  : (c.cls==='a-grn'?'var(--common-green)':c.cls==='a-org'?'var(--common-orange)':'var(--common-purple)');
+
+function build(){
+  market.innerHTML = '';
+  CARDS.forEach((c,i)=>{
+    const slot = document.createElement('div'); slot.className='slot';
+    slot.innerHTML =
+      `<div class="flyer"><div class="card ${c.cls}${c.rare?' rare':''}">
+        <span class="cc"></span>
+        <div class="ch"><span class="cn">${c.n}</span><span class="pip">${'<i></i>'.repeat(c.rare?3:1)}</span></div>
+        <div class="well"><svg viewBox="0 0 40 40" fill="none" stroke="${strokeFor(c)}" stroke-width="1.4">${c.svg}</svg></div>
+        <div class="ft"><span class="ty">${c.t}</span><span class="vl">${c.v}</span></div>
+        <span class="strip"></span>
+      </div></div>`;
+    market.appendChild(slot);
+  });
+}
+
+let dealing = false;
+function reset(){
+  document.querySelectorAll('.flyer').forEach(f=>{
+    f.getAnimations().forEach(a=>a.cancel());
+    f.classList.remove('done'); f.style.opacity='0';
+    f.querySelector('.card').classList.remove('lit');
+  });
+  deckCnt.textContent = '31';
+}
+
+function dust(cardEl, color){
+  const tr = table.getBoundingClientRect();
+  const cr = cardEl.getBoundingClientRect();
+  const cx = cr.left - tr.left + cr.width/2;
+  const cy = cr.top  - tr.top  + cr.height*0.42;
+  for(let k=0;k<6;k++){
+    const m = document.createElement('span'); m.className='mote';
+    const ang = -Math.PI/2 + (Math.random()-.5)*1.9;
+    const dist = 16 + Math.random()*26;
+    m.style.setProperty('--mx', Math.cos(ang)*dist+'px');
+    m.style.setProperty('--my', (Math.sin(ang)*dist - 6)+'px');
+    m.style.setProperty('--mc', color);
+    m.style.left = (cx - 2 + (Math.random()-.5)*20)+'px';
+    m.style.top  = (cy - 2 + (Math.random()-.5)*24)+'px';
+    m.style.animationDelay = (Math.random()*80)+'ms';
+    table.appendChild(m);
+    m.addEventListener('animationend', ()=>m.remove());
+  }
+}
+
+function deckGive(){
+  const face = deck.querySelector('.face');
+  face.animate(
+    [{transform:'translateY(0)'},{transform:'translateY(-5px)'},{transform:'translateY(0)'}],
+    {duration:240, easing:'cubic-bezier(.2,.9,.25,1)'}
+  );
+}
+
+function deal(){
+  if(dealing) return;
+  dealing = true; replay.disabled = true;
+  reset();
+  const flyers = [...document.querySelectorAll('.flyer')];
+  const reduced = reduce.matches;
+
+  flyers.forEach((flyer, i)=>{
+    const card = flyer.querySelector('.card');
+    const rest = REST_ROT[i] || 0;
+    const start = i*82 + 120;
+
+    setTimeout(()=>{
+      deckCnt.textContent = String(31 - (i+1));
+      if(reduced){
+        // no travel — fade into slot, neon fades up in place
+        flyer.style.transform = `rotate(${rest}deg)`;
+        flyer.animate([{opacity:0},{opacity:1}],{duration:260,easing:'ease-out',fill:'forwards'});
+        card.classList.add('lit');
+        flyer.classList.add('done');
+        if(i===flyers.length-1) finish();
+        return;
+      }
+      deckGive();
+      // measure deck vs resting slot to build the arc
+      const fr = flyer.getBoundingClientRect();
+      const dr = deck.getBoundingClientRect();
+      const dx = (dr.left+dr.width/2) - (fr.left+fr.width/2);
+      const dy = (dr.top +dr.height/2) - (fr.top +fr.height/2);
+      const startRot = -8 + (Math.random()*4);
+      const apexLift = 46 + Math.random()*10;
+      const dur = 380 + Math.random()*110;
+
+      const kf = [
+        {offset:0,   opacity:1, transform:`translate(${dx}px,${dy}px) rotate(${startRot}deg) scaleX(.84) scaleY(.84)`,
+                     filter:'drop-shadow(0 8px 16px rgba(0,0,0,.55))'},
+        {offset:.5,  opacity:1, transform:`translate(${dx*0.42}px,${dy*0.52 - apexLift}px) rotate(${startRot*0.4}deg) scaleX(.95) scaleY(.95)`,
+                     filter:'drop-shadow(0 36px 48px rgba(0,0,0,.5))'},
+        {offset:.86, opacity:1, transform:`translate(0px,-9px) rotate(${rest}deg) scaleX(.972) scaleY(1.055)`,
+                     filter:'drop-shadow(0 12px 20px rgba(0,0,0,.5))'},
+        {offset:.94, opacity:1, transform:`translate(0px,3px) rotate(${rest}deg) scaleX(1.02) scaleY(.965)`,
+                     filter:'drop-shadow(0 8px 15px rgba(0,0,0,.46))'},
+        {offset:1,   opacity:1, transform:`translate(0,0) rotate(${rest}deg) scaleX(1) scaleY(1)`,
+                     filter:'drop-shadow(0 6px 12px rgba(0,0,0,.44))'},
+      ];
+      const anim = flyer.animate(kf, {duration:dur, easing:'cubic-bezier(.34,.08,.16,1)', fill:'both'});
+
+      // neon accent fades up as the card nears its landing
+      setTimeout(()=>card.classList.add('lit'), dur*0.78);
+      anim.onfinish = ()=>{
+        flyer.style.transform = `rotate(${rest}deg)`; // pin resting tilt (hover transform stays on .card)
+        flyer.classList.add('done');
+        dust(card, card.classList.contains('rare') ? getComputedStyle(card).getPropertyValue('--c') : 'rgba(180,210,230,.9)');
+        if(i===flyers.length-1) finish();
+      };
+    }, start);
+  });
+}
+
+function finish(){ dealing = false; replay.disabled = false; }
+
+build();
+replay.addEventListener('click', deal);
+window.addEventListener('load', ()=> setTimeout(deal, 420));
+</script>
+</body>
+</html>
