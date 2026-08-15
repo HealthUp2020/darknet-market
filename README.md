@@ -1,15 +1,30 @@
-# game
+# NIGHT MARKET
 
-To install dependencies:
+A cyberpunk trading card game — a 4-player, best-of-3 reskin of a Jaipur-inspired market game,
+built with [Bun](https://bun.com). You play the OPERATOR against three rival machines, cornering
+the supply of contraband goods.
+
+**▶ Play: https://healthup2020.github.io/darknet-market/**
+
+## Develop
 
 ```bash
-bun install
+bun run dev      # dev server with the Bun HTML bundler (http://localhost:3000)
+bun test         # test suite (pure engine, bots, layout, match, persistence)
+bun run sim      # bot balance simulation
 ```
 
-To run:
+- Game logic is a **pure, DOM-free engine** in `public/engine.js` (+ `strategies.js`, `layout.js`,
+  `persistence.js`); the renderer is `public/game.js`. Tests import the engine directly.
+- Bots: `easy` (reckless) · `normal` (heuristic) · `hard` (1-ply lookahead). See `BOT_LOGIC.md`.
+
+## Deploy (GitHub Pages)
+
+GitHub Pages is static-only, so the game ships as a static bundle (no Bun server):
 
 ```bash
-bun run index.ts
+bun run build    # -> dist/ (minified bundle + backgrounds + .nojekyll)
 ```
 
-This project was created using `bun init` in bun v1.3.9. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+`.github/workflows/deploy.yml` runs on every push to `main`: it runs `bun test`, builds, and
+deploys `dist/` to Pages. A red test suite blocks the deploy.
