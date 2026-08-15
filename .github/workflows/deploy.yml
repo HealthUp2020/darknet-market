@@ -20,6 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      # Gate the deploy on a green test suite — broken code never ships.
+      - run: bun test
       # No `bun install` needed — `bun run build` bundles local ES modules only (no npm runtime deps).
       - run: bun run build
       - uses: actions/configure-pages@v5
