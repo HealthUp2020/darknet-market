@@ -3,7 +3,7 @@
 Prepend the shared spec from [00-everdell-motion.md](00-everdell-motion.md), then this prompt.
 
 ```
-[MOTION LANGUAGE] + Animate the DARKNET MARKET dealing its 7 cards. On round start / restock,
+[MOTION LANGUAGE] + Animate the NIGHT MARKET dealing its 7 cards. On round start / restock,
 cards travel one-by-one from the DECK to their market slots along a gentle arc, staggered ~80ms
 apart, each rising slightly then settling into place with the soft overshoot + squash. As each
 lands, its neon frame accent fades up (rare cards glow, commons stay matte) and a faint dust of

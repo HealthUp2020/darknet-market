@@ -310,7 +310,7 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .g-org{--ac:var(--common-orange);--acg:none}
 
   /* =========================================================
-     CENTER — DARKNET MARKET (the heart)
+     CENTER — NIGHT MARKET (the heart)
      ========================================================= */
   .market{position:absolute;left:300px;right:322px;top:94px;z-index:16}
   .market .hd{display:flex;align-items:center;gap:12px;margin-bottom:9px}
@@ -650,3 +650,61 @@ body{background:var(--bg-page)}
 #menu .mcta + .mcta{margin-top:12px}
 #menu .mcta.ghost{background:transparent;color:var(--text-secondary,#92a5bc);border:1px solid var(--border-panel,#26334a);box-shadow:none}
 #menu .mcta.ghost:hover{color:var(--text-primary,#e6eef7);border-color:var(--rare-cyan,#00e5ff);filter:none}
+
+/* ---- Match/round progress HUD (ROC-210) — centered band above the dock ---- */
+#progress{position:absolute;left:50%;top:474px;transform:translateX(-50%);z-index:17;display:none;
+  align-items:stretch;border:1px solid var(--border-panel);border-radius:10px;overflow:hidden;
+  background:var(--glass-bg,rgba(20,26,36,.72));backdrop-filter:blur(10px);box-shadow:var(--shadow-panel)}
+#progress.on{display:flex}
+#progress .pseg{display:flex;align-items:center;gap:10px;padding:9px 16px}
+#progress .pseg+.pseg{border-left:1px solid var(--border-panel)}
+#progress .cap{font:600 8px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted)}
+#progress .rn b{font:700 18px/1 var(--font-mono);color:var(--text-primary)}
+#progress .rn .of{font:500 12px/1 var(--font-mono);color:var(--text-muted)}
+#progress .ops{display:flex;gap:12px}
+#progress .pop{text-align:center}
+#progress .pop .nm{display:block;font:600 8px/1 var(--font-display);letter-spacing:.08em;color:var(--text-muted);margin-bottom:4px}
+#progress .pop.act .nm{color:var(--accent-ui);text-shadow:var(--glow-text-ui)}
+#progress .pop .pips{font-size:11px;letter-spacing:2px;color:#2b3446}
+#progress .pop .pips .on{color:var(--rare-gold);text-shadow:0 0 6px rgba(255,201,77,.5)}
+#progress .psupply .bars{display:flex;gap:3px}
+#progress .psupply .bars i{width:16px;height:8px;border-radius:2px;background:#1a2333;border:1px solid var(--border-panel)}
+#progress .psupply .bars i.on{background:var(--accent-ui);border-color:var(--accent-ui)}
+#progress .psupply .n{font:700 13px/1 var(--font-mono);color:var(--text-secondary)}
+#progress .psupply.warn .bars i.on{background:#ff9f45;border-color:#ff9f45;box-shadow:0 0 6px rgba(255,159,69,.5)}
+#progress .psupply.warn .n{color:#ff9f45}
+#progress .psupply .w{font:700 8px/1 var(--font-display);letter-spacing:.12em;color:#ff9f45;text-shadow:0 0 6px rgba(255,159,69,.4)}
+#progress .dk{font:700 15px/1 var(--font-mono);color:var(--rare-cyan)}
+#progress .pseg.warn .dk{color:#ff9f45}
+
+/* ---- How to Play rules panel (ROC-191) ---- */
+#menu .mlink{margin-top:14px;background:none;border:0;cursor:pointer;color:var(--text-muted);
+  font:600 10px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}
+#menu .mlink:hover{color:var(--rare-cyan)}
+.util button.ic{cursor:pointer;padding:0;font:inherit}
+.util #util-help:hover{color:var(--rare-cyan);border-color:rgba(0,229,255,.5)}
+
+#howto{position:fixed;inset:0;z-index:700;display:none;place-items:center;padding:20px;box-sizing:border-box;
+  background:repeating-linear-gradient(0deg,rgba(0,229,255,.03) 0 1px,transparent 1px 3px),radial-gradient(80% 60% at 50% 18%,#0e1a24,var(--bg-page,#0a0e16) 68%);
+  font-family:var(--font-display,"Chakra Petch",sans-serif);color:var(--text-primary)}
+#howto.on{display:grid}
+#howto .hbox{width:680px;max-width:100%;max-height:90vh;overflow:auto;box-sizing:border-box;
+  background:rgba(14,20,28,.92);border:1px solid var(--border-panel);border-radius:14px;padding:26px 30px;box-shadow:var(--shadow-panel)}
+#howto .hhead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+#howto .hkick{font:600 10px/1 var(--font-mono);letter-spacing:.28em;color:var(--text-muted);margin-bottom:8px}
+#howto .htitle{font-size:30px;font-weight:700;letter-spacing:.06em;margin:0;color:#fff}
+#howto .hclose{width:30px;height:30px;flex-shrink:0;border:1px solid var(--border-panel);border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px}
+#howto .hclose:hover{color:var(--rare-cyan);border-color:var(--rare-cyan)}
+#howto .hgoal{font:400 14px/1.6 var(--font-body);color:var(--text-secondary);background:rgba(0,229,255,.07);border-left:2px solid var(--rare-cyan);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:22px}
+#howto .hgoal b{color:var(--rare-cyan)}
+#howto .hsectitle{font:600 10px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ui);margin:0 0 12px}
+#howto .hgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+#howto .hcard{border:1px solid var(--border-panel);border-radius:10px;padding:12px 14px;background:rgba(20,26,36,.5)}
+#howto .hcard b{display:block;font:600 12px/1 var(--font-display);letter-spacing:.08em;color:var(--text-primary);margin-bottom:6px}
+#howto .hcard p{margin:0;font:400 12px/1.5 var(--font-body);color:var(--text-muted)}
+#howto .hlist{margin:0 0 24px;padding-left:18px;display:flex;flex-direction:column;gap:9px}
+#howto .hlist li{font:400 13px/1.55 var(--font-body);color:var(--text-secondary)}
+#howto .hlist b{color:var(--text-primary)}
+#howto .mcta{display:block;margin:0 auto;cursor:pointer;border:0;border-radius:9px;font:700 13px/1 var(--font-display);
+  letter-spacing:.16em;color:#04121a;background:var(--rare-cyan);padding:14px 34px;box-shadow:0 0 26px rgba(0,229,255,.32)}
+#howto .mcta:hover{filter:brightness(1.08)}

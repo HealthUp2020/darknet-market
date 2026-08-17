@@ -4,7 +4,7 @@ A cyberpunk trading card game — a 4-player, best-of-3 reskin of a Jaipur-inspi
 built with [Bun](https://bun.com). You play the OPERATOR against three rival machines, cornering
 the supply of contraband goods.
 
-**▶ Play: https://healthup2020.github.io/darknet-market/**
+**▶ Play: https://healthup2020.github.io/night-market/**
 
 ## Develop
 

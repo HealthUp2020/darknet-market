@@ -97,9 +97,10 @@ export function dealGoodsHand(state, playerIdx) {
 export function addLog(state, text) { state.log.push(text); }
 export function goodsInHand(hand) { const c = {}; for (const g of hand) c[g] = (c[g] || 0) + 1; return c; }
 export function refillMarket(state, count) { for (let i = 0; i < count && state.deck.length > 0; i++) state.market.push(state.deck.pop()); }
+export const PILES_TO_END = 3; // a round ends once this many goods piles are empty (or the deck runs out)
+export function emptyPileCount(state) { return GOODS.filter((g) => state.tokens[g].length === 0).length; }
 export function checkGameEnd(state) {
-  const empty = GOODS.filter((g) => state.tokens[g].length === 0).length;
-  if (empty >= 3 || state.deck.length === 0) finishGame(state);
+  if (emptyPileCount(state) >= PILES_TO_END || state.deck.length === 0) finishGame(state);
 }
 export function finishGame(state) {
   state.gameOver = true; // ends the current ROUND

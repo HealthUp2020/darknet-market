@@ -154,6 +154,69 @@ describe("exchangeCards", () => {
     s.players[0].hand = ["cloth"];
     expect(exchangeCards(s, 0, { handIdxs: [0], camels: 0 }, [0]).ok).toBe(false);
   });
+
+  describe("drone-only give path", () => {
+    test("gives N drones for N market goods: camels drop, hand gains taken cards, drones return to market, turn advances", () => {
+      const s = makeState({ market: ["gold", "silver", "cloth"] });
+      s.players[0].hand = ["leather"];
+      s.players[0].camels = 3;
+      const r = exchangeCards(s, 0, { handIdxs: [], camels: 2 }, [0, 1]);
+      expect(r.ok).toBe(true);
+      expect(s.players[0].camels).toBe(1);
+      expect(s.players[0].hand.sort()).toEqual(["gold", "leather", "silver"]);
+      // the two given drones go back into the market, the untaken "cloth" remains
+      expect(s.market.filter((c) => c === "camel")).toHaveLength(2);
+      expect(s.market).toContain("cloth");
+      expect(s.turnIndex).toBe(1);
+    });
+
+    test("rejects when the player doesn't have enough drones, with no state mutation", () => {
+      const s = makeState({ market: ["gold", "silver"] });
+      s.players[0].hand = ["leather"];
+      s.players[0].camels = 1; // only 1, trying to give 2
+      const r = exchangeCards(s, 0, { handIdxs: [], camels: 2 }, [0, 1]);
+      expect(r.ok).toBe(false);
+      expect(r.error).toBeTruthy();
+      expect(s.players[0].camels).toBe(1);
+      expect(s.market).toEqual(["gold", "silver"]);
+      expect(s.players[0].hand).toEqual(["leather"]);
+      expect(s.turnIndex).toBe(0);
+    });
+
+    test("rejects a drone-only exchange below the 2-minimum (1 drone for 1 card)", () => {
+      const s = makeState({ market: ["gold"] });
+      s.players[0].hand = [];
+      s.players[0].camels = 1;
+      const r = exchangeCards(s, 0, { handIdxs: [], camels: 1 }, [0]);
+      expect(r.ok).toBe(false);
+      expect(s.players[0].camels).toBe(1);
+      expect(s.market).toEqual(["gold"]);
+      expect(s.turnIndex).toBe(0);
+    });
+
+    test("rejects a drone-only exchange that would push the hand above HAND_LIMIT", () => {
+      const s = makeState({ market: ["gold", "silver", "cloth"] });
+      s.players[0].hand = Array(6).fill("leather"); // 6 + 3 taken = 9 > 7, drones don't shrink hand
+      s.players[0].camels = 3;
+      const r = exchangeCards(s, 0, { handIdxs: [], camels: 3 }, [0, 1, 2]);
+      expect(r.ok).toBe(false);
+      expect(s.players[0].camels).toBe(3);
+      expect(s.players[0].hand).toHaveLength(6);
+      expect(s.market).toEqual(["gold", "silver", "cloth"]);
+      expect(s.turnIndex).toBe(0);
+    });
+
+    test("rejects taking a drone via a drone-only exchange", () => {
+      const s = makeState({ market: ["camel", "gold"] });
+      s.players[0].hand = [];
+      s.players[0].camels = 2;
+      const r = exchangeCards(s, 0, { handIdxs: [], camels: 2 }, [0, 1]);
+      expect(r.ok).toBe(false);
+      expect(s.players[0].camels).toBe(2);
+      expect(s.market).toEqual(["camel", "gold"]);
+      expect(s.turnIndex).toBe(0);
+    });
+  });
 });
 
 describe("game end", () => {

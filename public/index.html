@@ -20,7 +20,7 @@
       <div class="cable" style="left:1200px;height:70px"></div>
       <div class="sign glyph" style="left:330px;top:250px;font-size:110px;color:var(--rare-magenta)">ᛰ⌇</div>
       <div class="sign glyph" style="right:340px;top:150px;font-size:84px;color:var(--rare-cyan)">⟠⌇ᚼ</div>
-      <div class="sign" style="left:50%;top:56px;transform:translateX(-50%);font-size:44px;color:var(--rare-gold);writing-mode:horizontal-tb;white-space:nowrap">// DARKNET BAZAAR //</div>
+      <div class="sign" style="left:50%;top:56px;transform:translateX(-50%);font-size:44px;color:var(--rare-gold);writing-mode:horizontal-tb;white-space:nowrap">// NIGHT BAZAAR //</div>
       <div class="steam" style="left:520px;bottom:150px;width:300px;height:160px"></div>
       <div class="steam" style="right:420px;bottom:120px;width:260px;height:140px"></div>
       <div class="rain"></div>
@@ -41,6 +41,7 @@
 
     <!-- UTILITY -->
     <div class="util">
+      <button class="ic" id="util-help" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.5v.4"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg></button>
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.2A1.6 1.6 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 13.4H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 6.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v0a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></div>
       <div class="ic" style="color:var(--accent-ui);border-color:rgba(79,195,217,.5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div>
     </div>
@@ -63,7 +64,7 @@
 
     <!-- ================= CENTER MARKET ================= -->
     <div class="market">
-      <div class="hd"><span class="ttl">Darknet Market</span><span class="rule"></span><span class="cap mono">7 GOODS FACE-UP</span></div>
+      <div class="hd"><span class="ttl">Night Market</span><span class="rule"></span><span class="cap mono">7 GOODS FACE-UP</span></div>
       <div class="counter">
         <div class="cards" id="market-cards"></div>
         <div class="deckcol">
@@ -100,6 +101,9 @@
       <div class="tb" id="log"><div class="scan"></div></div>
     </div>
 
+    <!-- Match/round progress HUD (ROC-210); filled by updateProgress() -->
+    <div id="progress"></div>
+
     <!-- ================= OPERATOR ZONE ================= -->
     <div class="op">
       <div class="opbg"></div>
@@ -123,7 +127,6 @@
       <div class="dock">
         <div class="drow">
           <button class="btn primary" id="btn-primary">Select cards to act</button>
-          <button class="btn" id="btn-camels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="10" rx="4" ry="3"/><ellipse cx="15" cy="12" rx="4" ry="3"/><path d="M4 18q9 4 16 0"/></svg>Take Drones</button>
         </div>
         <div class="drow">
           <button class="btn ghost" id="btn-clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Unselect all</button>
@@ -160,7 +163,7 @@
 <!-- Title / main menu (ROC-195); shown at boot + via MAIN MENU, hidden on ENTER -->
 <div id="menu" class="menu on" aria-hidden="false">
   <div class="mbox">
-    <div class="mkick">DARKNET BAZAAR</div>
+    <div class="mkick">NIGHT BAZAAR</div>
     <h1 class="mtitle"><span class="n">NIGHT</span> <span class="m">MARKET</span></h1>
     <div class="mtag">Trade contraband, corner the supply, and outlast three rival operators across a best-of-three.</div>
     <div class="mbadge">◆ BEST OF 3 · FIRST TO 2 SEALS</div>
@@ -174,7 +177,38 @@
     </div>
     <button id="menu-resume" class="mcta ghost" style="display:none">RESUME MATCH →</button>
     <button id="menu-start" class="mcta">ENTER THE MARKET →</button>
+    <button id="menu-howto" class="mlink" type="button">How to play</button>
     <div class="mrivals">RIVALS ONLINE &nbsp;·&nbsp; <b>VULT-3R</b> &nbsp; <b>NØMAD</b> &nbsp; <b>SPECTRE-9</b></div>
+  </div>
+</div>
+
+<!-- How to Play — rules panel (ROC-191); opened from menu or the in-game "?" -->
+<div id="howto" class="howto" aria-hidden="true">
+  <div class="hbox">
+    <div class="hhead">
+      <div><div class="hkick">Operator Briefing</div><h1 class="htitle">How to Play</h1></div>
+      <button id="howto-close" class="hclose" aria-label="Close">✕</button>
+    </div>
+
+    <div class="hgoal"><b>Goal —</b> win 2 of 3 rounds. Each round, bank the most CR by selling contraband before the market collapses.</div>
+
+    <div class="hsectitle">On your turn — do one thing</div>
+    <div class="hgrid">
+      <div class="hcard"><b>Take 1 card</b><p>Draw one good from the market into your hand (max 7).</p></div>
+      <div class="hcard"><b>Take drones</b><p>Sweep every drone from the market into your fleet — they don't clog your hand.</p></div>
+      <div class="hcard"><b>Sell goods</b><p>Cash in cards of one good for CR. Rare goods must be sold 2+ at a time.</p></div>
+      <div class="hcard"><b>Exchange</b><p>Swap 2+ hand cards and/or drones for the same number of market cards.</p></div>
+    </div>
+
+    <div class="hsectitle">Know the market</div>
+    <ul class="hlist">
+      <li><b>Prices fall as goods sell.</b> Each good's tokens stack high-to-low; every sale pays the top tokens. Sell scarce goods first for the premium.</li>
+      <li><b>Sell in bulk for a bonus.</b> Selling 3, 4, or 5+ of a good grants an extra bonus token on top.</li>
+      <li><b>Drones earn Fixer Reputation.</b> Whoever holds the largest drone fleet at round's end takes a <b>+5 CR</b> bonus.</li>
+      <li><b>Round ends</b> when 3 goods sell out (watch the <b>SUPPLY</b> meter) or the deck runs dry. Most CR wins the round and a seal — first to <b>2 seals</b> wins the match.</li>
+    </ul>
+
+    <button id="howto-ok" class="mcta">Got it →</button>
   </div>
 </div>
 

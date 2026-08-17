@@ -6,6 +6,7 @@ import { test, expect, describe } from "bun:test";
 import {
   newGame, takeCard, sellCards, exchangeCards, botPlay, checkGameEnd,
   TOKEN_TEMPLATE, HAND_LIMIT, PLAYER_COUNT, PLAYER_NAMES,
+  emptyPileCount, PILES_TO_END, GOODS,
 } from "../public/engine.js";
 
 // Same deterministic-state pattern as tests/engine.test.ts.
@@ -323,5 +324,64 @@ describe("descending token-value economics (ROC-214)", () => {
     sellCards(s, 0, "gold", 2); // takes the last 6 and a 5
     expect(s.tokens.gold).toEqual([5, 5, 5]);
     expect(s.tokens.gold[0]).toBe(Math.max(...s.tokens.gold)); // top == max of remainder, now 5 not 7/6
+  });
+});
+
+describe("emptyPileCount / PILES_TO_END (ROC-210)", () => {
+  test("PILES_TO_END is 3", () => {
+    expect(PILES_TO_END).toBe(3);
+  });
+
+  test("a fresh newGame() state has zero empty piles (all 6 GOODS piles stocked)", () => {
+    const s = newGame();
+    expect(GOODS).toHaveLength(6);
+    expect(emptyPileCount(s)).toBe(0);
+  });
+
+  test("emptying piles one at a time increments the count", () => {
+    const s = makeState();
+    expect(emptyPileCount(s)).toBe(0);
+
+    s.tokens.gold = [];
+    expect(emptyPileCount(s)).toBe(1);
+
+    s.tokens.silver = [];
+    expect(emptyPileCount(s)).toBe(2);
+
+    s.tokens.diamond = [];
+    expect(emptyPileCount(s)).toBe(3);
+  });
+
+  test("only the 6 GOODS piles count — unrelated state fields are ignored", () => {
+    const s = makeState();
+    // mutate assorted non-goods state; none of this should move the count
+    s.turnIndex = 3;
+    s.round = 7;
+    s.log = ["something happened"];
+    s.players[0].hand = ["gold", "gold"];
+    s.players[0].camels = 5;
+    s.bonus = { 3: [], 4: [], 5: [] }; // empty bonus tracks, not goods piles
+    expect(emptyPileCount(s)).toBe(0);
+
+    // and a camel pile at zero length isn't a GOODS pile either — no-op if present
+    if ("camel" in s.tokens) (s.tokens as any).camel = [];
+    expect(emptyPileCount(s)).toBe(0);
+  });
+
+  test("boundary: 2 empty piles does not trigger round end via checkGameEnd, 3 does", () => {
+    const s2 = makeState({ deck: Array(30).fill("leather") }); // stocked deck, no deck-exhaustion end
+    s2.tokens.gold = [];
+    s2.tokens.silver = [];
+    expect(emptyPileCount(s2)).toBe(2);
+    checkGameEnd(s2);
+    expect(s2.gameOver).toBe(false);
+
+    const s3 = makeState({ deck: Array(30).fill("leather") });
+    s3.tokens.gold = [];
+    s3.tokens.silver = [];
+    s3.tokens.cloth = [];
+    expect(emptyPileCount(s3)).toBe(3);
+    checkGameEnd(s3);
+    expect(s3.gameOver).toBe(true);
   });
 });

@@ -382,7 +382,7 @@ player can read "what can I do and where" without a tutorial. Rich and atmospher
 the neon hierarchy keeps it legible, never cluttered.
 
 THE ENVIRONMENT
-A rain-slick neon black-market district in a megacity at night — a back-alley darknet
+A rain-slick neon black-market district in a megacity at night — a back-alley night
 bazaar: market stalls, holographic signage/kanji, hanging cables, steam, puddles
 reflecting neon. Rendered in a 3/4 top-down / gentle isometric painterly-but-clean anime
 style (think a GITS-toned, calmer Night City). The environment is atmospheric background;
@@ -390,7 +390,7 @@ the glass HUD zones sit on top with clear anchoring (a stall = the market, a ter
 the deck, etc.). Muted environment so neon UI accents pop.
 
 THE ZONES (every mechanic must have a clear home)
-1. CENTRAL MARKET — the shared "DARKNET MARKET" row: 7 face-up goods cards on a lit market
+1. CENTRAL MARKET — the shared "NIGHT MARKET" row: 7 face-up goods cards on a lit market
    stall/counter at screen center. This is the focal point. Beside it: the DRAW DECK as a
    face-down stack of data-cards with a remaining-count, and a small DISCARD.
 2. MARKET PRICES BOARD (near the market) — the value-token economy: 6 goods, each a
@@ -463,7 +463,7 @@ plus a zone wireframe.
 KEEP EXACTLY AS-IS (from the current stage):
 - The NIGHT MARKET design system: navy tech-noir base, neon only on rare tier, Chakra Petch
   labels + IBM Plex Mono numbers, angled geometry, glass HUD panels, CR currency, the neon
-  "Darknet Bazaar" environment (grid, cables, kanji signage, steam, puddle).
+  "Night Bazaar" environment (grid, cables, kanji signage, steam, puddle).
 - The components: glass panels, GameCard, the value tokens, buttons, system banner, terminal.
 - The player is OPERATOR; rivals are VULT-3R / NØMAD / SPECTRE-9.
 
@@ -474,7 +474,7 @@ NEW LAYOUT — the two required changes:
    COUNT CHIP and a segmented DEPLETION GAUGE (Healthy / Low <=2 / Empty "SOLD OUT" states),
    with the 3 bonus tokens and the Fixer seal grouped at the bottom of this wall. It should
    read like a trading-floor price ticker mounted on the wall.
-2) DARKNET MARKET -> CENTER, as the HEART of the board. The 7 offered goods cards sit dead-
+2) NIGHT MARKET -> CENTER, as the HEART of the board. The 7 offered goods cards sit dead-
    center as the dominant focal point — larger and more prominent than any other element,
    with a pool of light / framing that draws the eye. The draw DECK + DISCARD sit just beside
    the market. Everything else should feel arranged around this centre.

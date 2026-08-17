@@ -2,6 +2,7 @@
 import { CARD_ART } from "./card-art.js"; // illustration SVGs extracted from ui-mockups/Assets/
 import {
   GOODS, GOODS_EN, RARE, TOKEN_TEMPLATE, PLAYER_COUNT, SEALS_TO_WIN, HAND_LIMIT,
+  PILES_TO_END, emptyPileCount,
   newGame, nextRound, takeCard, takeCamels, sellCards, exchangeCards, botPlay,
 } from "./engine.js";
 import { fitScale, isTooSmall } from "./layout.js";
@@ -22,7 +23,6 @@ const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 let state = newGame();
 let selectedMarket = new Set();
 let selectedHand = new Set();
-let selectedDrones = new Set();
 
 // ---- HTML builders ----
 function cardHTML(good, { selected, playable, zone, idx }) {
@@ -248,10 +248,39 @@ function render() {
 
   document.getElementById("fleet-count").textContent = human.camels;
   document.getElementById("fleet-cluster").innerHTML = Array.from({ length: Math.min(human.camels, 12) },
-    (_, i) => `<span class="drone${selectedDrones.has(i) ? " sel" : ""}" data-i="${i}">${DRONE_SVG}</span>`).join("");
+    (_, i) => `<span class="drone" data-i="${i}">${DRONE_SVG}</span>`).join("");
 
   updateDock(human, playable);
+  updateProgress();
   updateEndScreen();
+}
+
+// ---- Match/round progress HUD (ROC-210): round + seals + supply-collapse + deck ----
+const SHORT = { OPERATOR: "OPR", "VULT-3R": "VLT", "NØMAD": "NMD", "SPECTRE-9": "SP9" };
+function updateProgress() {
+  const el = document.getElementById("progress");
+  if (!el) return;
+  const m = state.match;
+  if (!m) { el.classList.remove("on"); return; }
+  const empties = emptyPileCount(state);            // goods piles run dry → round ends at PILES_TO_END
+  const warn = empties >= PILES_TO_END - 1;         // 2 of 3 → "round ending"
+  const deckLow = state.deck.length <= 12;
+
+  const ops = state.players.map((p, i) => {
+    const on = Math.min(m.seals[i], SEALS_TO_WIN);
+    const pips = `<span class="on">${"◆".repeat(on)}</span>${"◇".repeat(Math.max(0, SEALS_TO_WIN - on))}`;
+    const active = state.turnIndex === i && !state.gameOver;
+    return `<div class="pop${active ? " act" : ""}"><span class="nm">${SHORT[p.name] || p.name}</span><span class="pips">${pips}</span></div>`;
+  }).join("");
+  const segs = Array.from({ length: PILES_TO_END }, (_, i) => `<i class="${i < empties ? "on" : ""}"></i>`).join("");
+
+  el.innerHTML =
+    `<div class="pseg"><span class="cap">Round</span><span class="rn"><b>${m.roundNo}</b><span class="of">/${m.maxRounds}</span></span></div>`
+    + `<div class="pseg"><span class="cap">Seals</span><div class="ops">${ops}</div></div>`
+    + `<div class="pseg psupply${warn ? " warn" : ""}"><span class="cap">Supply</span><div class="bars">${segs}</div>`
+    + `<span class="n">${empties}/${PILES_TO_END}</span>${warn ? `<span class="w">Round ending</span>` : ""}</div>`
+    + `<div class="pseg${deckLow ? " warn" : ""}"><span class="cap">Deck</span><b class="dk">${state.deck.length}</b></div>`;
+  el.classList.add("on");
 }
 
 // ---- End-of-round / match-over screen (best-of-3) ----
@@ -300,7 +329,7 @@ function updateEndScreen() {
 
   el.innerHTML = `
     <div class="ebox">
-      <div class="kick">DARKNET MARKET // BEST OF ${m ? m.maxRounds : 3}</div>
+      <div class="kick">NIGHT MARKET // BEST OF ${m ? m.maxRounds : 3}</div>
       <div class="ewin">${head}</div>
       <div class="ewho">${who}</div>
       <div class="esub">${sub}</div>
@@ -312,43 +341,40 @@ function updateEndScreen() {
   el.setAttribute("aria-hidden", "false");
 }
 
-function setBtn(id, on, off) {
-  const b = document.getElementById(id);
-  b.classList.remove("on", "off", "primary");
-  if (off) b.classList.add("off");
-  else if (on) b.classList.add("on");
-}
-// Resolve the single "smart" primary action from the current selection (ROC-216/217).
+// Resolve the single "smart" primary action from the current selection (ROC-216/217/223).
 // Count comes from the selection — no manual stepper. Returns {kind,label,enabled,hint,…}.
 function currentAction(human) {
   const hand = [...selectedHand], mkt = [...selectedMarket];
   const handCards = hand.map((i) => human.hand[i]);
-  const give = hand.length + selectedDrones.size; // give side = selected hand cards + selected drones
 
-  // Exchange: giving (hand cards and/or drones) AND taking market cards (counts must match, ≥2).
-  if (give > 0 && mkt.length > 0) {
-    if (mkt.some((i) => state.market[i] === "camel")) return { enabled: false, label: "Exchange", hint: "Can't take drones via exchange." };
-    if (give < 2) return { enabled: false, label: "Exchange", hint: "An exchange needs 2+ cards/drones." };
-    if (give !== mkt.length) return { enabled: false, label: "Exchange", hint: `Give ${give}, take ${mkt.length} — pick equal numbers.` };
-    const after = human.hand.length - hand.length + mkt.length; // drones given don't affect hand size
-    if (after > HAND_LIMIT) return { enabled: false, label: "Exchange", hint: `That leaves ${after} cards (max ${HAND_LIMIT}).` };
-    return { kind: "exchange", enabled: true, label: `Exchange ×${give}` };
-  }
-  // Drones/cards selected to give but nothing selected to take yet.
-  if (selectedDrones.size > 0) return { enabled: false, label: "Exchange", hint: "Select market cards to exchange your drones for." };
-  // Sell: hand cards of one good.
+  // Sell: hand cards of one good (hand-only selection). Hand drives selling, market drives the rest.
   if (hand.length > 0) {
+    if (mkt.length > 0) return { enabled: false, label: "Sell", hint: "Selling uses hand cards only — clear the market selection." };
     const good = handCards[0];
     if (!handCards.every((c) => c === good)) return { enabled: false, label: "Sell", hint: "Selected cards must be the same good." };
     if (RARE.has(good) && hand.length < 2) return { enabled: false, label: "Sell", hint: `${GOODS_EN[good]} is rare — sell 2+ at once.` };
     return { kind: "sell", enabled: true, label: `Sell ×${hand.length}`, good };
   }
-  // Take: exactly one non-drone market card.
-  if (mkt.length === 1) {
-    if (state.market[mkt[0]] === "camel") return { enabled: false, label: "Take 1 card", hint: "Use Take Drones for drones." };
-    return { kind: "take", enabled: true, label: "Take 1 card", idx: mkt[0] };
+
+  // Market-driven actions (ROC-223). The primary label reads straight from the market selection.
+  const drones = mkt.filter((i) => state.market[i] === "camel").length;
+  const goods = mkt.length - drones;
+
+  // Any drone selected → Take Drones (sweeps every drone from the market, regardless of count).
+  if (drones > 0) {
+    if (goods > 0) return { enabled: false, label: "Take drones", hint: "Select drones on their own to take them." };
+    return { kind: "drones", enabled: true, label: "Take drones" };
   }
-  if (mkt.length > 1) return { enabled: false, label: "Take", hint: "Select 1 card to take — or give hand cards to exchange." };
+  // Exactly one goods card → Take it.
+  if (goods === 1) return { kind: "take", enabled: true, label: "Take 1 card", idx: mkt[0] };
+  // Two or more goods cards → Exchange for drones (give that many drones from the fleet).
+  if (goods > 1) {
+    const need = goods;
+    if (human.camels < need) return { enabled: false, label: "Exchange for drones", hint: `Need ${need} drones — you have ${human.camels}.` };
+    const after = human.hand.length + need; // drones given don't change hand size
+    if (after > HAND_LIMIT) return { enabled: false, label: "Exchange for drones", hint: `That leaves ${after} cards (max ${HAND_LIMIT}).` };
+    return { kind: "exchange", enabled: true, label: "Exchange for drones", need };
+  }
   return { enabled: false, label: "Select cards to act" };
 }
 
@@ -359,10 +385,7 @@ function updateDock(human, playable) {
   primary.classList.toggle("off", !playable || !a.enabled);
   primary.classList.toggle("primary", playable && a.enabled);
 
-  const marketHasDrone = state.market.includes("camel");
-  setBtn("btn-camels", marketHasDrone, !playable || !marketHasDrone);
-
-  const anySel = selectedMarket.size + selectedHand.size + selectedDrones.size > 0;
+  const anySel = selectedMarket.size + selectedHand.size > 0;
   document.getElementById("btn-clear").classList.toggle("off", !anySel);
 
   const hint = document.getElementById("dock-hint");
@@ -372,7 +395,7 @@ function updateDock(human, playable) {
   else if (a.hint) hint.textContent = a.hint;
   else {
     const sel = selectedMarket.size + selectedHand.size;
-    hint.textContent = sel ? `${sel} selected` : "Select cards to act, or take drones.";
+    hint.textContent = sel ? `${sel} selected` : "Select cards to act.";
   }
 }
 
@@ -402,26 +425,17 @@ document.getElementById("btn-primary").addEventListener("click", () => {
   if (!a.enabled) { if (a.hint) showError(a.hint); return; }
   if (a.kind === "take") afterPlayerAction(takeCard(state, 0, a.idx));
   else if (a.kind === "sell") afterPlayerAction(sellCards(state, 0, a.good, selectedHand.size));
-  else if (a.kind === "exchange") afterPlayerAction(exchangeCards(state, 0, { handIdxs: [...selectedHand], camels: selectedDrones.size }, [...selectedMarket]));
+  else if (a.kind === "drones") afterPlayerAction(takeCamels(state, 0));
+  else if (a.kind === "exchange") afterPlayerAction(exchangeCards(state, 0, { handIdxs: [], camels: a.need }, [...selectedMarket]));
 });
-document.getElementById("btn-camels").addEventListener("click", () => { if (requirePlayerTurn()) afterPlayerAction(takeCamels(state, 0)); });
-document.getElementById("btn-clear").addEventListener("click", () => { selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set(); render(); });
-// Select drones from your fleet to give in an exchange (click to select up to that drone).
-document.getElementById("fleet-cluster").addEventListener("click", (e) => {
-  if (state.gameOver || !state.players[state.turnIndex].isHuman) return;
-  const d = e.target.closest(".drone");
-  if (!d) return;
-  const i = Number(d.dataset.i);
-  if (selectedDrones.has(i)) selectedDrones.delete(i); else selectedDrones.add(i); // toggle this one drone
-  render();
-});
-document.getElementById("btn-reset").addEventListener("click", () => { state = newGame(); selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set(); initPriceWall(); render(); });
+document.getElementById("btn-clear").addEventListener("click", () => { selectedMarket = new Set(); selectedHand = new Set(); render(); });
+document.getElementById("btn-reset").addEventListener("click", () => { state = newGame(); selectedMarket = new Set(); selectedHand = new Set(); initPriceWall(); render(); });
 
 // End-screen buttons: continue to the next round, or start a fresh match.
 document.getElementById("endscreen").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-action]");
   if (!btn) return;
-  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
+  selectedMarket = new Set(); selectedHand = new Set();
   const act = btn.dataset.action;
   if (act === "next") {
     if (nextRound(state).ok) { initPriceWall(); render(); saveGame(); stepBotsIfNeeded(state); }
@@ -434,7 +448,7 @@ document.getElementById("endscreen").addEventListener("click", (e) => {
 
 function afterPlayerAction(res) {
   if (!res.ok) { showError(res.error); return; }
-  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
+  selectedMarket = new Set(); selectedHand = new Set();
   render(); saveGame(); stepBotsIfNeeded(state);
 }
 const BOT_STEP_MS = 700; // delay between bot moves so the player can follow each rival's action
@@ -542,6 +556,8 @@ function showMenu() {
   refreshResumeButton(); // the menu may open after a match ends / mid-match — recheck resumability
 }
 function hideMenu() { const el = document.getElementById("menu"); if (el) { el.classList.remove("on"); el.setAttribute("aria-hidden", "true"); } }
+function openHowto() { const el = document.getElementById("howto"); if (el) { el.classList.add("on"); el.setAttribute("aria-hidden", "false"); } }
+function closeHowto() { const el = document.getElementById("howto"); if (el) { el.classList.remove("on"); el.setAttribute("aria-hidden", "true"); } }
 
 // ---- Save / resume an in-progress match (ROC-196) ----
 function saveGame() {
@@ -559,7 +575,7 @@ function refreshResumeButton() {
 function startMatch() {
   hideMenu();
   state = newGame();
-  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
+  selectedMarket = new Set(); selectedHand = new Set();
   initPriceWall(); render(); saveGame();
 }
 function resumeMatch() {
@@ -567,7 +583,7 @@ function resumeMatch() {
   if (!saved) { startMatch(); return; }
   hideMenu();
   state = saved;
-  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
+  selectedMarket = new Set(); selectedHand = new Set();
   initPriceWall(); render();
   stepBotsIfNeeded(state); // if we saved mid bot-chain, keep it going
 }
@@ -580,6 +596,10 @@ function initMenu() {
   });
   document.getElementById("menu-start")?.addEventListener("click", startMatch);
   document.getElementById("menu-resume")?.addEventListener("click", resumeMatch);
+  document.getElementById("menu-howto")?.addEventListener("click", openHowto);
+  document.getElementById("util-help")?.addEventListener("click", openHowto);
+  document.getElementById("howto-close")?.addEventListener("click", closeHowto);
+  document.getElementById("howto-ok")?.addEventListener("click", closeHowto);
   showMenu(); // boot into the title menu (refreshResumeButton runs inside showMenu)
 }
 

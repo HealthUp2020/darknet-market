@@ -4,7 +4,7 @@
 Roadmap + epics tracked in Linear.
 
 - Team: RocketArminek (ROC)
-- Project: Darknet Market — https://linear.app/rocketarminek/project/darknet-market-b191d75250a8/overview
+- Project: Night Market — https://linear.app/rocketarminek/project/night-market-b191d75250a8/overview
 - Epics live as issues in the project. Each carries **Size** and **Done %** in its description.
 - When work maps to a roadmap epic, update the matching Linear issue (status/description) rather than tracking progress only in git.
 
