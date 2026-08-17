@@ -1,7 +1,7 @@
 // ---- NIGHT MARKET — stage renderer (HTML/CSS). Rules engine lives in engine.js ----
 import { CARD_ART } from "./card-art.js"; // illustration SVGs extracted from ui-mockups/Assets/
 import {
-  GOODS, GOODS_EN, RARE, TOKEN_TEMPLATE, PLAYER_COUNT, SEALS_TO_WIN,
+  GOODS, GOODS_EN, RARE, TOKEN_TEMPLATE, PLAYER_COUNT, SEALS_TO_WIN, HAND_LIMIT,
   newGame, nextRound, takeCard, takeCamels, sellCards, exchangeCards, botPlay,
 } from "./engine.js";
 import { fitScale, isTooSmall } from "./layout.js";
@@ -22,7 +22,7 @@ const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 let state = newGame();
 let selectedMarket = new Set();
 let selectedHand = new Set();
-let selectedCamelsForExchange = 0;
+let selectedDrones = new Set();
 
 // ---- HTML builders ----
 function cardHTML(good, { selected, playable, zone, idx }) {
@@ -247,9 +247,9 @@ function render() {
     }).join("");
 
   document.getElementById("fleet-count").textContent = human.camels;
-  document.getElementById("fleet-cluster").innerHTML = Array.from({ length: Math.min(human.camels, 12) }, () => `<span class="drone">${DRONE_SVG}</span>`).join("");
+  document.getElementById("fleet-cluster").innerHTML = Array.from({ length: Math.min(human.camels, 12) },
+    (_, i) => `<span class="drone${selectedDrones.has(i) ? " sel" : ""}" data-i="${i}">${DRONE_SVG}</span>`).join("");
 
-  document.getElementById("camel-selected-count").textContent = selectedCamelsForExchange;
   updateDock(human, playable);
   updateEndScreen();
 }
@@ -318,30 +318,61 @@ function setBtn(id, on, off) {
   if (off) b.classList.add("off");
   else if (on) b.classList.add("on");
 }
+// Resolve the single "smart" primary action from the current selection (ROC-216/217).
+// Count comes from the selection — no manual stepper. Returns {kind,label,enabled,hint,…}.
+function currentAction(human) {
+  const hand = [...selectedHand], mkt = [...selectedMarket];
+  const handCards = hand.map((i) => human.hand[i]);
+  const give = hand.length + selectedDrones.size; // give side = selected hand cards + selected drones
+
+  // Exchange: giving (hand cards and/or drones) AND taking market cards (counts must match, ≥2).
+  if (give > 0 && mkt.length > 0) {
+    if (mkt.some((i) => state.market[i] === "camel")) return { enabled: false, label: "Exchange", hint: "Can't take drones via exchange." };
+    if (give < 2) return { enabled: false, label: "Exchange", hint: "An exchange needs 2+ cards/drones." };
+    if (give !== mkt.length) return { enabled: false, label: "Exchange", hint: `Give ${give}, take ${mkt.length} — pick equal numbers.` };
+    const after = human.hand.length - hand.length + mkt.length; // drones given don't affect hand size
+    if (after > HAND_LIMIT) return { enabled: false, label: "Exchange", hint: `That leaves ${after} cards (max ${HAND_LIMIT}).` };
+    return { kind: "exchange", enabled: true, label: `Exchange ×${give}` };
+  }
+  // Drones/cards selected to give but nothing selected to take yet.
+  if (selectedDrones.size > 0) return { enabled: false, label: "Exchange", hint: "Select market cards to exchange your drones for." };
+  // Sell: hand cards of one good.
+  if (hand.length > 0) {
+    const good = handCards[0];
+    if (!handCards.every((c) => c === good)) return { enabled: false, label: "Sell", hint: "Selected cards must be the same good." };
+    if (RARE.has(good) && hand.length < 2) return { enabled: false, label: "Sell", hint: `${GOODS_EN[good]} is rare — sell 2+ at once.` };
+    return { kind: "sell", enabled: true, label: `Sell ×${hand.length}`, good };
+  }
+  // Take: exactly one non-drone market card.
+  if (mkt.length === 1) {
+    if (state.market[mkt[0]] === "camel") return { enabled: false, label: "Take 1 card", hint: "Use Take Drones for drones." };
+    return { kind: "take", enabled: true, label: "Take 1 card", idx: mkt[0] };
+  }
+  if (mkt.length > 1) return { enabled: false, label: "Take", hint: "Select 1 card to take — or give hand cards to exchange." };
+  return { enabled: false, label: "Select cards to act" };
+}
+
 function updateDock(human, playable) {
-  const oneMarket = selectedMarket.size === 1 && state.market[[...selectedMarket][0]] !== "camel";
+  const a = currentAction(human);
+  const primary = document.getElementById("btn-primary");
+  primary.textContent = a.label;
+  primary.classList.toggle("off", !playable || !a.enabled);
+  primary.classList.toggle("primary", playable && a.enabled);
+
   const marketHasDrone = state.market.includes("camel");
-  const handCards = [...selectedHand].map((i) => human.hand[i]);
-  const sameGood = handCards.length > 0 && handCards.every((c) => c === handCards[0]);
-  const canExchange = selectedHand.size + selectedCamelsForExchange >= 2 && selectedMarket.size > 0;
+  setBtn("btn-camels", marketHasDrone, !playable || !marketHasDrone);
 
-  setBtn("btn-take", oneMarket, !playable);
-  setBtn("btn-camels", marketHasDrone, !playable);
-  setBtn("btn-sell", sameGood, !playable);
-  setBtn("btn-exchange", canExchange, !playable);
-  document.getElementById("btn-sell").classList.toggle("primary", playable && sameGood);
-
-  const minus = document.getElementById("camel-minus"), plus = document.getElementById("camel-plus");
-  minus.classList.toggle("off", !playable || selectedCamelsForExchange === 0);
-  plus.classList.toggle("off", !playable || selectedCamelsForExchange >= human.camels);
+  const anySel = selectedMarket.size + selectedHand.size + selectedDrones.size > 0;
+  document.getElementById("btn-clear").classList.toggle("off", !anySel);
 
   const hint = document.getElementById("dock-hint");
   hint.className = "hint";
   if (state.gameOver) hint.textContent = "Match over — reset to play again.";
   else if (!playable) hint.textContent = "Awaiting your turn…";
+  else if (a.hint) hint.textContent = a.hint;
   else {
     const sel = selectedMarket.size + selectedHand.size;
-    hint.textContent = sel ? `${sel} selected · choose an action` : "Select cards to act";
+    hint.textContent = sel ? `${sel} selected` : "Select cards to act, or take drones.";
   }
 }
 
@@ -364,33 +395,33 @@ function requirePlayerTurn() {
   if (!state.players[state.turnIndex].isHuman) { showError("Wait for your turn."); return false; }
   return true;
 }
-document.getElementById("btn-take").addEventListener("click", () => {
+// Single smart primary action — take / sell / exchange, resolved from the selection.
+document.getElementById("btn-primary").addEventListener("click", () => {
   if (!requirePlayerTurn()) return;
-  if (selectedMarket.size !== 1) return showError("Select exactly 1 market card.");
-  afterPlayerAction(takeCard(state, 0, [...selectedMarket][0]));
+  const a = currentAction(state.players[0]);
+  if (!a.enabled) { if (a.hint) showError(a.hint); return; }
+  if (a.kind === "take") afterPlayerAction(takeCard(state, 0, a.idx));
+  else if (a.kind === "sell") afterPlayerAction(sellCards(state, 0, a.good, selectedHand.size));
+  else if (a.kind === "exchange") afterPlayerAction(exchangeCards(state, 0, { handIdxs: [...selectedHand], camels: selectedDrones.size }, [...selectedMarket]));
 });
 document.getElementById("btn-camels").addEventListener("click", () => { if (requirePlayerTurn()) afterPlayerAction(takeCamels(state, 0)); });
-document.getElementById("btn-sell").addEventListener("click", () => {
-  if (!requirePlayerTurn()) return;
-  if (selectedHand.size === 0) return showError("Select cards to sell (same good).");
-  const cards = [...selectedHand].map((i) => state.players[0].hand[i]), good = cards[0];
-  if (!cards.every((c) => c === good)) return showError("Selected cards must be the same good.");
-  afterPlayerAction(sellCards(state, 0, good, cards.length));
+document.getElementById("btn-clear").addEventListener("click", () => { selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set(); render(); });
+// Select drones from your fleet to give in an exchange (click to select up to that drone).
+document.getElementById("fleet-cluster").addEventListener("click", (e) => {
+  if (state.gameOver || !state.players[state.turnIndex].isHuman) return;
+  const d = e.target.closest(".drone");
+  if (!d) return;
+  const i = Number(d.dataset.i);
+  if (selectedDrones.has(i)) selectedDrones.delete(i); else selectedDrones.add(i); // toggle this one drone
+  render();
 });
-document.getElementById("btn-exchange").addEventListener("click", () => {
-  if (!requirePlayerTurn()) return;
-  if (selectedHand.size + selectedCamelsForExchange < 2 || selectedMarket.size === 0) return showError("Give 2+ cards/drones and take the same number.");
-  afterPlayerAction(exchangeCards(state, 0, { handIdxs: [...selectedHand], camels: selectedCamelsForExchange }, [...selectedMarket]));
-});
-document.getElementById("camel-plus").addEventListener("click", () => { if (requirePlayerTurn() && selectedCamelsForExchange < state.players[0].camels) { selectedCamelsForExchange++; render(); } });
-document.getElementById("camel-minus").addEventListener("click", () => { if (requirePlayerTurn() && selectedCamelsForExchange > 0) { selectedCamelsForExchange--; render(); } });
-document.getElementById("btn-reset").addEventListener("click", () => { state = newGame(); selectedMarket = new Set(); selectedHand = new Set(); selectedCamelsForExchange = 0; initPriceWall(); render(); });
+document.getElementById("btn-reset").addEventListener("click", () => { state = newGame(); selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set(); initPriceWall(); render(); });
 
 // End-screen buttons: continue to the next round, or start a fresh match.
 document.getElementById("endscreen").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-action]");
   if (!btn) return;
-  selectedMarket = new Set(); selectedHand = new Set(); selectedCamelsForExchange = 0;
+  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
   const act = btn.dataset.action;
   if (act === "next") {
     if (nextRound(state).ok) { initPriceWall(); render(); saveGame(); stepBotsIfNeeded(state); }
@@ -403,10 +434,10 @@ document.getElementById("endscreen").addEventListener("click", (e) => {
 
 function afterPlayerAction(res) {
   if (!res.ok) { showError(res.error); return; }
-  selectedMarket = new Set(); selectedHand = new Set(); selectedCamelsForExchange = 0;
+  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
   render(); saveGame(); stepBotsIfNeeded(state);
 }
-const BOT_STEP_MS = 260; // delay between bot moves so the player can follow the action
+const BOT_STEP_MS = 700; // delay between bot moves so the player can follow each rival's action
 function stepBotsIfNeeded(gameRef) {
   if (gameRef.gameOver || gameRef.players[gameRef.turnIndex].isHuman) { render(); return; }
   setTimeout(() => {
@@ -528,7 +559,7 @@ function refreshResumeButton() {
 function startMatch() {
   hideMenu();
   state = newGame();
-  selectedMarket = new Set(); selectedHand = new Set(); selectedCamelsForExchange = 0;
+  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
   initPriceWall(); render(); saveGame();
 }
 function resumeMatch() {
@@ -536,7 +567,7 @@ function resumeMatch() {
   if (!saved) { startMatch(); return; }
   hideMenu();
   state = saved;
-  selectedMarket = new Set(); selectedHand = new Set(); selectedCamelsForExchange = 0;
+  selectedMarket = new Set(); selectedHand = new Set(); selectedDrones = new Set();
   initPriceWall(); render();
   stepBotsIfNeeded(state); // if we saved mid bot-chain, keep it going
 }

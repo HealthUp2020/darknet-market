@@ -4,7 +4,7 @@
 // and checkGameEnd threshold (2 vs 3 empty piles).
 import { test, expect, describe } from "bun:test";
 import {
-  takeCard, sellCards, exchangeCards, botPlay, checkGameEnd,
+  newGame, takeCard, sellCards, exchangeCards, botPlay, checkGameEnd,
   TOKEN_TEMPLATE, HAND_LIMIT, PLAYER_COUNT, PLAYER_NAMES,
 } from "../public/engine.js";
 
@@ -264,5 +264,64 @@ describe("bot AI — no legal move skips", () => {
     botPlay(s, PLAYER_COUNT - 1);
     expect(s.turnIndex).toBe(0);
     expect(s.round).toBe(3);
+  });
+});
+
+// ROC-214 regression: "AI Cores shows 5 not 7" — customer report that the price
+// wall was not showing the correct current top token. The wall reads
+// state.tokens[good][0]; token piles are stocked descending, so [0] is always
+// the current max/payout and it should start at the template's leading value
+// and step DOWN as a good is sold, never silently reset or misread.
+describe("descending token-value economics (ROC-214)", () => {
+  test("newGame starts every good's pile top at the template's leading (max) value", () => {
+    // TOKEN_TEMPLATE piles are non-increasing, so [0] is the max for each good.
+    for (const pile of Object.values(TOKEN_TEMPLATE) as number[][]) {
+      expect(pile[0]).toBe(Math.max(...pile));
+    }
+    expect(TOKEN_TEMPLATE.diamond[0]).toBe(7);
+    expect(TOKEN_TEMPLATE.gold[0]).toBe(6);
+    expect(TOKEN_TEMPLATE.silver[0]).toBe(5);
+    expect(TOKEN_TEMPLATE.cloth[0]).toBe(5);
+    expect(TOKEN_TEMPLATE.spice[0]).toBe(5);
+    expect(TOKEN_TEMPLATE.leather[0]).toBe(4);
+
+    const s = newGame();
+    for (const good of Object.keys(TOKEN_TEMPLATE)) {
+      expect(s.tokens[good][0]).toBe(TOKEN_TEMPLATE[good][0]);
+    }
+  });
+
+  test("selling depletes from the pile top — payout drops from 7 to 5 after selling the three 7s", () => {
+    const s = makeState({ market: ["gold", "silver", "spice"] }); // stocked default deck
+    s.players[0].hand = ["diamond", "diamond", "diamond", "cloth"];
+    s.tokens.diamond = [7, 7, 7, 5, 5, 5, 5];
+
+    const before = s.players[0].score;
+    const r = sellCards(s, 0, "diamond", 3);
+    expect(r.ok).toBe(true);
+
+    // the three 7-tokens are gone, replaced at the top by a 5
+    expect(s.tokens.diamond).toEqual([5, 5, 5, 5]);
+    expect(s.tokens.diamond[0]).toBe(5); // displayed top value dropped 7 -> 5
+
+    // 7+7+7 = 21 banked, plus the 3-card sale bonus (bonus[3] top = 1 in makeState)
+    expect(s.players[0].score).toBe(before + 21 + 1);
+
+    // the non-camel cards actually left the hand
+    expect(s.players[0].hand.filter((c: string) => c === "diamond")).toHaveLength(0);
+  });
+
+  test("invariant: after any sale, the displayed top equals the max of the remaining (descending) pile", () => {
+    const s = makeState({ market: ["gold", "silver", "spice"] });
+    s.players[0].hand = ["gold", "gold", "gold", "gold"];
+    s.tokens.gold = [6, 6, 6, 5, 5, 5, 5];
+
+    sellCards(s, 0, "gold", 2); // sell 2 of the three 6s
+    expect(s.tokens.gold).toEqual([6, 5, 5, 5, 5]);
+    expect(s.tokens.gold[0]).toBe(Math.max(...s.tokens.gold)); // top == max of remainder
+
+    sellCards(s, 0, "gold", 2); // takes the last 6 and a 5
+    expect(s.tokens.gold).toEqual([5, 5, 5]);
+    expect(s.tokens.gold[0]).toBe(Math.max(...s.tokens.gold)); // top == max of remainder, now 5 not 7/6
   });
 });

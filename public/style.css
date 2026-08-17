@@ -225,6 +225,17 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .wall .wh{display:flex;align-items:center;gap:8px;margin-bottom:4px}
   .wall .wh .ttl{font:600 10px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
   .wall .wh .rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(79,195,217,.4),transparent)}
+  /* "?" price-mechanic explainer (ROC-221) */
+  .wall .wh .info{position:relative;width:14px;height:14px;flex-shrink:0;padding:0;display:grid;place-items:center;
+    border:1px solid var(--border-panel);border-radius:50%;background:transparent;color:var(--text-muted);
+    font:700 9px/1 var(--font-mono);cursor:help}
+  .wall .wh .info:hover,.wall .wh .info:focus-visible{color:var(--rare-cyan);border-color:var(--rare-cyan);outline:none}
+  .wall .wh .info .tip{position:absolute;left:-2px;top:22px;z-index:60;width:212px;display:none;text-align:left;
+    background:rgba(12,18,26,.98);border:1px solid var(--border-panel);border-radius:8px;padding:10px 12px;
+    font:400 10px/1.55 var(--font-body);letter-spacing:.02em;color:var(--text-secondary);text-transform:none;
+    box-shadow:var(--shadow-panel)}
+  .wall .wh .info:hover .tip,.wall .wh .info:focus .tip,.wall .wh .info:focus-visible .tip{display:block}
+  .wall .wh .info .tip b{display:block;margin-bottom:4px;color:var(--rare-cyan);font-weight:600}
   .wall .wsub{font:500 8px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--text-muted);margin-bottom:9px}
   .rows{display:flex;flex-direction:column;gap:5px;flex:1}
   .prow{position:relative;display:flex;align-items:center;gap:9px;padding:5px 8px;flex:1;
@@ -419,6 +430,10 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .fleet .cluster{display:flex;flex-wrap:wrap;gap:5px;max-width:216px}
   .drone{width:26px;height:24px;color:var(--accent-ui);opacity:.9}
   .drone svg{width:100%;height:100%;filter:drop-shadow(0 0 3px rgba(79,195,217,.5))}
+  /* Fleet drones are clickable to give in an exchange (ROC-216 fix) */
+  .fleet .cluster .drone{cursor:pointer;border-radius:4px;transition:transform var(--dur-fast) var(--ease-hud)}
+  .fleet .cluster .drone:hover{transform:translateY(-2px)}
+  .fleet .cluster .drone.sel{color:var(--rare-gold);opacity:1;background:rgba(255,201,77,.14);box-shadow:0 0 0 1px rgba(255,201,77,.5)}
   .fleet .cnt{font:600 13px/1 var(--font-mono);color:var(--accent-ui)}
 
   .hand{position:absolute;left:492px;bottom:8px;transform:translateX(-50%);z-index:20;display:flex;align-items:flex-end;height:196px}
@@ -429,8 +444,9 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .hand .hc .card{filter:drop-shadow(0 8px 14px rgba(0,0,0,.55))}
   .hand .lab2{position:absolute;top:-6px;left:50%;transform:translateX(-50%);white-space:nowrap}
 
-  .dock{position:absolute;right:20px;bottom:22px;z-index:22;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
-  .drow{display:flex;gap:9px;align-items:center}
+  /* Centered action dock — sits above the hand, in the lower-centre (ROC-219) */
+  .dock{position:absolute;left:492px;bottom:214px;transform:translateX(-50%);z-index:22;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .drow{display:flex;gap:9px;align-items:center;justify-content:center}
   .btn{position:relative;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;box-sizing:border-box;cursor:pointer;
     font:600 10px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ui);
     background:var(--accent-ui-glass);border:1px solid rgba(79,195,217,.5);clip-path:var(--clip-btn)}
@@ -440,6 +456,9 @@ a:hover { color: var(--rare-cyan); text-shadow: var(--glow-text-ui); }
   .btn.primary{background:var(--accent-ui);color:#06131a;border-color:var(--accent-ui);box-shadow:var(--glow-ui)}
   .btn.sys{background:transparent;border-color:var(--border-panel);color:var(--text-secondary);border-radius:2px;clip-path:none;font-family:var(--font-mono);letter-spacing:.08em}
   .btn.sys .br{opacity:.5}
+  .btn.ghost{background:transparent;border-color:var(--border-panel);color:var(--text-muted)}
+  .btn.ghost:hover{color:var(--text-secondary);border-color:var(--accent-ui)}
+  #btn-primary{min-width:168px;justify-content:center;padding:13px 22px;font-size:11px}
   .stepper{display:inline-flex;align-items:stretch;border:1px solid rgba(79,195,217,.4);clip-path:var(--clip-btn);background:rgba(10,14,22,.6)}
   .stepper .sb{width:30px;display:grid;place-items:center;color:var(--accent-ui);font:600 16px/1 var(--font-mono);cursor:pointer}
   .stepper .win{width:44px;display:grid;place-items:center;border-left:1px solid rgba(79,195,217,.3);border-right:1px solid rgba(79,195,217,.3);background:rgba(0,229,255,.05)}

@@ -47,7 +47,9 @@
 
     <!-- ================= LEFT PRICE WALL ================= -->
     <div class="glass wall"><div class="sheen"></div>
-      <div class="wh"><span class="ttl">Market Prices</span><span class="rule"></span></div>
+      <div class="wh"><span class="ttl">Market Prices</span>
+        <button class="info" id="wall-info" aria-label="How market prices work" tabindex="0">?<span class="tip" role="tooltip"><b>Prices fall as goods sell.</b>The top token is the current CR payout. Each sale takes the highest tokens, so a good pays less as its stock (×N) runs down — sell scarce goods first for the premium.</span></button>
+        <span class="rule"></span></div>
       <div class="wsub">TOP TOKEN = CR PAYOUT · ×N = STOCK LEFT</div>
       <div class="rows" id="price-rows"></div>
       <div class="wfoot">
@@ -120,15 +122,11 @@
 
       <div class="dock">
         <div class="drow">
-          <button class="btn" id="btn-take"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="10" height="13" rx="1.5"/><rect x="12" y="4" width="8" height="11" rx="1.5"/></svg>Take 1 Card</button>
+          <button class="btn primary" id="btn-primary">Select cards to act</button>
           <button class="btn" id="btn-camels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="10" rx="4" ry="3"/><ellipse cx="15" cy="12" rx="4" ry="3"/><path d="M4 18q9 4 16 0"/></svg>Take Drones</button>
         </div>
         <div class="drow">
-          <button class="btn" id="btn-sell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="6" width="9" height="12" rx="1.5"/><circle cx="18" cy="12" r="4"/><path d="M18 10v4M16.4 11h3.2"/></svg>Sell Selected</button>
-          <button class="btn" id="btn-exchange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="7" height="10" rx="1.5"/><rect x="14" y="7" width="7" height="10" rx="1.5"/><path d="M10 10l4 0M10 10l-1.6-1.6M14 14l-4 0M14 14l1.6 1.6"/></svg>Exchange</button>
-          <div class="stepper"><span class="sb" id="camel-minus">−</span><span class="win"><b id="camel-selected-count">0</b></span><span class="sb" id="camel-plus">+</span></div>
-        </div>
-        <div class="drow">
+          <button class="btn ghost" id="btn-clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Unselect all</button>
           <span class="hint" id="dock-hint"></span>
           <button class="btn sys" id="btn-reset"><span class="br">[</span>Reset Match<span class="br">]</span></button>
         </div>
