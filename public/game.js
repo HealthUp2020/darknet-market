@@ -9,6 +9,7 @@ import { fitScale, isTooSmall } from "./layout.js";
 import { DIFFICULTY, DIFFICULTY_ORDER } from "./strategies.js";
 import { SAVE_KEY, parseSave } from "./persistence.js";
 import { AVATARS } from "./avatars.js";
+import { startWalkthrough } from "./walkthrough.js";
 // Live opponent difficulty (ROC-208): easy=reckless, normal=heuristic, hard=1-ply lookahead.
 let difficulty = "hard";
 
@@ -572,11 +573,41 @@ function refreshResumeButton() {
   if (btn) btn.style.display = loadSave() ? "" : "none";
 }
 
-function startMatch() {
+// ---- Guided walkthrough (ROC-191): auto once for new players, replayable from How to Play ----
+const ONBOARD_KEY = "nm-onboarded";
+function onboarded() { try { return !!localStorage.getItem(ONBOARD_KEY); } catch { return false; } }
+function setOnboarded() { try { localStorage.setItem(ONBOARD_KEY, "1"); } catch {} }
+const WT_STEPS = [
+  { target: null, title: "Welcome to Night Market", body: "You're the OPERATOR, cornering contraband against three rival machines. Here's the board — take the quick tour, or skip anytime." },
+  { target: ".market", title: "The Night Market", body: "Seven goods sit face-up here. On your turn you take one card, sweep the drones, or spend drones from your fleet to grab several cards at once." },
+  { target: ".wall", title: "Market prices", body: "Prices fall as goods sell — the top token is the current CR payout. Sell scarce goods first for the premium." },
+  { target: "#hand", title: "Your hand", body: "Cards you've taken, up to 7. Collect matching goods, then sell a batch — selling 3 or more earns a bonus token." },
+  { target: ".dock", title: "Your actions", body: "Select cards and this button reads your intent: Take, Sell, or Exchange. It greys out and tells you why when a move isn't legal." },
+  { target: ".fleet", title: "Your drone fleet", body: "Drones don't clog your hand and pay for exchanges. Hold the largest fleet at round's end for a +5 CR Fixer bonus." },
+  { target: ".rivals", title: "The rival machines", body: "Three AI operators act between your turns. Watch what they hoard — and deny them the goods they need." },
+  { target: "#progress", title: "Match progress", body: "Best of three rounds. Track rounds, seals, market supply and the deck here — first to 2 seals wins the match." },
+  { target: "#util-help", title: "Need a refresher?", body: "Open this ? anytime to reread the rules or replay this walkthrough. That's the tour — good luck, Operator." },
+];
+function runWalkthrough() { startWalkthrough(WT_STEPS, () => setOnboarded()); }
+function afterRender(fn) { requestAnimationFrame(() => requestAnimationFrame(fn)); }
+
+function newMatch() {
   hideMenu();
   state = newGame();
   selectedMarket = new Set(); selectedHand = new Set();
   initPriceWall(); render(); saveGame();
+}
+function startMatch() {
+  newMatch();
+  if (!onboarded()) afterRender(runWalkthrough); // first-run guided tour
+}
+// Replay entry point (from the How to Play panel). Ensures a live board, then runs the tour.
+function launchWalkthrough() {
+  closeHowto();
+  const menuOpen = document.getElementById("menu")?.classList.contains("on");
+  const live = state && state.match && !state.match.matchOver && !menuOpen;
+  if (live) runWalkthrough();
+  else { newMatch(); afterRender(runWalkthrough); }
 }
 function resumeMatch() {
   const saved = loadSave();
@@ -600,6 +631,7 @@ function initMenu() {
   document.getElementById("util-help")?.addEventListener("click", openHowto);
   document.getElementById("howto-close")?.addEventListener("click", closeHowto);
   document.getElementById("howto-ok")?.addEventListener("click", closeHowto);
+  document.getElementById("howto-tour")?.addEventListener("click", launchWalkthrough);
   showMenu(); // boot into the title menu (refreshResumeButton runs inside showMenu)
 }
 

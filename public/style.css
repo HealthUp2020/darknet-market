@@ -708,3 +708,35 @@ body{background:var(--bg-page)}
 #howto .mcta{display:block;margin:0 auto;cursor:pointer;border:0;border-radius:9px;font:700 13px/1 var(--font-display);
   letter-spacing:.16em;color:#04121a;background:var(--rare-cyan);padding:14px 34px;box-shadow:0 0 26px rgba(0,229,255,.32)}
 #howto .mcta:hover{filter:brightness(1.08)}
+
+/* ---- Guided spotlight walkthrough (ROC-191) ---- */
+.wt-overlay{position:fixed;inset:0;z-index:800;font-family:var(--font-display,"Chakra Petch",sans-serif)}
+/* The "hole": a box whose huge box-shadow dims everything around it. 0-size ⇒ full dim. */
+.wt-hole{position:fixed;left:50%;top:50%;width:0;height:0;border-radius:12px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(4,8,14,.74);transition:left .28s cubic-bezier(.3,.9,.3,1),top .28s cubic-bezier(.3,.9,.3,1),width .28s cubic-bezier(.3,.9,.3,1),height .28s cubic-bezier(.3,.9,.3,1)}
+.wt-hole.on{box-shadow:0 0 0 9999px rgba(4,8,14,.74),0 0 0 2px var(--rare-cyan),0 0 26px 2px rgba(0,229,255,.45),inset 0 0 0 1px rgba(0,229,255,.25)}
+.wt-pop{position:fixed;width:340px;max-width:calc(100vw - 24px);box-sizing:border-box;
+  background:rgba(14,20,28,.97);border:1px solid var(--border-panel);border-radius:12px;padding:18px 18px 14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 0 1px rgba(0,229,255,.1);color:var(--text-primary)}
+.wt-pop .wt-skip{position:absolute;top:12px;right:12px;background:none;border:0;cursor:pointer;
+  color:var(--text-muted);font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.wt-pop .wt-skip:hover{color:var(--rare-cyan)}
+.wt-pop .wt-kick{font:600 9px/1 var(--font-mono);letter-spacing:.24em;text-transform:uppercase;color:var(--accent-ui);margin-bottom:9px}
+.wt-pop .wt-title{margin:0 0 7px;font-size:17px;font-weight:700;letter-spacing:.02em;color:#fff}
+.wt-pop .wt-body{margin:0 0 14px;font:400 13px/1.55 var(--font-body,inherit);color:var(--text-secondary)}
+.wt-pop .wt-foot{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wt-pop .wt-dots{display:flex;gap:5px;flex-wrap:wrap}
+.wt-pop .wt-dots i{width:6px;height:6px;border-radius:50%;background:var(--border-panel);transition:background .2s,transform .2s}
+.wt-pop .wt-dots i.on{background:var(--rare-cyan);transform:scale(1.25)}
+.wt-pop .wt-nav{display:flex;gap:8px;flex-shrink:0}
+.wt-pop .wt-back{background:none;border:1px solid var(--border-panel);border-radius:7px;cursor:pointer;
+  color:var(--text-muted);font:600 11px/1 var(--font-display);letter-spacing:.08em;padding:9px 13px}
+.wt-pop .wt-back:hover{color:var(--text-primary);border-color:var(--text-muted)}
+.wt-pop .wt-next{border:0;border-radius:7px;cursor:pointer;color:#04121a;background:var(--rare-cyan);
+  font:700 11px/1 var(--font-display);letter-spacing:.08em;padding:9px 15px;box-shadow:0 0 18px rgba(0,229,255,.3)}
+.wt-pop .wt-next:hover{filter:brightness(1.08)}
+/* Replay button inside the How-to panel */
+#howto .htour{display:block;margin:0 auto 12px;background:none;border:1px solid var(--border-panel);border-radius:8px;cursor:pointer;
+  color:var(--accent-ui);font:600 11px/1 var(--font-display);letter-spacing:.12em;text-transform:uppercase;padding:11px 20px}
+#howto .htour:hover{color:var(--rare-cyan);border-color:rgba(0,229,255,.5)}
+@media (prefers-reduced-motion: reduce){ .wt-hole{transition:none} }
